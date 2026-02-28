@@ -4,7 +4,7 @@ import './Home.css'
 
 const heroImages = [
     'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1542810634-71277d95dc82?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=1600&auto=format&fit=crop',
 ]
@@ -42,12 +42,7 @@ const objectives = [
     },
 ]
 
-const stats = [
-    { number: '500+', label: 'Community Members Served' },
-    { number: '7', label: 'Founding Members' },
-    { number: '5', label: 'Core Programs' },
-    { number: '3+', label: 'Years of Impact' },
-]
+
 
 const founders = [
     { name: 'Rasha Hayel Mousa', initials: 'RH', role: 'Co-Founder' },
@@ -61,6 +56,7 @@ const founders = [
 
 export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const [activeObjective, setActiveObjective] = useState(null)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -106,15 +102,46 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ── Stats Bar ────────────────────────────── */}
-            <section className="stats-bar">
-                <div className="container stats-bar__grid">
-                    {stats.map((s, i) => (
-                        <div key={i} className="stats-bar__item">
-                            <span className="stats-bar__number">{s.number}</span>
-                            <span className="stats-bar__label">{s.label}</span>
+            {/* ── Activities & Programs (Objectives) ────────── */}
+            <section className="activities-section">
+                <div className="container">
+                    <div className="section-header activities-header">
+                        <h2>Activities & Programs</h2>
+                    </div>
+
+                    <div className="activities-nav">
+                        {objectives.map((obj, i) => (
+                            <button
+                                key={i}
+                                className={`activity-btn ${activeObjective === i ? 'active' : ''}`}
+                                onClick={() => setActiveObjective(activeObjective === i ? null : i)}
+                            >
+                                <div className="activity-icon-wrapper">
+                                    <span className="activity-icon">{obj.icon}</span>
+                                </div>
+                                <span className="activity-label">{obj.title}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className={`activity-details-wrapper ${activeObjective !== null ? 'open' : ''}`}>
+                    {activeObjective !== null && (
+                        <div className="container activity-details animate-fade-in">
+                            <div className="activity-details-left">
+                                <div className="activity-details-title-row">
+                                    <div className="activity-details-icon-large">
+                                        {objectives[activeObjective].icon}
+                                    </div>
+                                    <h3>{objectives[activeObjective].title}</h3>
+                                </div>
+                            </div>
+                            <div className="activity-details-right">
+                                <h4>Our work</h4>
+                                <p>{objectives[activeObjective].desc}</p>
+                            </div>
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 
@@ -152,28 +179,6 @@ export default function Home() {
                                 <p>Innovation in humanitarian service delivery</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Objectives ───────────────────────────── */}
-            <section className="section section-alt">
-                <div className="container">
-                    <div className="section-header">
-                        <div className="badge">What We Do</div>
-                        <h2>Our Core Objectives</h2>
-                        <div className="divider" />
-                        <p>Five pillars of action that guide every program and initiative we undertake.</p>
-                    </div>
-                    <div className="objectives-grid">
-                        {objectives.map((obj, i) => (
-                            <NavLink to={obj.link} key={i} className="obj-card">
-                                <div className="obj-card__icon">{obj.icon}</div>
-                                <h3>{obj.title}</h3>
-                                <p>{obj.desc}</p>
-                                <span className="obj-card__arrow">→</span>
-                            </NavLink>
-                        ))}
                     </div>
                 </div>
             </section>
