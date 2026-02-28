@@ -1,0 +1,86 @@
+import { NavLink } from 'react-router-dom'
+import './Footer.css'
+
+export default function Footer() {
+    return (
+        <footer className="footer">
+            <div className="container">
+                <div className="footer__grid">
+                    {/* Brand */}
+                    <div className="footer__brand">
+                        <NavLink to="/" className="footer__logo">
+                            <span className="footer__logo-icon">☀</span>
+                            <span>Shams <strong>Roj</strong></span>
+                        </NavLink>
+                        <p className="footer__tagline">
+                            Fostering community development, justice, and equality across generations.
+                        </p>
+                        <div className="footer__social">
+                            <a href="#" aria-label="Facebook" className="footer__social-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                                </svg>
+                            </a>
+                            <a href="#" aria-label="Twitter" className="footer__social-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                                </svg>
+                            </a>
+                            <a href="#" aria-label="LinkedIn" className="footer__social-link">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Quick Links */}
+                    <div className="footer__col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><NavLink to="/">Home</NavLink></li>
+                            <li><NavLink to="/about">About Us</NavLink></li>
+                            <li><NavLink to="/objectives">Our Objectives</NavLink></li>
+                            <li><NavLink to="/founders">Our Founders</NavLink></li>
+                            <li><NavLink to="/principles">Guiding Principles</NavLink></li>
+                            <li><NavLink to="/contact">Contact Us</NavLink></li>
+                        </ul>
+                    </div>
+
+                    {/* Objectives */}
+                    <div className="footer__col">
+                        <h4>Our Focus Areas</h4>
+                        <ul>
+                            <li><span>Capacity Building</span></li>
+                            <li><span>Education</span></li>
+                            <li><span>Healthcare</span></li>
+                            <li><span>Social Support</span></li>
+                            <li><span>Volunteering</span></li>
+                        </ul>
+                    </div>
+
+                    {/* Contact */}
+                    <div className="footer__col">
+                        <h4>Contact Us</h4>
+                        <ul className="footer__contact-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                                <a href="mailto:info@shamsroj.org">info@shamsroj.org</a>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                                <span>+963 000 000 000</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="footer__bottom">
+                    <p>© {new Date().getFullYear()} Shams Roj Organization. All rights reserved.</p>
+                    <p>Built with ❤ for community development</p>
+                </div>
+            </div>
+        </footer>
+    )
+}
