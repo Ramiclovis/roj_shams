@@ -265,8 +265,7 @@
 .activities-section--in-view .activity-btn:nth-child(5) .activity-icon-wrapper { animation-delay: 0.33s; }
 
 .activity-icon {
-    width: 40px;
-    height: 40px;
+    font-size: 40px;
     flex-shrink: 0;
 }
 

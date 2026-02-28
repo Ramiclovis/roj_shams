@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Target, BookOpen, HeartPulse, Users, Leaf } from 'lucide-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import './Home.css'
 
@@ -13,31 +14,31 @@ const heroImages = [
 
 const objectives = [
     {
-        icon: Target,
+        icon: faBullseye,
         title: 'Capacity Building',
         desc: 'Developing life skills and empowering individuals to foster sustainable community growth. We design and deliver comprehensive programs that build leadership, professional competencies, and resilience so communities can thrive from within.',
         link: '/objectives',
     },
     {
-        icon: BookOpen,
+        icon: faBook,
         title: 'Education',
         desc: 'Establishing educational centers and kindergartens across all stages of learning. We ensure every child and adult has access to quality education regardless of circumstance, and we support teachers and learning environments for lasting impact.',
         link: '/objectives',
     },
     {
-        icon: HeartPulse,
+        icon: faHeartbeat,
         title: 'Healthcare',
         desc: 'Providing medical care for vulnerable groups and improving health standards through medical centers. Our work includes preventive care, mental health support, and outreach in underserved areas so that health becomes a right, not a privilege.',
         link: '/objectives',
     },
     {
-        icon: Users,
+        icon: faUsers,
         title: 'Social Support',
         desc: 'Addressing social issues and providing comprehensive psychosocial support (PSS). We offer counseling, crisis response, and family support to help individuals and communities navigate hardship with dignity and rebuild resilience.',
         link: '/objectives',
     },
     {
-        icon: Leaf,
+        icon: faLeaf,
         title: 'Volunteering',
         desc: 'Organizing volunteer campaigns and impactful training programs for communities. We channel the energy and skills of volunteers into structured service, building both individual capacity and collective impact for lasting change.',
         link: '/objectives',
@@ -128,7 +129,6 @@ export default function Home() {
 
                     <div className="activities-nav">
                         {objectives.map((obj, i) => {
-                            const IconComponent = obj.icon
                             return (
                                 <button
                                     key={i}
@@ -136,7 +136,7 @@ export default function Home() {
                                     onClick={() => setActiveObjective(activeObjective === i ? null : i)}
                                 >
                                     <div className="activity-icon-wrapper">
-                                        <IconComponent className="activity-icon" size={40} strokeWidth={2} />
+                                        <FontAwesomeIcon icon={obj.icon} className="activity-icon" />
                                     </div>
                                     <span className="activity-label">{t(`objective.${i}.title`)}</span>
                                 </button>
@@ -148,13 +148,12 @@ export default function Home() {
                 <div className={`activity-details-wrapper ${activeObjective !== null ? 'open' : ''}`}>
                     {activeObjective !== null && (() => {
                         const obj = objectives[activeObjective]
-                        const IconComponent = obj.icon
                         return (
                             <div className="container activity-details animate-fade-in">
                                 <div className="activity-details-left">
                                     <div className="activity-details-title-row">
                                         <div className="activity-details-icon-large">
-                                            <IconComponent size={32} strokeWidth={2} />
+                                            <FontAwesomeIcon icon={obj.icon} />
                                         </div>
                                         <h3>{t(`objective.${activeObjective}.title`)}</h3>
                                     </div>
