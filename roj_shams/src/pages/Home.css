@@ -54,6 +54,7 @@
 .hero__accent {
     color: var(--clr-accent);
     position: relative;
+    overflow: hidden;
 }
 
 .hero__accent::after {
@@ -66,6 +67,9 @@
     background: var(--clr-accent);
     border-radius: 2px;
     opacity: 0.5;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: heroAccentLine 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
 }
 
 .hero__lead {
@@ -99,7 +103,98 @@
     background: rgba(255, 255, 255, 0.35);
 }
 
-/* Activities & Programs (Objectives) */
+/* Hero content entrance animations */
+.hero__content .animate-fade-up {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: heroFadeUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero__content .animate-fade-up-delay-1 {
+    opacity: 0;
+    transform: translateY(48px);
+    animation: heroFadeUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+}
+
+.hero__content .animate-fade-up-delay-2 {
+    opacity: 0;
+    transform: translateY(36px);
+    animation: heroFadeUp 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
+}
+
+.hero__content .animate-fade-up-delay-3 {
+    opacity: 0;
+    transform: translateY(28px);
+    animation: heroFadeUp 1.3s cubic-bezier(0.22, 1, 0.36, 1) 1.35s forwards;
+}
+
+.hero__content .animate-fade-up-delay-4 {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) 1.9s forwards;
+}
+
+@keyframes heroFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hero accent word underline reveal */
+@keyframes heroAccentLine {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+/* Hero background slide - subtle Ken Burns zoom */
+.hero__slide {
+    transform: scale(1.05);
+    transition: opacity 1.2s ease-in-out, transform 8s linear;
+}
+
+.hero__slide--active {
+    transform: scale(1.12);
+}
+
+/* Scroll hint bounce */
+.hero__scroll-hint {
+    animation: heroScrollHint 2.5s ease-in-out infinite;
+}
+
+.hero__scroll-line {
+    animation: heroScrollLine 2s ease-in-out infinite;
+}
+
+@keyframes heroScrollHint {
+    0%, 100% {
+        opacity: 0.45;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 0.85;
+        transform: translateY(6px);
+    }
+}
+
+@keyframes heroScrollLine {
+    0%, 100% {
+        transform: scaleY(0.6);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
 .activities-section {
     padding: var(--space-xl) 0 0;
     background: var(--clr-white);
@@ -108,6 +203,14 @@
 .activities-header {
     text-align: center;
     margin-bottom: var(--space-xl);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.activities-section--in-view .activities-header {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .activities-header h2 {
@@ -138,9 +241,7 @@
 
 .activity-icon-wrapper {
     width: 120px;
-    /* Increased from 90px */
     height: 120px;
-    /* Increased from 90px */
     border-radius: 50%;
     background: var(--clr-primary-dark);
     display: flex;
@@ -149,22 +250,67 @@
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 3px solid transparent;
     color: var(--clr-accent);
+    opacity: 0;
+    transform: scale(0.6) translateY(15px);
 }
 
+.activities-section--in-view .activity-icon-wrapper {
+    animation: activityIconIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.activities-section--in-view .activity-btn:nth-child(1) .activity-icon-wrapper { animation-delay: 0.05s; }
+.activities-section--in-view .activity-btn:nth-child(2) .activity-icon-wrapper { animation-delay: 0.12s; }
+.activities-section--in-view .activity-btn:nth-child(3) .activity-icon-wrapper { animation-delay: 0.19s; }
+.activities-section--in-view .activity-btn:nth-child(4) .activity-icon-wrapper { animation-delay: 0.26s; }
+.activities-section--in-view .activity-btn:nth-child(5) .activity-icon-wrapper { animation-delay: 0.33s; }
+
 .activity-icon {
-    font-size: 3.5rem;
-    /* Increased from 2.5rem */
-    line-height: 1;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
 }
 
 .activity-label {
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 1.1rem;
-    /* Increased from 0.95rem */
     color: var(--clr-primary-dark);
     text-align: center;
     line-height: 1.3;
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.activities-section--in-view .activity-label {
+    animation: activityLabelIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+
+.activities-section--in-view .activity-btn:nth-child(1) .activity-label { animation-delay: 0.15s; }
+.activities-section--in-view .activity-btn:nth-child(2) .activity-label { animation-delay: 0.22s; }
+.activities-section--in-view .activity-btn:nth-child(3) .activity-label { animation-delay: 0.29s; }
+.activities-section--in-view .activity-btn:nth-child(4) .activity-label { animation-delay: 0.36s; }
+.activities-section--in-view .activity-btn:nth-child(5) .activity-label { animation-delay: 0.43s; }
+
+@keyframes activityIconIn {
+    from {
+        opacity: 0;
+        transform: scale(0.6) translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes activityLabelIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Active / Hover States */
@@ -222,8 +368,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.3) rotate(-15deg);
+    animation: detailsIconReveal 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+}
+
+.activity-details-icon-large svg {
+    width: 32px;
+    height: 32px;
 }
 
 .activity-details-left h3 {
@@ -231,6 +384,31 @@
     font-size: 2rem;
     margin: 0;
     line-height: 1.2;
+    opacity: 0;
+    transform: translateX(-25px);
+    animation: detailsTitleReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+
+@keyframes detailsIconReveal {
+    from {
+        opacity: 0;
+        transform: scale(0.3) rotate(-15deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes detailsTitleReveal {
+    from {
+        opacity: 0;
+        transform: translateX(-25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .activity-details-right {
@@ -520,8 +698,8 @@
     }
 
     .activity-icon {
-        font-size: 2.6rem;
-        /* Increased from 2rem */
+        width: 26px;
+        height: 26px;
     }
 
     .activity-details {

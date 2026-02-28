@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom'
+import { useLanguage } from '../context/LanguageContext'
 import './Footer.css'
 
 export default function Footer() {
+    const { t } = useLanguage()
     return (
         <footer className="footer">
             <div className="container">
@@ -13,7 +15,7 @@ export default function Footer() {
                             <span>Shams <strong>Roj</strong></span>
                         </NavLink>
                         <p className="footer__tagline">
-                            Fostering community development, justice, and equality across generations.
+                            {t('footer.tagline')}
                         </p>
                         <div className="footer__social">
                             <a href="#" aria-label="Facebook" className="footer__social-link">
@@ -37,32 +39,32 @@ export default function Footer() {
 
                     {/* Quick Links */}
                     <div className="footer__col">
-                        <h4>Quick Links</h4>
+                        <h4>{t('footer.quickLinks')}</h4>
                         <ul>
-                            <li><NavLink to="/">Home</NavLink></li>
-                            <li><NavLink to="/about">About Us</NavLink></li>
-                            <li><NavLink to="/objectives">Our Objectives</NavLink></li>
-                            <li><NavLink to="/founders">Our Founders</NavLink></li>
-                            <li><NavLink to="/principles">Guiding Principles</NavLink></li>
-                            <li><NavLink to="/contact">Contact Us</NavLink></li>
+                            <li><NavLink to="/">{t('nav.home')}</NavLink></li>
+                            <li><NavLink to="/about">{t('nav.about')}</NavLink></li>
+                            <li><NavLink to="/objectives">{t('nav.objectives')}</NavLink></li>
+                            <li><NavLink to="/founders">{t('nav.founders')}</NavLink></li>
+                            <li><NavLink to="/principles">{t('nav.principles')}</NavLink></li>
+                            <li><NavLink to="/contact">{t('nav.contact')}</NavLink></li>
                         </ul>
                     </div>
 
                     {/* Objectives */}
                     <div className="footer__col">
-                        <h4>Our Focus Areas</h4>
+                        <h4>{t('footer.focusAreas')}</h4>
                         <ul>
-                            <li><span>Capacity Building</span></li>
-                            <li><span>Education</span></li>
-                            <li><span>Healthcare</span></li>
-                            <li><span>Social Support</span></li>
-                            <li><span>Volunteering</span></li>
+                            <li><span>{t('objective.0.title')}</span></li>
+                            <li><span>{t('objective.1.title')}</span></li>
+                            <li><span>{t('objective.2.title')}</span></li>
+                            <li><span>{t('objective.3.title')}</span></li>
+                            <li><span>{t('objective.4.title')}</span></li>
                         </ul>
                     </div>
 
                     {/* Contact */}
                     <div className="footer__col">
-                        <h4>Contact Us</h4>
+                        <h4>{t('footer.contactUs')}</h4>
                         <ul className="footer__contact-list">
                             <li>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
@@ -77,8 +79,8 @@ export default function Footer() {
                 </div>
 
                 <div className="footer__bottom">
-                    <p>© {new Date().getFullYear()} Shams Roj Organization. All rights reserved.</p>
-                    <p>Built with ❤ for community development</p>
+                    <p>© {new Date().getFullYear()} Shams Roj Organization. {t('footer.rights')}</p>
+                    <p>{t('footer.builtWith')}</p>
                 </div>
             </div>
         </footer>

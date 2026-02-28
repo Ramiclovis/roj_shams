@@ -9,8 +9,82 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+    <style>
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: linear-gradient(135deg, #0d2f45 0%, #1b4f72 55%, #0d2f45 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        font-family: 'Inter', sans-serif;
+      }
+      #initial-loader .loader-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      #initial-loader .loader-sun {
+        font-size: 3rem;
+        line-height: 1;
+        animation: loader-sun-pulse 1.2s ease-in-out infinite;
+      }
+      #initial-loader .loader-text {
+        color: #fff;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      #initial-loader .loader-text strong {
+        color: #f39c12;
+      }
+      #initial-loader .loader-bar-wrap {
+        width: 200px;
+        height: 4px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      #initial-loader .loader-bar {
+        height: 100%;
+        width: 45%;
+        background: linear-gradient(90deg, #f39c12, #f8c471);
+        border-radius: 999px;
+        animation: loader-bar-move 1.4s ease-in-out infinite;
+      }
+      #initial-loader .loader-dots {
+        color: rgba(255,255,255,0.6);
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        animation: loader-glow 1.2s ease-in-out infinite;
+      }
+      @keyframes loader-sun-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.15); opacity: 0.9; }
+      }
+      @keyframes loader-bar-move {
+        0% { transform: translateX(-100%); }
+        50% { transform: translateX(220%); }
+        100% { transform: translateX(-100%); }
+      }
+      @keyframes loader-glow {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+    </style>
   </head>
   <body>
+    <div id="initial-loader" aria-hidden="true">
+      <div class="loader-logo">
+        <span class="loader-sun" aria-hidden="true">☀</span>
+        <span class="loader-text">Shams <strong>Roj</strong></span>
+      </div>
+      <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+      <div class="loader-dots">Loading …</div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

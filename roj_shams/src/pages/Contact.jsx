@@ -1,7 +1,17 @@
 import { useState } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 import './Contact.css'
 
+const subjectOptions = [
+    { value: 'volunteer', labelKey: 'contact.subjectVolunteer' },
+    { value: 'partnership', labelKey: 'contact.subjectPartnership' },
+    { value: 'donation', labelKey: 'contact.subjectDonation' },
+    { value: 'programs', labelKey: 'contact.subjectPrograms' },
+    { value: 'other', labelKey: 'contact.subjectOther' },
+]
+
 export default function Contact() {
+    const { t } = useLanguage()
     const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
     const [submitted, setSubmitted] = useState(false)
 
@@ -18,78 +28,75 @@ export default function Contact() {
         <div className="contact">
             <section className="page-hero">
                 <div className="container">
-                    <div className="badge">Get in Touch</div>
-                    <h1>Contact Us</h1>
-                    <p>Have a question, want to volunteer, or looking to partner with us? We'd love to hear from you.</p>
+                    <div className="badge">{t('contact.badge')}</div>
+                    <h1>{t('contact.title')}</h1>
+                    <p>{t('contact.lead')}</p>
                 </div>
             </section>
 
             <section className="section">
                 <div className="container">
                     <div className="contact__layout">
-                        {/* Form */}
                         <div className="contact__form-wrap">
                             {submitted ? (
                                 <div className="contact__success">
                                     <div className="contact__success-icon">✅</div>
-                                    <h3>Message Sent!</h3>
-                                    <p>Thank you for reaching out. Our team will get back to you within 1–2 business days.</p>
+                                    <h3>{t('contact.successTitle')}</h3>
+                                    <p>{t('contact.successP')}</p>
                                     <button className="btn btn-outline-dark" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', subject: '', message: '' }) }}>
-                                        Send Another Message
+                                        {t('contact.sendAnother')}
                                     </button>
                                 </div>
                             ) : (
                                 <form className="contact__form" onSubmit={handleSubmit} noValidate>
-                                    <h2>Send Us a Message</h2>
-                                    <p style={{ marginBottom: '2rem' }}>Fill out the form below and we'll be in touch shortly.</p>
+                                    <h2>{t('contact.formTitle')}</h2>
+                                    <p style={{ marginBottom: '2rem' }}>{t('contact.formLead')}</p>
 
                                     <div className="form-row">
                                         <div className="form-field">
-                                            <label htmlFor="name">Full Name</label>
+                                            <label htmlFor="name">{t('contact.labelName')}</label>
                                             <input
                                                 type="text"
                                                 id="name"
                                                 name="name"
                                                 value={form.name}
                                                 onChange={handleChange}
-                                                placeholder="Your full name"
+                                                placeholder={t('contact.placeholderName')}
                                                 required
                                             />
                                         </div>
                                         <div className="form-field">
-                                            <label htmlFor="email">Email Address</label>
+                                            <label htmlFor="email">{t('contact.labelEmail')}</label>
                                             <input
                                                 type="email"
                                                 id="email"
                                                 name="email"
                                                 value={form.email}
                                                 onChange={handleChange}
-                                                placeholder="your@email.com"
+                                                placeholder={t('contact.placeholderEmail')}
                                                 required
                                             />
                                         </div>
                                     </div>
 
                                     <div className="form-field">
-                                        <label htmlFor="subject">Subject</label>
+                                        <label htmlFor="subject">{t('contact.labelSubject')}</label>
                                         <select id="subject" name="subject" value={form.subject} onChange={handleChange} required>
-                                            <option value="">Select a topic...</option>
-                                            <option value="volunteer">Volunteering</option>
-                                            <option value="partnership">Partnership</option>
-                                            <option value="donation">Donation</option>
-                                            <option value="programs">Our Programs</option>
-                                            <option value="other">Other</option>
+                                            <option value="">{t('contact.subjectPlaceholder')}</option>
+                                            {subjectOptions.map((opt, i) => (
+                                                <option key={i} value={opt.value}>{t(opt.labelKey)}</option>
+                                            ))}
                                         </select>
                                     </div>
 
                                     <div className="form-field">
-                                        <label htmlFor="message">Message</label>
+                                        <label htmlFor="message">{t('contact.labelMessage')}</label>
                                         <textarea
                                             id="message"
                                             name="message"
                                             value={form.message}
                                             onChange={handleChange}
-                                            placeholder="Tell us how we can help or how you'd like to get involved..."
+                                            placeholder={t('contact.placeholderMessage')}
                                             rows={6}
                                             required
                                         />
@@ -99,16 +106,15 @@ export default function Contact() {
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
                                             <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
                                         </svg>
-                                        Send Message
+                                        {t('contact.sendButton')}
                                     </button>
                                 </form>
                             )}
                         </div>
 
-                        {/* Sidebar */}
                         <aside className="contact__sidebar">
                             <div className="contact__info-card">
-                                <h3>Contact Information</h3>
+                                <h3>{t('contact.infoTitle')}</h3>
                                 <div className="contact__info-list">
                                     <div className="contact__info-item">
                                         <div className="contact__info-icon">
@@ -118,7 +124,7 @@ export default function Contact() {
                                             </svg>
                                         </div>
                                         <div>
-                                            <strong>Email</strong>
+                                            <strong>{t('contact.email')}</strong>
                                             <a href="mailto:info@shamsroj.org">info@shamsroj.org</a>
                                         </div>
                                     </div>
@@ -129,7 +135,7 @@ export default function Contact() {
                                             </svg>
                                         </div>
                                         <div>
-                                            <strong>Phone</strong>
+                                            <strong>{t('contact.phone')}</strong>
                                             <span>+963 000 000 000</span>
                                         </div>
                                     </div>
@@ -141,7 +147,7 @@ export default function Contact() {
                                             </svg>
                                         </div>
                                         <div>
-                                            <strong>Location</strong>
+                                            <strong>{t('contact.location')}</strong>
                                             <span>Syria</span>
                                         </div>
                                     </div>
@@ -149,26 +155,26 @@ export default function Contact() {
                             </div>
 
                             <div className="contact__ways">
-                                <h4>Ways to Get Involved</h4>
+                                <h4>{t('contact.waysTitle')}</h4>
                                 <div className="contact__way">
                                     <span className="contact__way-icon">🌱</span>
                                     <div>
-                                        <strong>Volunteer</strong>
-                                        <p>Join our campaigns and training programs</p>
+                                        <strong>{t('contact.way1Title')}</strong>
+                                        <p>{t('contact.way1P')}</p>
                                     </div>
                                 </div>
                                 <div className="contact__way">
                                     <span className="contact__way-icon">🤝</span>
                                     <div>
-                                        <strong>Partner With Us</strong>
-                                        <p>Collaborate on humanitarian initiatives</p>
+                                        <strong>{t('contact.way2Title')}</strong>
+                                        <p>{t('contact.way2P')}</p>
                                     </div>
                                 </div>
                                 <div className="contact__way">
                                     <span className="contact__way-icon">💛</span>
                                     <div>
-                                        <strong>Support Our Work</strong>
-                                        <p>Help fund community development programs</p>
+                                        <strong>{t('contact.way3Title')}</strong>
+                                        <p>{t('contact.way3P')}</p>
                                     </div>
                                 </div>
                             </div>

@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { useLanguage } from '../context/LanguageContext'
 import './Navbar.css'
 
 const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/about', label: 'About Us' },
-    { to: '/objectives', label: 'Objectives' },
-    { to: '/founders', label: 'Founders' },
-    { to: '/principles', label: 'Principles' },
-    { to: '/contact', label: 'Contact' },
+    { to: '/', labelKey: 'nav.home' },
+    { to: '/about', labelKey: 'nav.about' },
+    { to: '/objectives', labelKey: 'nav.objectives' },
+    { to: '/founders', labelKey: 'nav.founders' },
+    { to: '/principles', labelKey: 'nav.principles' },
+    { to: '/contact', labelKey: 'nav.contact' },
 ]
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
-    const [lang, setLang] = useState('EN')
+    const { lang, setLang, t } = useLanguage()
     const location = useLocation()
 
     useEffect(() => {
@@ -28,22 +29,28 @@ export default function Navbar() {
     }, [])
 
     const toggleLang = () => {
-        const next = lang === 'EN' ? 'AR' : 'EN'
-        setLang(next)
-        document.documentElement.dir = next === 'AR' ? 'rtl' : 'ltr'
-        document.documentElement.lang = next === 'AR' ? 'ar' : 'en'
+        setLang(lang === 'EN' ? 'AR' : 'EN')
     }
 
     return (
         <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
             <div className="navbar__inner container">
-                {/* Logo */}
-                <NavLink to="/" className="navbar__logo">
+                {/* Logo - click refreshes page and goes to home */}
+                <a
+                    href="#/"
+                    className="navbar__logo"
+                    onClick={(e) => {
+                        e.preventDefault()
+                        window.location.hash = '/'
+                        window.location.reload()
+                    }}
+                    aria-label="Shams Roj - Go to home"
+                >
                     <span className="navbar__logo-icon">☀</span>
                     <span className="navbar__logo-text">
                         Shams <strong>Roj</strong>
                     </span>
-                </NavLink>
+                </a>
 
                 {/* Desktop Nav */}
                 <nav className="navbar__links" aria-label="Main navigation">
@@ -56,7 +63,7 @@ export default function Navbar() {
                                 `navbar__link${isActive ? ' navbar__link--active' : ''}`
                             }
                         >
-                            {link.label}
+                            {t(link.labelKey)}
                         </NavLink>
                     ))}
                 </nav>
@@ -74,7 +81,7 @@ export default function Navbar() {
                     </button>
 
                     <NavLink to="/contact" className="navbar__cta btn btn-primary">
-                        Get in Touch
+                        {t('nav.getInTouch')}
                     </NavLink>
                 </div>
 
@@ -103,7 +110,7 @@ export default function Navbar() {
                                 `navbar__mobile-link${isActive ? ' navbar__mobile-link--active' : ''}`
                             }
                         >
-                            {link.label}
+                            {t(link.labelKey)}
                         </NavLink>
                     ))}
 
@@ -119,7 +126,7 @@ export default function Navbar() {
                         </button>
 
                         <NavLink to="/contact" className="btn btn-primary navbar__mobile-cta">
-                            Get in Touch
+                            {t('nav.getInTouch')}
                         </NavLink>
                     </div>
                 </nav>

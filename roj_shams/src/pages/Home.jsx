@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Target, BookOpen, HeartPulse, Users, Leaf } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
 import './Home.css'
 
 const heroImages = [
@@ -11,33 +13,33 @@ const heroImages = [
 
 const objectives = [
     {
-        icon: '🎯',
+        icon: Target,
         title: 'Capacity Building',
-        desc: 'Developing life skills and empowering individuals to foster sustainable community growth.',
+        desc: 'Developing life skills and empowering individuals to foster sustainable community growth. We design and deliver comprehensive programs that build leadership, professional competencies, and resilience so communities can thrive from within.',
         link: '/objectives',
     },
     {
-        icon: '📚',
+        icon: BookOpen,
         title: 'Education',
-        desc: 'Establishing educational centers and kindergartens across all stages of learning.',
+        desc: 'Establishing educational centers and kindergartens across all stages of learning. We ensure every child and adult has access to quality education regardless of circumstance, and we support teachers and learning environments for lasting impact.',
         link: '/objectives',
     },
     {
-        icon: '🏥',
+        icon: HeartPulse,
         title: 'Healthcare',
-        desc: 'Providing medical care for vulnerable groups and improving health standards through medical centers.',
+        desc: 'Providing medical care for vulnerable groups and improving health standards through medical centers. Our work includes preventive care, mental health support, and outreach in underserved areas so that health becomes a right, not a privilege.',
         link: '/objectives',
     },
     {
-        icon: '🤝',
+        icon: Users,
         title: 'Social Support',
-        desc: 'Addressing social issues and providing comprehensive psychosocial support (PSS).',
+        desc: 'Addressing social issues and providing comprehensive psychosocial support (PSS). We offer counseling, crisis response, and family support to help individuals and communities navigate hardship with dignity and rebuild resilience.',
         link: '/objectives',
     },
     {
-        icon: '🌱',
+        icon: Leaf,
         title: 'Volunteering',
-        desc: 'Organizing volunteer campaigns and impactful training programs for communities.',
+        desc: 'Organizing volunteer campaigns and impactful training programs for communities. We channel the energy and skills of volunteers into structured service, building both individual capacity and collective impact for lasting change.',
         link: '/objectives',
     },
 ]
@@ -45,24 +47,40 @@ const objectives = [
 
 
 const founders = [
-    { name: 'Rasha Hayel Mousa', initials: 'RH', role: 'Co-Founder' },
-    { name: 'Nadia Omar Salim', initials: 'NO', role: 'Co-Founder' },
-    { name: 'Judy Badr Hassan', initials: 'JB', role: 'Co-Founder' },
-    { name: 'Mohi Al-Din Sa\'dou', initials: 'MS', role: 'Co-Founder' },
-    { name: 'Dr. Carmen Hassan Ibrahim', initials: 'CH', role: 'Co-Founder' },
-    { name: 'Eng. Lilas Ibrahim Salim', initials: 'LI', role: 'Co-Founder' },
-    { name: 'Lawyer Doaa Al-Jazmati', initials: 'DA', role: 'Co-Founder' },
+    { name: 'Rasha Hayel Mousa', initials: 'RH', roleKey: 'founders.role' },
+    { name: 'Nadia Omar Salim', initials: 'NO', roleKey: 'founders.role' },
+    { name: 'Judy Badr Hassan', initials: 'JB', roleKey: 'founders.role' },
+    { name: 'Mohi Al-Din Sa\'dou', initials: 'MS', roleKey: 'founders.role' },
+    { name: 'Dr. Carmen Hassan Ibrahim', initials: 'CH', roleKey: 'founders.role' },
+    { name: 'Eng. Lilas Ibrahim Salim', initials: 'LI', roleKey: 'founders.role' },
+    { name: 'Lawyer Doaa Al-Jazmati', initials: 'DA', roleKey: 'founders.role' },
 ]
 
 export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [activeObjective, setActiveObjective] = useState(null)
+    const [activitiesInView, setActivitiesInView] = useState(false)
+    const activitiesRef = useRef(null)
+    const { t } = useLanguage()
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentImageIndex((prev) => (prev + 1) % heroImages.length)
         }, 2000)
         return () => clearInterval(interval)
+    }, [])
+
+    useEffect(() => {
+        const el = activitiesRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) setActivitiesInView(true)
+            },
+            { threshold: 0.2, rootMargin: '0px 0px -50px 0px' }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
     }, [])
 
     return (
@@ -82,66 +100,72 @@ export default function Home() {
                 </div>
 
                 <div className="container hero__content">
-                    <div className="badge animate-fade-up">☀ Non-Profit Organization</div>
+                    <div className="badge animate-fade-up">{t('hero.badge')}</div>
                     <h1 className="animate-fade-up-delay-1">
-                        Building Brighter<br />
-                        <span className="hero__accent">Communities</span> Together
+                        {t('hero.titleLine1')}<br />
+                        <span className="hero__accent">{t('hero.titleAccent')}</span> {t('hero.titleLine2')}
                     </h1>
                     <p className="hero__lead animate-fade-up-delay-2">
-                        Shams Roj is dedicated to fostering community development, justice, and equality
-                        through humanitarian programs in capacity building, education, healthcare, and beyond.
+                        {t('hero.lead')}
                     </p>
                     <div className="hero__actions animate-fade-up-delay-3">
-                        <NavLink to="/objectives" className="btn btn-primary">Explore Our Work</NavLink>
-                        <NavLink to="/contact" className="btn btn-outline">Get Involved</NavLink>
+                        <NavLink to="/objectives" className="btn btn-primary">{t('hero.exploreWork')}</NavLink>
+                        <NavLink to="/contact" className="btn btn-outline">{t('hero.getInvolved')}</NavLink>
                     </div>
                     <div className="hero__scroll-hint animate-fade-up-delay-4" aria-hidden="true">
                         <div className="hero__scroll-line" />
-                        <span>Scroll to explore</span>
+                        <span>{t('hero.scrollHint')}</span>
                     </div>
                 </div>
             </section>
 
             {/* ── Activities & Programs (Objectives) ────────── */}
-            <section className="activities-section">
+            <section ref={activitiesRef} className={`activities-section ${activitiesInView ? 'activities-section--in-view' : ''}`}>
                 <div className="container">
                     <div className="section-header activities-header">
-                        <h2>Activities & Programs</h2>
+                        <h2>{t('activities.title')}</h2>
                     </div>
 
                     <div className="activities-nav">
-                        {objectives.map((obj, i) => (
-                            <button
-                                key={i}
-                                className={`activity-btn ${activeObjective === i ? 'active' : ''}`}
-                                onClick={() => setActiveObjective(activeObjective === i ? null : i)}
-                            >
-                                <div className="activity-icon-wrapper">
-                                    <span className="activity-icon">{obj.icon}</span>
-                                </div>
-                                <span className="activity-label">{obj.title}</span>
-                            </button>
-                        ))}
+                        {objectives.map((obj, i) => {
+                            const IconComponent = obj.icon
+                            return (
+                                <button
+                                    key={i}
+                                    className={`activity-btn ${activeObjective === i ? 'active' : ''}`}
+                                    onClick={() => setActiveObjective(activeObjective === i ? null : i)}
+                                >
+                                    <div className="activity-icon-wrapper">
+                                        <IconComponent className="activity-icon" size={40} strokeWidth={2} />
+                                    </div>
+                                    <span className="activity-label">{t(`objective.${i}.title`)}</span>
+                                </button>
+                            )
+                        })}
                     </div>
                 </div>
 
                 <div className={`activity-details-wrapper ${activeObjective !== null ? 'open' : ''}`}>
-                    {activeObjective !== null && (
-                        <div className="container activity-details animate-fade-in">
-                            <div className="activity-details-left">
-                                <div className="activity-details-title-row">
-                                    <div className="activity-details-icon-large">
-                                        {objectives[activeObjective].icon}
+                    {activeObjective !== null && (() => {
+                        const obj = objectives[activeObjective]
+                        const IconComponent = obj.icon
+                        return (
+                            <div className="container activity-details animate-fade-in">
+                                <div className="activity-details-left">
+                                    <div className="activity-details-title-row">
+                                        <div className="activity-details-icon-large">
+                                            <IconComponent size={32} strokeWidth={2} />
+                                        </div>
+                                        <h3>{t(`objective.${activeObjective}.title`)}</h3>
                                     </div>
-                                    <h3>{objectives[activeObjective].title}</h3>
+                                </div>
+                                <div className="activity-details-right">
+                                    <h4>{t('activities.ourWork')}</h4>
+                                    <p>{t(`objective.${activeObjective}.desc`)}</p>
                                 </div>
                             </div>
-                            <div className="activity-details-right">
-                                <h4>Our work</h4>
-                                <p>{objectives[activeObjective].desc}</p>
-                            </div>
-                        </div>
-                    )}
+                        )
+                    })()}
                 </div>
             </section>
 
@@ -150,33 +174,30 @@ export default function Home() {
                 <div className="container">
                     <div className="mission">
                         <div className="mission__text">
-                            <div className="badge">Our Mission</div>
-                            <h2>Empowering Communities Through Compassionate Action</h2>
+                            <div className="badge">{t('mission.badge')}</div>
+                            <h2>{t('mission.title')}</h2>
                             <p>
-                                Shams Roj is a non-profit entity dedicated to upholding principles of justice and equity.
-                                We believe in the power of collective action and the strength of ethical leadership
-                                to create lasting, meaningful change in communities.
+                                {t('mission.p1')}
                             </p>
                             <p>
-                                Our work spans education, healthcare, psychosocial support, and volunteer engagement —
-                                reaching those who need it most and building the foundations for a more equitable society.
+                                {t('mission.p2')}
                             </p>
                             <NavLink to="/about" className="btn btn-outline-dark" style={{ marginTop: '1.5rem' }}>
-                                Our Story →
+                                {t('mission.ourStory')}
                             </NavLink>
                         </div>
                         <div className="mission__visual">
                             <div className="mission__card mission__card--1">
                                 <span>🌍</span>
-                                <p>Community-centered approach to all programs</p>
+                                <p>{t('mission.card1')}</p>
                             </div>
                             <div className="mission__card mission__card--2">
                                 <span>⚖️</span>
-                                <p>Committed to justice, equity, and zero tolerance for abuse</p>
+                                <p>{t('mission.card2')}</p>
                             </div>
                             <div className="mission__card mission__card--3">
                                 <span>💡</span>
-                                <p>Innovation in humanitarian service delivery</p>
+                                <p>{t('mission.card3')}</p>
                             </div>
                         </div>
                     </div>
@@ -187,12 +208,12 @@ export default function Home() {
             <section className="values-strip">
                 <div className="container values-strip__inner">
                     <div className="values-strip__text">
-                        <h2>Guided by Uncompromising Principles</h2>
-                        <p>Every action we take is rooted in human dignity, organizational cohesion, solidarity, and zero tolerance for exploitation.</p>
-                        <NavLink to="/principles" className="btn btn-outline">Read Our Principles</NavLink>
+                        <h2>{t('values.title')}</h2>
+                        <p>{t('values.p')}</p>
+                        <NavLink to="/principles" className="btn btn-outline">{t('values.readPrinciples')}</NavLink>
                     </div>
                     <div className="values-strip__badges">
-                        {['Human Dignity', 'Zero Tolerance', 'Solidarity', 'Justice'].map((v, i) => (
+                        {[t('values.dignity'), t('values.zeroTolerance'), t('values.solidarity'), t('values.justice')].map((v, i) => (
                             <span key={i} className="values-strip__badge">{v}</span>
                         ))}
                     </div>
@@ -203,10 +224,10 @@ export default function Home() {
             <section className="section">
                 <div className="container">
                     <div className="section-header">
-                        <div className="badge">Leadership</div>
-                        <h2>Meet Our Founders</h2>
+                        <div className="badge">{t('founders.badge')}</div>
+                        <h2>{t('founders.title')}</h2>
                         <div className="divider" />
-                        <p>Visionary individuals united by a common commitment to humanitarian service.</p>
+                        <p>{t('founders.subtitle')}</p>
                     </div>
                     <div className="founders-preview">
                         {founders.map((f, i) => (
@@ -214,13 +235,13 @@ export default function Home() {
                                 <div className="founder-chip__avatar">{f.initials}</div>
                                 <div>
                                     <span className="founder-chip__name">{f.name}</span>
-                                    <span className="founder-chip__role">{f.role}</span>
+                                    <span className="founder-chip__role">{t(f.roleKey)}</span>
                                 </div>
                             </div>
                         ))}
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
-                        <NavLink to="/founders" className="btn btn-outline-dark">View All Founders</NavLink>
+                        <NavLink to="/founders" className="btn btn-outline-dark">{t('founders.viewAll')}</NavLink>
                     </div>
                 </div>
             </section>
@@ -229,10 +250,10 @@ export default function Home() {
             <section className="cta-banner">
                 <div className="container cta-banner__inner">
                     <div>
-                        <h2>Ready to Make a Difference?</h2>
-                        <p>Join us in our mission to build a more just and equitable community.</p>
+                        <h2>{t('cta.title')}</h2>
+                        <p>{t('cta.p')}</p>
                     </div>
-                    <NavLink to="/contact" className="btn btn-primary">Contact Us Today</NavLink>
+                    <NavLink to="/contact" className="btn btn-primary">{t('cta.button')}</NavLink>
                 </div>
             </section>
         </div>
