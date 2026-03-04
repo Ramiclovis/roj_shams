@@ -14,10 +14,10 @@ const heroImages = [
     'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=1600&auto=format&fit=crop',
 ]
 */
-const heroImages = [] /* فارغ لأن السلايدر معطّل؛ يُستخدم poster فقط إن وُجد فيديو */
+const heroImages = [] /* فارغ لأن السلايدر معطّل */
 
-/* فيديو الهيرو من assets/VIDEO — مسار يتوافق مع النشر على Vercel/GitHub Pages */
-const heroVideoSrc = new URL('../assets/VIDEO/2.mp4', import.meta.url).href
+/* فيديو الهيرو من public/2.mp4 — يظهر داخل قسم الهيرو مع تشغيل مسرّع */
+const heroVideoSrc = '/2.mp4'
 const heroVideoPlaybackRate = 1.5
 
 const objectives = [
@@ -106,9 +106,11 @@ export default function Home() {
     const [activeObjective, setActiveObjective] = useState(null)
     const [activitiesInView, setActivitiesInView] = useState(false)
     const [wwdInView, setWwdInView] = useState(false)
+    const [newsInView, setNewsInView] = useState(false)
     const [isNarrow, setIsNarrow] = useState(false)
     const activitiesRef = useRef(null)
     const wwdRef = useRef(null)
+    const newsRef = useRef(null)
     const heroVideoRef = useRef(null)
     const { t } = useLanguage()
 
@@ -161,6 +163,19 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
+        const el = newsRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) setNewsInView(true)
+            },
+            { threshold: 0.15 }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
+
+    useEffect(() => {
         const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
         const interval = setInterval(() => {
             setCurrentTileIndex((prev) => (prev + 1) % (maxIndex + 1))
@@ -175,64 +190,35 @@ export default function Home() {
         return () => clearInterval(interval)
     }, [])
 
-    /* تشغيل الفيديو تلقائياً في Safari — بدون load() وتشغيل فوري عند canplay */
+    /* تشغيل الفيديو في الهيرو — سرعة + تشغيل تلقائي ومساعدة Safari */
     useEffect(() => {
         if (!heroVideoSrc) return
         const video = heroVideoRef.current
         if (!video) return
-
+        video.muted = true
         video.setAttribute('playsinline', 'true')
         video.setAttribute('webkit-playsinline', 'true')
-        video.muted = true
-
-        const startPlayback = () => {
+        const start = () => {
             video.muted = true
             video.playbackRate = heroVideoPlaybackRate
             video.play().catch(() => {})
         }
-
-        const tryPlay = () => { startPlayback() }
-
-        video.addEventListener('loadedmetadata', tryPlay)
-        video.addEventListener('loadeddata', tryPlay)
-        video.addEventListener('canplay', tryPlay)
-        video.addEventListener('canplaythrough', tryPlay)
-
-        if (video.readyState >= 2) startPlayback()
-
-        const wrap = video.closest('.hero__video-wrap')
-        const retryOnUserInteraction = () => {
+        video.addEventListener('loadeddata', start)
+        video.addEventListener('canplay', start)
+        if (video.readyState >= 2) start()
+        const onInteraction = () => {
             video.muted = true
             video.play().catch(() => {})
-            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
-            wrap?.removeEventListener('click', retryOnUserInteraction)
-            document.removeEventListener('touchstart', retryOnDocument)
-            document.removeEventListener('click', retryOnDocument)
+            document.removeEventListener('touchstart', onInteraction)
+            document.removeEventListener('click', onInteraction)
         }
-        const retryOnDocument = () => {
-            video.muted = true
-            video.play().catch(() => {})
-            document.removeEventListener('touchstart', retryOnDocument)
-            document.removeEventListener('click', retryOnDocument)
-            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
-            wrap?.removeEventListener('click', retryOnUserInteraction)
-        }
-        if (wrap) {
-            wrap.addEventListener('touchstart', retryOnUserInteraction, { once: true, passive: true })
-            wrap.addEventListener('click', retryOnUserInteraction, { once: true })
-        }
-        document.addEventListener('touchstart', retryOnDocument, { once: true, passive: true })
-        document.addEventListener('click', retryOnDocument, { once: true })
-
+        document.addEventListener('touchstart', onInteraction, { once: true, passive: true })
+        document.addEventListener('click', onInteraction, { once: true })
         return () => {
-            video.removeEventListener('loadedmetadata', tryPlay)
-            video.removeEventListener('loadeddata', tryPlay)
-            video.removeEventListener('canplay', tryPlay)
-            video.removeEventListener('canplaythrough', tryPlay)
-            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
-            wrap?.removeEventListener('click', retryOnUserInteraction)
-            document.removeEventListener('touchstart', retryOnDocument)
-            document.removeEventListener('click', retryOnDocument)
+            video.removeEventListener('loadeddata', start)
+            video.removeEventListener('canplay', start)
+            document.removeEventListener('touchstart', onInteraction)
+            document.removeEventListener('click', onInteraction)
         }
     }, [heroVideoSrc])
 
@@ -240,42 +226,19 @@ export default function Home() {
         <div className="home">
             {/* ── Hero ─────────────────────────────────── */}
             <section className="hero">
-                {/* خلفية الفيديو أو السلايدر */}
-                {heroVideoSrc && (
-                    <div className="hero__video-wrap" aria-hidden="true">
-                        <video
-                            ref={heroVideoRef}
-                            className="hero__video"
-                            src={heroVideoSrc}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="auto"
-                            poster={heroImages[0] || ''}
-                            onLoadedData={() => {
-                                if (heroVideoRef.current) {
-                                    heroVideoRef.current.muted = true
-                                    heroVideoRef.current.playbackRate = heroVideoPlaybackRate
-                                    heroVideoRef.current.play().catch(() => {})
-                                }
-                            }}
-                        />
-                    </div>
-                )}
-                {/* سلايدر صور الهيرو معطّل — أزل الكومنت لتفعيل السلايدر عند إلغاء الفيديو
-                {!heroVideoSrc && (
-                    <div className="hero__slider" aria-hidden="true">
-                        {heroImages.map((img, i) => (
-                            <div
-                                key={i}
-                                className={`hero__slide ${i === currentImageIndex ? 'hero__slide--active' : ''}`}
-                                style={{ backgroundImage: `url(${img})` }}
-                            />
-                        ))}
-                    </div>
-                )}
-                */}
+                {/* خلفية الفيديو — من public/2.mp4 */}
+                <div className="hero__video-wrap" aria-hidden="true">
+                    <video
+                        ref={heroVideoRef}
+                        className="hero__video"
+                        src={heroVideoSrc}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                    />
+                </div>
                 <div className="hero__slider-overlay" />
 
                 <div className="container hero__content">
@@ -361,7 +324,7 @@ export default function Home() {
             </section>
 
             {/* ── News & Updates ────────────────────────── */}
-            <section className="news-section">
+            <section ref={newsRef} className={`news-section ${newsInView ? 'news-section--in-view' : ''}`}>
                 <div className="container">
                     <div className="news-section__header">
                         <span className="news-section__label">{t('news.badge')}</span>

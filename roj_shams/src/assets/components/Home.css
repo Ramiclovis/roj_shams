@@ -544,6 +544,74 @@
     letter-spacing: -0.02em;
 }
 
+/* أنيميشن دخول قسم الأخبار */
+.news-section__header {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.news-section--in-view .news-section__header {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-section__label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+}
+
+.news-section--in-view .news-section__label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-section__heading {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+}
+
+.news-section--in-view .news-section__heading {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-featured-slider {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.25s, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+}
+
+.news-section--in-view .news-featured-slider {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-tiles-slider {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s;
+}
+
+.news-section--in-view .news-tiles-slider {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-section__footer {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.55s ease 0.6s, transform 0.55s ease 0.6s;
+}
+
+.news-section--in-view .news-section__footer {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* ── كتلة كبيرة بعرض كامل (صورة/فيديو) مع صندوق النص أعلى اليمين ── */
 .news-featured {
     margin-bottom: var(--space-xl);
