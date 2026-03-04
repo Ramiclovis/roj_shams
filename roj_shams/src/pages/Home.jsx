@@ -175,7 +175,7 @@ export default function Home() {
         return () => clearInterval(interval)
     }, [])
 
-    /* تشغيل الفيديو برمجياً على الموبايل (iOS/Android) بعد النشر — ضروري لـ autoplay */
+    /* تشغيل الفيديو مباشرة على Safari — تحميل صريح + تشغيل برمجي بعد أحداث التحميل */
     useEffect(() => {
         if (!heroVideoSrc) return
         const video = heroVideoRef.current
@@ -183,6 +183,8 @@ export default function Home() {
 
         video.setAttribute('playsinline', 'true')
         video.setAttribute('webkit-playsinline', 'true')
+        video.muted = true
+        video.load()
 
         const startPlayback = () => {
             video.muted = true
@@ -190,14 +192,32 @@ export default function Home() {
             video.play().catch(() => {})
         }
 
-        video.addEventListener('loadeddata', startPlayback)
-        video.addEventListener('canplay', startPlayback)
-        if (video.readyState >= 2) startPlayback()
-        else setTimeout(startPlayback, 300)
+        const tryPlayAfterLayout = () => {
+            requestAnimationFrame(() => setTimeout(startPlayback, 0))
+        }
+
+        video.addEventListener('loadedmetadata', tryPlayAfterLayout)
+        video.addEventListener('loadeddata', tryPlayAfterLayout)
+        video.addEventListener('canplay', tryPlayAfterLayout)
+        video.addEventListener('canplaythrough', tryPlayAfterLayout)
+
+        if (video.readyState >= 2) tryPlayAfterLayout()
+        else setTimeout(tryPlayAfterLayout, 400)
 
         const wrap = video.closest('.hero__video-wrap')
         const retryOnUserInteraction = () => {
+            video.muted = true
             video.play().catch(() => {})
+            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
+            wrap?.removeEventListener('click', retryOnUserInteraction)
+            document.removeEventListener('touchstart', retryOnDocument)
+            document.removeEventListener('click', retryOnDocument)
+        }
+        const retryOnDocument = () => {
+            video.muted = true
+            video.play().catch(() => {})
+            document.removeEventListener('touchstart', retryOnDocument)
+            document.removeEventListener('click', retryOnDocument)
             wrap?.removeEventListener('touchstart', retryOnUserInteraction)
             wrap?.removeEventListener('click', retryOnUserInteraction)
         }
@@ -205,12 +225,18 @@ export default function Home() {
             wrap.addEventListener('touchstart', retryOnUserInteraction, { once: true, passive: true })
             wrap.addEventListener('click', retryOnUserInteraction, { once: true })
         }
+        document.addEventListener('touchstart', retryOnDocument, { once: true, passive: true })
+        document.addEventListener('click', retryOnDocument, { once: true })
 
         return () => {
-            video.removeEventListener('loadeddata', startPlayback)
-            video.removeEventListener('canplay', startPlayback)
+            video.removeEventListener('loadedmetadata', tryPlayAfterLayout)
+            video.removeEventListener('loadeddata', tryPlayAfterLayout)
+            video.removeEventListener('canplay', tryPlayAfterLayout)
+            video.removeEventListener('canplaythrough', tryPlayAfterLayout)
             wrap?.removeEventListener('touchstart', retryOnUserInteraction)
             wrap?.removeEventListener('click', retryOnUserInteraction)
+            document.removeEventListener('touchstart', retryOnDocument)
+            document.removeEventListener('click', retryOnDocument)
         }
     }, [heroVideoSrc])
 
@@ -233,6 +259,7 @@ export default function Home() {
                             poster={heroImages[0] || ''}
                             onLoadedData={() => {
                                 if (heroVideoRef.current) {
+                                    heroVideoRef.current.muted = true
                                     heroVideoRef.current.playbackRate = heroVideoPlaybackRate
                                     heroVideoRef.current.play().catch(() => {})
                                 }
