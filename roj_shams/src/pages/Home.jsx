@@ -5,7 +5,6 @@ import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/f
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Home.css'
-import heroVideoMp4 from '../assets/VIDEO/VIDEO.mp4'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
@@ -17,8 +16,8 @@ const heroImages = [
 */
 const heroImages = [] /* فارغ لأن السلايدر معطّل؛ يُستخدم poster فقط إن وُجد فيديو */
 
-/* فيديو الهيرو من assets/VIDEO مع تشغيل مسرّع */
-const heroVideoSrc = heroVideoMp4
+/* فيديو الهيرو من assets/VIDEO مع تشغيل مسرّع — مسار يتوافق مع النشر على Vercel/GitHub Pages */
+const heroVideoSrc = new URL('../assets/VIDEO/VIDEO.mp4', import.meta.url).href
 const heroVideoPlaybackRate = 1.5
 
 const objectives = [
@@ -176,6 +175,45 @@ export default function Home() {
         return () => clearInterval(interval)
     }, [])
 
+    /* تشغيل الفيديو برمجياً على الموبايل (iOS/Android) بعد النشر — ضروري لـ autoplay */
+    useEffect(() => {
+        if (!heroVideoSrc) return
+        const video = heroVideoRef.current
+        if (!video) return
+
+        video.setAttribute('playsinline', 'true')
+        video.setAttribute('webkit-playsinline', 'true')
+
+        const startPlayback = () => {
+            video.muted = true
+            video.playbackRate = heroVideoPlaybackRate
+            video.play().catch(() => {})
+        }
+
+        video.addEventListener('loadeddata', startPlayback)
+        video.addEventListener('canplay', startPlayback)
+        if (video.readyState >= 2) startPlayback()
+        else setTimeout(startPlayback, 300)
+
+        const wrap = video.closest('.hero__video-wrap')
+        const retryOnUserInteraction = () => {
+            video.play().catch(() => {})
+            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
+            wrap?.removeEventListener('click', retryOnUserInteraction)
+        }
+        if (wrap) {
+            wrap.addEventListener('touchstart', retryOnUserInteraction, { once: true, passive: true })
+            wrap.addEventListener('click', retryOnUserInteraction, { once: true })
+        }
+
+        return () => {
+            video.removeEventListener('loadeddata', startPlayback)
+            video.removeEventListener('canplay', startPlayback)
+            wrap?.removeEventListener('touchstart', retryOnUserInteraction)
+            wrap?.removeEventListener('click', retryOnUserInteraction)
+        }
+    }, [heroVideoSrc])
+
     return (
         <div className="home">
             {/* ── Hero ─────────────────────────────────── */}
@@ -191,9 +229,13 @@ export default function Home() {
                             muted
                             loop
                             playsInline
+                            preload="auto"
                             poster={heroImages[0] || ''}
                             onLoadedData={() => {
-                                if (heroVideoRef.current) heroVideoRef.current.playbackRate = heroVideoPlaybackRate
+                                if (heroVideoRef.current) {
+                                    heroVideoRef.current.playbackRate = heroVideoPlaybackRate
+                                    heroVideoRef.current.play().catch(() => {})
+                                }
                             }}
                         />
                     </div>
