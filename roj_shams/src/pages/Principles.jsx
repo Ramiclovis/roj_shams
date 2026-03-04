@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLanguage } from '../context/LanguageContext'
-import './Principles.css'
+import '../assets/components/Principles.css'
 
 const coreValueKeys = [
     { icon: '🌍', color: '#2980B9', titleKey: 'principles.val0Title', descKey: 'principles.val0Desc' },

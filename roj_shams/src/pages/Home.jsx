@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/free-solid-svg-icons'
+import { faInstagram, faFacebookF, faYoutube, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
-import './Home.css'
+import '../assets/components/Home.css'
 
 const heroImages = [
     'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600&auto=format&fit=crop',
@@ -128,7 +129,21 @@ export default function Home() {
                         <NavLink to="/objectives" className="btn btn-primary">{t('hero.exploreWork')}</NavLink>
                         <NavLink to="/contact" className="btn btn-outline">{t('hero.getInvolved')}</NavLink>
                     </div>
-                    <div className="hero__scroll-hint animate-fade-up-delay-4" aria-hidden="true">
+                    <div className="hero__social animate-fade-up-delay-4" aria-label="Social media">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Instagram">
+                            <FontAwesomeIcon icon={faInstagram} />
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Facebook">
+                            <FontAwesomeIcon icon={faFacebookF} />
+                        </a>
+                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="YouTube">
+                            <FontAwesomeIcon icon={faYoutube} />
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="LinkedIn">
+                            <FontAwesomeIcon icon={faLinkedinIn} />
+                        </a>
+                    </div>
+                    <div className="hero__scroll-hint animate-fade-up-delay-5" aria-hidden="true">
                         <div className="hero__scroll-line" />
                         <span>{t('hero.scrollHint')}</span>
                     </div>
@@ -209,7 +224,7 @@ export default function Home() {
             </section>
 
             {/* ── Values Strip ─────────────────────────── */}
-            <section className="values-strip">
+            {/* <section className="values-strip">
                 <div className="container values-strip__inner">
                     <div className="values-strip__text">
                         <h2>{t('values.title')}</h2>
@@ -222,10 +237,10 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* ── Founders Preview ─────────────────────── */}
-            <section className="section">
+            {/* <section className="section">
                 <div className="container">
                     <div className="section-header">
                         <div className="badge">{t('founders.badge')}</div>
@@ -248,7 +263,7 @@ export default function Home() {
                         <NavLink to="/founders" className="btn btn-outline-dark">{t('founders.viewAll')}</NavLink>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* ── CTA Banner ───────────────────────────── */}
             <section className="cta-banner">

@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
-import './Objectives.css'
+import '../assets/components/Objectives.css'
 
 const objectives = [
     { icon: '🎯', color: '#2980B9' },

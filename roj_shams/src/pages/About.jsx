@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
-import './About.css'
+import '../assets/components/About.css'
 
 const timelineKeys = [
     { yearKey: 'about.timeline.0.year', titleKey: 'about.timeline.0.title', descKey: 'about.timeline.0.desc' },

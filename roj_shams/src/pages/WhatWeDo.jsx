@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
-import './WhatWeDo.css'
+import '../assets/components/WhatWeDo.css'
 
 const objectives = [
     {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLanguage } from '../context/LanguageContext'
-import './Contact.css'
+import '../assets/components/Contact.css'
 
 const subjectOptions = [
     { value: 'volunteer', labelKey: 'contact.subjectVolunteer' },

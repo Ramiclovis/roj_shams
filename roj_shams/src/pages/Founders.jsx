@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext'
-import './Founders.css'
+import '../assets/components/Founders.css'
 
 const founders = [
     { initials: 'RH', name: 'Ms. Rasha Hayel Mousa', color: '#2980B9', bioKey: 'foundersPage.bio.0' },

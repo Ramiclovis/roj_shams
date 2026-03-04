@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
-import './Navbar.css'
+import '../assets/components/Navbar.css'
 
 const navLinks = [
     { to: '/', labelKey: 'nav.home' },
