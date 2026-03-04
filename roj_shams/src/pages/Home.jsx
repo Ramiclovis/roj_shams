@@ -16,8 +16,8 @@ const heroImages = [
 */
 const heroImages = [] /* فارغ لأن السلايدر معطّل؛ يُستخدم poster فقط إن وُجد فيديو */
 
-/* فيديو الهيرو من assets/VIDEO مع تشغيل مسرّع — مسار يتوافق مع النشر على Vercel/GitHub Pages */
-const heroVideoSrc = new URL('../assets/VIDEO/VIDEO.mp4', import.meta.url).href
+/* فيديو الهيرو من assets/VIDEO — مسار يتوافق مع النشر على Vercel/GitHub Pages */
+const heroVideoSrc = new URL('../assets/VIDEO/2.mp4', import.meta.url).href
 const heroVideoPlaybackRate = 1.5
 
 const objectives = [
