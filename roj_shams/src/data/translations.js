@@ -26,10 +26,11 @@ export const translations = {
     'hero.getInvolved': 'Get Involved',
     'hero.scrollHint': 'Scroll to explore',
 
-    // What do we do (if present)
+    // What do we do
     'whatWeDo.title': 'What do we do',
     'whatWeDo.text': 'Shams Roj aims to provide humanitarian and development assistance, improve human rights, and promote justice and equality. We work through capacity building, education, healthcare, psychosocial support, and volunteer engagement — always putting local resilience and community empowerment at the heart of our strategy.',
-    'whatWeDo.learnMore': 'Learn more',
+    'whatWeDo.learnMore': 'Read More',
+    'whatWeDo.pageIntro': 'Shams Roj works to strengthen communities through a wide range of humanitarian and development programs. We are committed to human rights, justice, and equality — delivering services that reach the most vulnerable and building the foundations for lasting, self-sustaining change. Explore our core activity areas below to learn more about what we do on the ground every day.',
 
     // Activities & Programs
     'activities.title': 'Activities & Programs',
@@ -279,7 +280,8 @@ export const translations = {
 
     'whatWeDo.title': 'ماذا نفعل',
     'whatWeDo.text': 'تهدف شمس روج إلى تقديم المساعدة الإنسانية والتنموية، وتعزيز حقوق الإنسان والعدالة والمساواة. نعمل من خلال بناء القدرات والتعليم والصحة والدعم النفسي الاجتماعي والتطوع — ونجعل الصمود المحلي وتمكين المجتمع في صلب استراتيجيتنا.',
-    'whatWeDo.learnMore': 'اعرف المزيد',
+    'whatWeDo.learnMore': 'اقرأ المزيد',
+    'whatWeDo.pageIntro': 'تعمل شمس روج على تعزيز المجتمعات من خلال مجموعة واسعة من البرامج الإنسانية والتنموية. نحن ملتزمون بحقوق الإنسان والعدالة والمساواة — نقدم خدمات تصل إلى الأكثر ضعفاً وتبني أسس التغيير الدائم والمستدام. استكشف مجالات أنشطتنا الأساسية أدناه لمعرفة المزيد عما نقوم به على أرض الواقع كل يوم.',
 
     'activities.title': 'الأنشطة والبرامج',
     'activities.ourWork': 'عملنا',

@@ -10,6 +10,7 @@ import Objectives from './pages/Objectives'
 import Founders from './pages/Founders'
 import Principles from './pages/Principles'
 import Contact from './pages/Contact'
+import WhatWeDo from './pages/WhatWeDo'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -42,12 +43,13 @@ function App() {
           <Navbar />
           <main>
             <Routes>
-              <Route path="/"            element={<Home />} />
-              <Route path="/about"       element={<About />} />
-              <Route path="/objectives"  element={<Objectives />} />
-              <Route path="/founders"    element={<Founders />} />
-              <Route path="/principles"  element={<Principles />} />
-              <Route path="/contact"     element={<Contact />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/objectives" element={<Objectives />} />
+              <Route path="/founders" element={<Founders />} />
+              <Route path="/principles" element={<Principles />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/what-we-do" element={<WhatWeDo />} />
             </Routes>
           </main>
           <Footer />

@@ -61,7 +61,9 @@ export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [activeObjective, setActiveObjective] = useState(null)
     const [activitiesInView, setActivitiesInView] = useState(false)
+    const [wwdInView, setWwdInView] = useState(false)
     const activitiesRef = useRef(null)
+    const wwdRef = useRef(null)
     const { t } = useLanguage()
 
     useEffect(() => {
@@ -79,6 +81,19 @@ export default function Home() {
                 if (entry.isIntersecting) setActivitiesInView(true)
             },
             { threshold: 0.2, rootMargin: '0px 0px -50px 0px' }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
+
+    useEffect(() => {
+        const el = wwdRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) setWwdInView(true)
+            },
+            { threshold: 0.2 }
         )
         observer.observe(el)
         return () => observer.disconnect()
@@ -168,38 +183,28 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ── Mission ──────────────────────────────── */}
-            <section className="section">
-                <div className="container">
-                    <div className="mission">
-                        <div className="mission__text">
-                            <div className="badge">{t('mission.badge')}</div>
-                            <h2>{t('mission.title')}</h2>
-                            <p>
-                                {t('mission.p1')}
-                            </p>
-                            <p>
-                                {t('mission.p2')}
-                            </p>
-                            <NavLink to="/about" className="btn btn-outline-dark" style={{ marginTop: '1.5rem' }}>
-                                {t('mission.ourStory')}
+            {/* ── What do we do ────────────────────────── */}
+            <section className="wwd-section">
+                <div
+                    ref={wwdRef}
+                    className={`wwd-panel ${wwdInView ? 'wwd-panel--in-view' : ''}`}
+                >
+                    {/* Full-width background image */}
+                    <div className="wwd-panel__bg" />
+                    {/* Left half: dark overlay + text */}
+                    <div className="wwd-panel__left">
+                        <div className="wwd-panel__overlay" />
+                        <div className="wwd-panel__content">
+                            <h2 className="wwd-panel__title">{t('whatWeDo.title')}</h2>
+                            <div className="wwd-panel__divider" />
+                            <p className="wwd-panel__text">{t('whatWeDo.text')}</p>
+                            <NavLink to="/what-we-do" className="wwd-panel__btn">
+                                {t('whatWeDo.learnMore')}
                             </NavLink>
                         </div>
-                        <div className="mission__visual">
-                            <div className="mission__card mission__card--1">
-                                <span>🌍</span>
-                                <p>{t('mission.card1')}</p>
-                            </div>
-                            <div className="mission__card mission__card--2">
-                                <span>⚖️</span>
-                                <p>{t('mission.card2')}</p>
-                            </div>
-                            <div className="mission__card mission__card--3">
-                                <span>💡</span>
-                                <p>{t('mission.card3')}</p>
-                            </div>
-                        </div>
                     </div>
+                    {/* Right half: clear image, no overlay */}
+                    <div className="wwd-panel__right" />
                 </div>
             </section>
 

@@ -139,6 +139,7 @@
         opacity: 0;
         transform: translateY(40px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -150,6 +151,7 @@
     from {
         transform: scaleX(0);
     }
+
     to {
         transform: scaleX(1);
     }
@@ -175,10 +177,13 @@
 }
 
 @keyframes heroScrollHint {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.45;
         transform: translateY(0);
     }
+
     50% {
         opacity: 0.85;
         transform: translateY(6px);
@@ -186,15 +191,19 @@
 }
 
 @keyframes heroScrollLine {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scaleY(0.6);
         opacity: 0.5;
     }
+
     50% {
         transform: scaleY(1);
         opacity: 1;
     }
 }
+
 .activities-section {
     padding: var(--space-xl) 0 0;
     background: var(--clr-white);
@@ -258,11 +267,25 @@
     animation: activityIconIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.activities-section--in-view .activity-btn:nth-child(1) .activity-icon-wrapper { animation-delay: 0.05s; }
-.activities-section--in-view .activity-btn:nth-child(2) .activity-icon-wrapper { animation-delay: 0.12s; }
-.activities-section--in-view .activity-btn:nth-child(3) .activity-icon-wrapper { animation-delay: 0.19s; }
-.activities-section--in-view .activity-btn:nth-child(4) .activity-icon-wrapper { animation-delay: 0.26s; }
-.activities-section--in-view .activity-btn:nth-child(5) .activity-icon-wrapper { animation-delay: 0.33s; }
+.activities-section--in-view .activity-btn:nth-child(1) .activity-icon-wrapper {
+    animation-delay: 0.05s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(2) .activity-icon-wrapper {
+    animation-delay: 0.12s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(3) .activity-icon-wrapper {
+    animation-delay: 0.19s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(4) .activity-icon-wrapper {
+    animation-delay: 0.26s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(5) .activity-icon-wrapper {
+    animation-delay: 0.33s;
+}
 
 .activity-icon {
     font-size: 40px;
@@ -284,17 +307,32 @@
     animation: activityLabelIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
 }
 
-.activities-section--in-view .activity-btn:nth-child(1) .activity-label { animation-delay: 0.15s; }
-.activities-section--in-view .activity-btn:nth-child(2) .activity-label { animation-delay: 0.22s; }
-.activities-section--in-view .activity-btn:nth-child(3) .activity-label { animation-delay: 0.29s; }
-.activities-section--in-view .activity-btn:nth-child(4) .activity-label { animation-delay: 0.36s; }
-.activities-section--in-view .activity-btn:nth-child(5) .activity-label { animation-delay: 0.43s; }
+.activities-section--in-view .activity-btn:nth-child(1) .activity-label {
+    animation-delay: 0.15s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(2) .activity-label {
+    animation-delay: 0.22s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(3) .activity-label {
+    animation-delay: 0.29s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(4) .activity-label {
+    animation-delay: 0.36s;
+}
+
+.activities-section--in-view .activity-btn:nth-child(5) .activity-label {
+    animation-delay: 0.43s;
+}
 
 @keyframes activityIconIn {
     from {
         opacity: 0;
         transform: scale(0.6) translateY(15px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -306,6 +344,7 @@
         opacity: 0;
         transform: translateY(12px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -393,6 +432,7 @@
         opacity: 0;
         transform: scale(0.3) rotate(-15deg);
     }
+
     to {
         opacity: 1;
         transform: scale(1) rotate(0);
@@ -404,6 +444,7 @@
         opacity: 0;
         transform: translateX(-25px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -444,56 +485,196 @@
     }
 }
 
-/* Mission */
-.mission {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: var(--space-xl);
+/* ── What do we do ── full image, left half dark + text, right half clear */
+.wwd-section {
+    padding: 0;
+    margin: 2rem 0;
+}
+
+.wwd-panel {
+    position: relative;
+    min-height: 650px;
+    border: 3px solid var(--clr-accent);
+    overflow: hidden;
+    display: flex;
+}
+
+/* Full-width background image */
+.wwd-panel__bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=1600&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s ease;
+    z-index: 0;
+}
+
+.wwd-panel:hover .wwd-panel__bg {
+    transform: scale(1.04);
+}
+
+/* Left half — dark overlay container */
+.wwd-panel__left {
+    position: relative;
+    z-index: 1;
+    width: 50%;
+    display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-.mission__text h2 {
-    margin: 0.75rem 0 1.25rem;
+/* Dark overlay covers only the left half */
+.wwd-panel__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 28, 46, 0.82);
+    z-index: 0;
 }
 
-.mission__text p+p {
-    margin-top: 1rem;
-}
-
-.mission__visual {
+/* Text sits on top of the overlay */
+.wwd-panel__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 3.5rem 2.5rem;
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    align-items: center;
+    gap: 0;
 }
 
-.mission__card {
-    background: var(--clr-surface);
-    border-radius: var(--radius-md);
-    padding: 1.25rem var(--space-md);
-    border: 1px solid var(--clr-border);
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-    transition: var(--transition);
+/* ── Badge (small label above title) */
+.wwd-panel__badge {
+    display: inline-block;
+    background: rgba(243, 156, 18, 0.18);
+    border: 1px solid var(--clr-accent);
+    color: var(--clr-accent);
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    /* animation base */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
 }
 
-.mission__card:hover {
-    transform: translateX(6px);
-    border-color: var(--clr-accent-light);
-    box-shadow: var(--shadow-sm);
+/* ── Thin accent divider */
+.wwd-panel__divider {
+    width: 0;
+    height: 2px;
+    background: var(--clr-accent);
+    margin-bottom: 1.2rem;
+    border-radius: 2px;
+    opacity: 0;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+        opacity 0.4s ease 0.35s;
 }
 
-.mission__card span {
-    font-size: 1.8rem;
-    flex-shrink: 0;
+.wwd-panel__title {
+    color: var(--clr-white);
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+    margin: 0 0 1.1rem;
+    font-weight: 800;
+    line-height: 1.25;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease 0.45s, transform 0.65s ease 0.45s;
 }
 
-.mission__card p {
+.wwd-panel__text {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 1rem;
+    line-height: 1.9;
+    margin-bottom: 2rem;
+    max-width: 380px;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.65s ease 0.6s, transform 0.65s ease 0.6s;
+}
+
+/* ── Animate in when section is in view */
+.wwd-panel--in-view .wwd-panel__badge {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.wwd-panel--in-view .wwd-panel__divider {
+    width: 120px;
+    opacity: 1;
+}
+
+.wwd-panel--in-view .wwd-panel__title {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.wwd-panel--in-view .wwd-panel__text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.wwd-panel--in-view .wwd-panel__btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Right half — no overlay, image shows clearly */
+.wwd-panel__right {
+    width: 50%;
+    z-index: 1;
+}
+
+/* Yellow pill button */
+.wwd-panel__btn {
+    display: inline-block;
+    background: var(--clr-accent);
+    color: var(--clr-primary-dark);
+    font-family: var(--font-heading);
+    font-weight: 700;
     font-size: 0.9rem;
-    margin: 0;
-    color: var(--clr-text);
-    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.7rem 2rem;
+    border-radius: var(--radius-full, 9999px);
+    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease,
+        opacity 0.65s ease 0.75s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(16px);
 }
+
+.wwd-panel__btn:hover {
+    background: #f0a500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* Responsive — stack on mobile */
+@media (max-width: 700px) {
+    .wwd-panel {
+        flex-direction: column;
+        min-height: unset;
+    }
+
+    .wwd-panel__left {
+        width: 100%;
+        min-height: 420px;
+    }
+
+    .wwd-panel__right {
+        display: none;
+    }
+}
+
 
 
 /* Values Strip */
@@ -644,9 +825,6 @@
 }
 
 @media (max-width: 900px) {
-    .mission {
-        grid-template-columns: 1fr;
-    }
 
     .stats-bar__grid {
         grid-template-columns: repeat(2, 1fr);
