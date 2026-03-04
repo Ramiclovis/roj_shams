@@ -78,6 +78,7 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 img {
@@ -144,6 +145,7 @@ p {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 var(--space-md);
+  box-sizing: border-box;
 }
 
 .section {
@@ -387,5 +389,12 @@ p {
 
   body {
     line-height: 1.65;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
   }
 }

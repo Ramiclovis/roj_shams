@@ -2,6 +2,7 @@
 
 .what-we-do-page {
     padding-top: var(--nav-offset);
+    overflow-x: hidden;
 }
 
 /* Intro section */
@@ -311,6 +312,21 @@
 }
 
 /* Responsive */
+@media (max-width: 900px) {
+    .what-we-do-page .activities-nav {
+        gap: 2rem;
+    }
+
+    .what-we-do-page .activity-btn {
+        width: 140px;
+    }
+
+    .what-we-do-page .activity-icon-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+}
+
 @media (max-width: 600px) {
     .what-we-do-page .activities-nav {
         gap: 1rem;
@@ -336,5 +352,16 @@
 
     .what-we-do-page .activity-details-left h3 {
         font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .what-we-do-page .activity-btn {
+        width: 120px;
+    }
+
+    .what-we-do-page .activity-icon-wrapper {
+        width: 80px;
+        height: 80px;
     }
 }

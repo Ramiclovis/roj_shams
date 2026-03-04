@@ -5,13 +5,21 @@ import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/f
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Home.css'
+import heroVideoMp4 from '../assets/VIDEO/VIDEO.mp4'
 
+/* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
     'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=1600&auto=format&fit=crop',
 ]
+*/
+const heroImages = [] /* فارغ لأن السلايدر معطّل؛ يُستخدم poster فقط إن وُجد فيديو */
+
+/* فيديو الهيرو من assets/VIDEO مع تشغيل مسرّع */
+const heroVideoSrc = heroVideoMp4
+const heroVideoPlaybackRate = 1.5
 
 const objectives = [
     {
@@ -46,7 +54,41 @@ const objectives = [
     },
 ]
 
-
+const newsItems = [
+    {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=600&auto=format&fit=crop',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', /* غيّر الرابط إلى فيديو منظمة */
+        titleKey: 'news.item1.title',
+        dateKey: 'news.item1.date',
+        excerptKey: 'news.item1.excerpt',
+        link: '#',
+    },
+    {
+        id: 2,
+        image: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=600&auto=format&fit=crop',
+        titleKey: 'news.item2.title',
+        dateKey: 'news.item2.date',
+        excerptKey: 'news.item2.excerpt',
+        link: '#',
+    },
+    {
+        id: 3,
+        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop',
+        titleKey: 'news.item3.title',
+        dateKey: 'news.item3.date',
+        excerptKey: 'news.item3.excerpt',
+        link: '#',
+    },
+    {
+        id: 4,
+        image: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=600&auto=format&fit=crop',
+        titleKey: 'news.item4.title',
+        dateKey: 'news.item4.date',
+        excerptKey: 'news.item4.excerpt',
+        link: '#',
+    },
+]
 
 const founders = [
     { name: 'Rasha Hayel Mousa', initials: 'RH', roleKey: 'founders.role' },
@@ -60,19 +102,38 @@ const founders = [
 
 export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0)
+    const [currentTileIndex, setCurrentTileIndex] = useState(0)
     const [activeObjective, setActiveObjective] = useState(null)
     const [activitiesInView, setActivitiesInView] = useState(false)
     const [wwdInView, setWwdInView] = useState(false)
+    const [isNarrow, setIsNarrow] = useState(false)
     const activitiesRef = useRef(null)
     const wwdRef = useRef(null)
+    const heroVideoRef = useRef(null)
     const { t } = useLanguage()
 
+    useEffect(() => {
+        const mql = window.matchMedia('(max-width: 900px)')
+        const handle = () => setIsNarrow(mql.matches)
+        mql.addEventListener('change', handle)
+        handle()
+        return () => mql.removeEventListener('change', handle)
+    }, [])
+
+    useEffect(() => {
+        const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
+        setCurrentTileIndex((prev) => Math.min(prev, maxIndex))
+    }, [isNarrow])
+
+    /* سلايدر صور الهيرو معطّل — كان يغيّر currentImageIndex كل 2 ثانية
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentImageIndex((prev) => (prev + 1) % heroImages.length)
         }, 2000)
         return () => clearInterval(interval)
     }, [])
+    */
 
     useEffect(() => {
         const el = activitiesRef.current
@@ -100,21 +161,57 @@ export default function Home() {
         return () => observer.disconnect()
     }, [])
 
+    useEffect(() => {
+        const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
+        const interval = setInterval(() => {
+            setCurrentTileIndex((prev) => (prev + 1) % (maxIndex + 1))
+        }, 4500)
+        return () => clearInterval(interval)
+    }, [isNarrow])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentFeaturedIndex((prev) => (prev + 1) % newsItems.length)
+        }, 4500)
+        return () => clearInterval(interval)
+    }, [])
+
     return (
         <div className="home">
             {/* ── Hero ─────────────────────────────────── */}
             <section className="hero">
-                {/* Background Slider */}
-                <div className="hero__slider" aria-hidden="true">
-                    {heroImages.map((img, i) => (
-                        <div
-                            key={i}
-                            className={`hero__slide ${i === currentImageIndex ? 'hero__slide--active' : ''}`}
-                            style={{ backgroundImage: `url(${img})` }}
+                {/* خلفية الفيديو أو السلايدر */}
+                {heroVideoSrc && (
+                    <div className="hero__video-wrap" aria-hidden="true">
+                        <video
+                            ref={heroVideoRef}
+                            className="hero__video"
+                            src={heroVideoSrc}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            poster={heroImages[0] || ''}
+                            onLoadedData={() => {
+                                if (heroVideoRef.current) heroVideoRef.current.playbackRate = heroVideoPlaybackRate
+                            }}
                         />
-                    ))}
-                    <div className="hero__slider-overlay" />
-                </div>
+                    </div>
+                )}
+                {/* سلايدر صور الهيرو معطّل — أزل الكومنت لتفعيل السلايدر عند إلغاء الفيديو
+                {!heroVideoSrc && (
+                    <div className="hero__slider" aria-hidden="true">
+                        {heroImages.map((img, i) => (
+                            <div
+                                key={i}
+                                className={`hero__slide ${i === currentImageIndex ? 'hero__slide--active' : ''}`}
+                                style={{ backgroundImage: `url(${img})` }}
+                            />
+                        ))}
+                    </div>
+                )}
+                */}
+                <div className="hero__slider-overlay" />
 
                 <div className="container hero__content">
                     <div className="badge animate-fade-up">{t('hero.badge')}</div>
@@ -195,6 +292,87 @@ export default function Home() {
                             </div>
                         )
                     })()}
+                </div>
+            </section>
+
+            {/* ── News & Updates ────────────────────────── */}
+            <section className="news-section">
+                <div className="container">
+                    <div className="news-section__header">
+                        <span className="news-section__label">{t('news.badge')}</span>
+                        <h2 className="news-section__heading">{t('news.title')}</h2>
+                    </div>
+
+                    {/* سلايدر الصورة الكبيرة */}
+                    <div className="news-featured-slider">
+                        <div
+                            className="news-featured-slider__track"
+                            style={{ transform: `translateX(-${currentFeaturedIndex * 100}%)` }}
+                        >
+                            {newsItems.map((item, i) => (
+                                <div key={item.id} className="news-featured-slider__slide">
+                                    <article className="news-featured">
+                                        <a href={item.link} className="news-featured__media">
+                                            <div
+                                                className="news-featured__image"
+                                                style={{ backgroundImage: `url(${item.image})` }}
+                                            />
+                                            <div className="news-featured__overlay">
+                                                <time className="news-featured__date">{t(item.dateKey)}</time>
+                                                <h3 className="news-featured__title">{t(item.titleKey)}</h3>
+                                                <p className="news-featured__excerpt">{t(item.excerptKey)}</p>
+                                            </div>
+                                        </a>
+                                    </article>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* سلايدر: 3 بطاقات ظاهرة، الانزلاق يكشف الرابعة */}
+                    <div className="news-tiles-slider">
+                        <div
+                            className="news-tiles-slider__track"
+                            style={{
+                                transform: `translateX(-${currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
+                            }}
+                        >
+                            {newsItems.map((item) => (
+                                <div key={item.id} className="news-tiles-slider__slide">
+                                    <article className="news-tile">
+                                        <a href={item.link} className="news-tile__link">
+                                            <div
+                                                className="news-tile__image"
+                                                style={{ backgroundImage: `url(${item.image})` }}
+                                            />
+                                            <div className="news-tile__overlay">
+                                                <time className="news-tile__date">{t(item.dateKey)}</time>
+                                                <h3 className="news-tile__title">{t(item.titleKey)}</h3>
+                                                <span className="news-tile__read">{t('news.readMore')} →</span>
+                                            </div>
+                                        </a>
+                                    </article>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="news-tiles-slider__dots" aria-hidden="true">
+                            {Array.from({
+                                length: isNarrow ? newsItems.length : Math.max(1, newsItems.length - 2),
+                            }).map((_, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    className={`news-tiles-slider__dot ${i === currentTileIndex ? 'active' : ''}`}
+                                    onClick={() => setCurrentTileIndex(i)}
+                                    aria-label={`Slide ${i + 1}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="news-section__footer">
+                        <NavLink to="/contact" className="news-section__cta">{t('news.viewAll')}</NavLink>
+                    </div>
                 </div>
             </section>
 
