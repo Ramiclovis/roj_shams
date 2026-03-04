@@ -175,7 +175,7 @@ export default function Home() {
         return () => clearInterval(interval)
     }, [])
 
-    /* تشغيل الفيديو مباشرة على Safari — تحميل صريح + تشغيل برمجي بعد أحداث التحميل */
+    /* تشغيل الفيديو تلقائياً في Safari — بدون load() وتشغيل فوري عند canplay */
     useEffect(() => {
         if (!heroVideoSrc) return
         const video = heroVideoRef.current
@@ -184,7 +184,6 @@ export default function Home() {
         video.setAttribute('playsinline', 'true')
         video.setAttribute('webkit-playsinline', 'true')
         video.muted = true
-        video.load()
 
         const startPlayback = () => {
             video.muted = true
@@ -192,17 +191,14 @@ export default function Home() {
             video.play().catch(() => {})
         }
 
-        const tryPlayAfterLayout = () => {
-            requestAnimationFrame(() => setTimeout(startPlayback, 0))
-        }
+        const tryPlay = () => { startPlayback() }
 
-        video.addEventListener('loadedmetadata', tryPlayAfterLayout)
-        video.addEventListener('loadeddata', tryPlayAfterLayout)
-        video.addEventListener('canplay', tryPlayAfterLayout)
-        video.addEventListener('canplaythrough', tryPlayAfterLayout)
+        video.addEventListener('loadedmetadata', tryPlay)
+        video.addEventListener('loadeddata', tryPlay)
+        video.addEventListener('canplay', tryPlay)
+        video.addEventListener('canplaythrough', tryPlay)
 
-        if (video.readyState >= 2) tryPlayAfterLayout()
-        else setTimeout(tryPlayAfterLayout, 400)
+        if (video.readyState >= 2) startPlayback()
 
         const wrap = video.closest('.hero__video-wrap')
         const retryOnUserInteraction = () => {
@@ -229,10 +225,10 @@ export default function Home() {
         document.addEventListener('click', retryOnDocument, { once: true })
 
         return () => {
-            video.removeEventListener('loadedmetadata', tryPlayAfterLayout)
-            video.removeEventListener('loadeddata', tryPlayAfterLayout)
-            video.removeEventListener('canplay', tryPlayAfterLayout)
-            video.removeEventListener('canplaythrough', tryPlayAfterLayout)
+            video.removeEventListener('loadedmetadata', tryPlay)
+            video.removeEventListener('loadeddata', tryPlay)
+            video.removeEventListener('canplay', tryPlay)
+            video.removeEventListener('canplaythrough', tryPlay)
             wrap?.removeEventListener('touchstart', retryOnUserInteraction)
             wrap?.removeEventListener('click', retryOnUserInteraction)
             document.removeEventListener('touchstart', retryOnDocument)
