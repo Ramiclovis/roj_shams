@@ -340,7 +340,7 @@ export default function Home() {
                             {newsItems.map((item, i) => (
                                 <div key={item.id} className="news-featured-slider__slide">
                                     <article className="news-featured">
-                                        <a href={item.link} className="news-featured__media">
+                                        <NavLink to={`/news/${item.id}`} className="news-featured__media">
                                             <div
                                                 className="news-featured__image"
                                                 style={{ backgroundImage: `url(${item.image})` }}
@@ -350,7 +350,7 @@ export default function Home() {
                                                 <h3 className="news-featured__title">{t(item.titleKey)}</h3>
                                                 <p className="news-featured__excerpt">{t(item.excerptKey)}</p>
                                             </div>
-                                        </a>
+                                        </NavLink>
                                     </article>
                                 </div>
                             ))}
@@ -368,7 +368,7 @@ export default function Home() {
                             {newsItems.map((item) => (
                                 <div key={item.id} className="news-tiles-slider__slide">
                                     <article className="news-tile">
-                                        <a href={item.link} className="news-tile__link">
+                                        <NavLink to={`/news/${item.id}`} className="news-tile__link">
                                             <div
                                                 className="news-tile__image"
                                                 style={{ backgroundImage: `url(${item.image})` }}
@@ -378,7 +378,7 @@ export default function Home() {
                                                 <h3 className="news-tile__title">{t(item.titleKey)}</h3>
                                                 <span className="news-tile__read">{t('news.readMore')} →</span>
                                             </div>
-                                        </a>
+                                        </NavLink>
                                     </article>
                                 </div>
                             ))}

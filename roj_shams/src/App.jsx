@@ -11,6 +11,7 @@ import Founders from './pages/Founders'
 import Principles from './pages/Principles'
 import Contact from './pages/Contact'
 import WhatWeDo from './pages/WhatWeDo'
+import NewsDetail from './pages/NewsDetail'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -50,6 +51,7 @@ function App() {
               <Route path="/principles" element={<Principles />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/what-we-do" element={<WhatWeDo />} />
+              <Route path="/news/:id" element={<NewsDetail />} />
             </Routes>
           </main>
           <Footer />
