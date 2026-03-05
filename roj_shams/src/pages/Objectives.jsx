@@ -8,6 +8,7 @@ const objectives = [
     { icon: '🏥', color: '#27AE60' },
     { icon: '🤝', color: '#E67E22' },
     { icon: '🌱', color: '#16A085' },
+    { icon: '🚑', color: '#C0392B' },
 ]
 
 const activityKeys = [
@@ -16,6 +17,7 @@ const activityKeys = [
     ['objPage.2.act0', 'objPage.2.act1', 'objPage.2.act2', 'objPage.2.act3'],
     ['objPage.3.act0', 'objPage.3.act1', 'objPage.3.act2', 'objPage.3.act3'],
     ['objPage.4.act0', 'objPage.4.act1', 'objPage.4.act2', 'objPage.4.act3'],
+    ['objPage.5.act0', 'objPage.5.act1', 'objPage.5.act2', 'objPage.5.act3'],
 ]
 
 export default function Objectives() {

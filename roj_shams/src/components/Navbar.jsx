@@ -9,6 +9,7 @@ const navLinks = [
     { to: '/objectives', labelKey: 'nav.objectives' },
     { to: '/founders', labelKey: 'nav.founders' },
     { to: '/principles', labelKey: 'nav.principles' },
+    { to: '/news', labelKey: 'nav.news' },
     { to: '/contact', labelKey: 'nav.contact' },
 ]
 

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf } from '@fortawesome/free-solid-svg-icons'
-import { faInstagram, faFacebookF, faYoutube, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
+import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
+import { newsItems } from '../data/newsItems'
 import '../assets/components/Home.css'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
@@ -51,41 +52,11 @@ const objectives = [
         desc: 'Organizing volunteer campaigns and impactful training programs for communities. We channel the energy and skills of volunteers into structured service, building both individual capacity and collective impact for lasting change.',
         link: '/objectives',
     },
-]
-
-const newsItems = [
     {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=600&auto=format&fit=crop',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', /* غيّر الرابط إلى فيديو منظمة */
-        titleKey: 'news.item1.title',
-        dateKey: 'news.item1.date',
-        excerptKey: 'news.item1.excerpt',
-        link: '#',
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=600&auto=format&fit=crop',
-        titleKey: 'news.item2.title',
-        dateKey: 'news.item2.date',
-        excerptKey: 'news.item2.excerpt',
-        link: '#',
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop',
-        titleKey: 'news.item3.title',
-        dateKey: 'news.item3.date',
-        excerptKey: 'news.item3.excerpt',
-        link: '#',
-    },
-    {
-        id: 4,
-        image: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=600&auto=format&fit=crop',
-        titleKey: 'news.item4.title',
-        dateKey: 'news.item4.date',
-        excerptKey: 'news.item4.excerpt',
-        link: '#',
+        icon: faTruckMedical,
+        title: 'Emergency Relief',
+        desc: 'Responding swiftly to crises with food, shelter, medical aid, and essential supplies. We work with local partners to reach affected communities and support recovery and resilience in times of disaster and displacement.',
+        link: '/objectives',
     },
 ]
 
@@ -108,10 +79,13 @@ export default function Home() {
     const [wwdInView, setWwdInView] = useState(false)
     const [newsInView, setNewsInView] = useState(false)
     const [isNarrow, setIsNarrow] = useState(false)
+    const [promiseInView, setPromiseInView] = useState(false)
+    const [promisePercent, setPromisePercent] = useState(0)
     const activitiesRef = useRef(null)
     const wwdRef = useRef(null)
     const newsRef = useRef(null)
     const heroVideoRef = useRef(null)
+    const promiseRef = useRef(null)
     const { t } = useLanguage()
 
     useEffect(() => {
@@ -174,6 +148,34 @@ export default function Home() {
         observer.observe(el)
         return () => observer.disconnect()
     }, [])
+
+    /* أنيميشن نسبة Our Promise من 0 إلى 95 عند ظهور القسم */
+    const PROMISE_TARGET = 95
+    useEffect(() => {
+        const el = promiseRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) setPromiseInView(true)
+            },
+            { threshold: 0.3 }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
+    useEffect(() => {
+        if (!promiseInView) return
+        const duration = 1800
+        const start = performance.now()
+        const step = (now) => {
+            const elapsed = now - start
+            const progress = Math.min(elapsed / duration, 1)
+            const easeOut = 1 - Math.pow(1 - progress, 2)
+            setPromisePercent(Math.round(easeOut * PROMISE_TARGET))
+            if (progress < 1) requestAnimationFrame(step)
+        }
+        requestAnimationFrame(step)
+    }, [promiseInView])
 
     useEffect(() => {
         const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
@@ -242,7 +244,6 @@ export default function Home() {
                 <div className="hero__slider-overlay" />
 
                 <div className="container hero__content">
-                    <div className="badge animate-fade-up">{t('hero.badge')}</div>
                     <h1 className="animate-fade-up-delay-1">
                         {t('hero.titleLine1')}<br />
                         <span className="hero__accent">{t('hero.titleAccent')}</span> {t('hero.titleLine2')}
@@ -329,6 +330,7 @@ export default function Home() {
                     <div className="news-section__header">
                         <span className="news-section__label">{t('news.badge')}</span>
                         <h2 className="news-section__heading">{t('news.title')}</h2>
+                        <p className="news-section__lead">{t('news.pageLead')}</p>
                     </div>
 
                     {/* سلايدر الصورة الكبيرة */}
@@ -339,12 +341,20 @@ export default function Home() {
                         >
                             {newsItems.map((item, i) => (
                                 <div key={item.id} className="news-featured-slider__slide">
-                                    <article className="news-featured">
+                                    <article className={`news-featured ${item.videoUrl ? 'news-featured--has-video' : ''}`}>
                                         <NavLink to={`/news/${item.id}`} className="news-featured__media">
                                             <div
                                                 className="news-featured__image"
                                                 style={{ backgroundImage: `url(${item.image})` }}
                                             />
+                                            {item.videoUrl && (
+                                                <span className="news-featured__play" aria-hidden="true">
+                                                    <FontAwesomeIcon icon={faPlay} />
+                                                </span>
+                                            )}
+                                            {item.videoUrl && (
+                                                <span className="news-featured__video-badge">{t('news.videoLabel')}</span>
+                                            )}
                                             <div className="news-featured__overlay">
                                                 <time className="news-featured__date">{t(item.dateKey)}</time>
                                                 <h3 className="news-featured__title">{t(item.titleKey)}</h3>
@@ -367,12 +377,22 @@ export default function Home() {
                         >
                             {newsItems.map((item) => (
                                 <div key={item.id} className="news-tiles-slider__slide">
-                                    <article className="news-tile">
+                                    <article className={`news-tile ${item.videoUrl ? 'news-tile--has-video' : ''}`}>
                                         <NavLink to={`/news/${item.id}`} className="news-tile__link">
-                                            <div
-                                                className="news-tile__image"
-                                                style={{ backgroundImage: `url(${item.image})` }}
-                                            />
+                                            <div className="news-tile__media">
+                                                <div
+                                                    className="news-tile__image"
+                                                    style={{ backgroundImage: `url(${item.image})` }}
+                                                />
+                                                {item.videoUrl && (
+                                                    <span className="news-tile__play" aria-hidden="true">
+                                                        <FontAwesomeIcon icon={faPlay} />
+                                                    </span>
+                                                )}
+                                                {item.videoUrl && (
+                                                    <span className="news-tile__video-badge">{t('news.videoLabel')}</span>
+                                                )}
+                                            </div>
                                             <div className="news-tile__overlay">
                                                 <time className="news-tile__date">{t(item.dateKey)}</time>
                                                 <h3 className="news-tile__title">{t(item.titleKey)}</h3>
@@ -399,7 +419,7 @@ export default function Home() {
                     </div>
 
                     <div className="news-section__footer">
-                        <NavLink to="/contact" className="news-section__cta">{t('news.viewAll')}</NavLink>
+                        <NavLink to="/news" className="news-section__cta">{t('news.viewAll')}</NavLink>
                     </div>
                 </div>
             </section>
@@ -426,6 +446,50 @@ export default function Home() {
                     </div>
                     {/* Right half: clear image, no overlay */}
                     <div className="wwd-panel__right" />
+                </div>
+            </section>
+
+            {/* ── Our Promise ── تبرعات + 90% + طرق الدفع */}
+            <section className="promise-section" ref={promiseRef}>
+                <div className="promise-section__accent" aria-hidden="true" />
+                <div className="container promise-section__container">
+                    <span className="promise-section__badge">{t('promise.badge')}</span>
+                    <h2 className="promise-section__title">{t('promise.title')}</h2>
+                    <p className="promise-section__text">{t('promise.text')}</p>
+                    <div className="promise-section__circle-wrap">
+                        <div
+                            className="promise-section__circle"
+                            style={{ '--promise-deg': (promisePercent / 100) * 360 + 'deg' }}
+                            aria-hidden="true"
+                        >
+                            <span className="promise-section__percent">{promisePercent}%</span>
+                        </div>
+                    </div>
+                    <div className="promise-section__payments">
+                        <div className="promise-section__payment">
+                            <div className="promise-section__payment-icon">
+                                <FontAwesomeIcon icon={faCreditCard} />
+                            </div>
+                            <span className="promise-section__payment-name">Swish</span>
+                            <span className="promise-section__payment-desc">{t('promise.swish')}</span>
+                            <span className="promise-section__payment-detail">{t('promise.swishNumber')}</span>
+                        </div>
+                        <div className="promise-section__payment">
+                            <div className="promise-section__payment-icon">
+                                <FontAwesomeIcon icon={faBuildingColumns} />
+                            </div>
+                            <span className="promise-section__payment-name">Bankgiro</span>
+                            <span className="promise-section__payment-desc">{t('promise.bankgirot')}</span>
+                            <span className="promise-section__payment-detail">{t('promise.bankgirotNumber')}</span>
+                        </div>
+                        <div className="promise-section__payment">
+                            <div className="promise-section__payment-icon promise-section__payment-icon--paypal">
+                                <FontAwesomeIcon icon={faPaypal} />
+                            </div>
+                            <span className="promise-section__payment-name">PayPal</span>
+                            <span className="promise-section__payment-desc">{t('promise.paypal')}</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 

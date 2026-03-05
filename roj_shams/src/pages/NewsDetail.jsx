@@ -1,13 +1,26 @@
 import { NavLink, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebookF, faXTwitter, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import { newsItems } from '../data/newsItems'
-import '../assets/components/Home.css'
+import '../assets/components/NewsDetail.css'
 
 export default function NewsDetail() {
   const { id } = useParams()
   const { t } = useLanguage()
+  const [mounted, setMounted] = useState(false)
 
   const item = newsItems.find((n) => String(n.id) === String(id))
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [id])
 
   if (!item) {
     return (
@@ -27,8 +40,8 @@ export default function NewsDetail() {
   }
 
   return (
-    <div className="home">
-      <section className="page-hero">
+    <div className={`news-detail-page ${mounted ? 'news-detail-page--mounted' : ''}`}>
+      <section className="page-hero page-hero--news">
         <div className="container">
           <div className="badge">{t('news.badge')}</div>
           <h1>{t(item.titleKey)}</h1>
@@ -45,10 +58,22 @@ export default function NewsDetail() {
             style={{ maxWidth: '900px', margin: '0 auto' }}
           >
             <div className="news-featured__media">
-              <div
-                className="news-featured__image"
-                style={{ backgroundImage: `url(${item.image})` }}
-              />
+              {item.videoUrl ? (
+                <div className="news-featured__video-wrap">
+                  <iframe
+                    src={item.videoUrl}
+                    title={t(item.titleKey)}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="news-featured__video"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="news-featured__image"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
+              )}
             </div>
             <div className="news-featured__overlay">
               <time className="news-featured__date">{t(item.dateKey)}</time>
@@ -67,23 +92,23 @@ export default function NewsDetail() {
                   </p>
                   <ul className="news-detail-share-list">
                     <li>
-                      <a href="#" className="news-detail-share-link">
-                        Facebook
+                      <a href="#" className="news-detail-share-link" aria-label="Facebook">
+                        <FontAwesomeIcon icon={faFacebookF} />
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="news-detail-share-link">
-                        Twitter
+                      <a href="#" className="news-detail-share-link" aria-label="Twitter">
+                        <FontAwesomeIcon icon={faXTwitter} />
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="news-detail-share-link">
-                        Instagram
+                      <a href="#" className="news-detail-share-link" aria-label="Instagram">
+                        <FontAwesomeIcon icon={faInstagram} />
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="news-detail-share-link">
-                        LinkedIn
+                      <a href="#" className="news-detail-share-link" aria-label="LinkedIn">
+                        <FontAwesomeIcon icon={faLinkedinIn} />
                       </a>
                     </li>
                   </ul>
@@ -105,11 +130,6 @@ export default function NewsDetail() {
               </div>
             </div>
           </article>
-          <div style={{ marginTop: '2.5rem' }}>
-            <NavLink to="/" className="btn btn-outline-dark">
-              {t('nav.home')}
-            </NavLink>
-          </div>
         </div>
       </section>
     </div>

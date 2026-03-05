@@ -13,6 +13,7 @@ export const translations = {
     'nav.objectives': 'Objectives',
     'nav.founders': 'Founders',
     'nav.principles': 'Principles',
+    'nav.news': 'News',
     'nav.contact': 'Contact',
     'nav.getInTouch': 'Get in Touch',
 
@@ -45,12 +46,16 @@ export const translations = {
     'objective.3.desc': 'Addressing social issues and providing comprehensive psychosocial support (PSS). We offer counseling, crisis response, and family support to help individuals and communities navigate hardship with dignity and rebuild resilience.',
     'objective.4.title': 'Volunteering',
     'objective.4.desc': 'Organizing volunteer campaigns and impactful training programs for communities. We channel the energy and skills of volunteers into structured service, building both individual capacity and collective impact for lasting change.',
+    'objective.5.title': 'Emergency Relief',
+    'objective.5.desc': 'Responding swiftly to crises with food, shelter, medical aid, and essential supplies. We work with local partners to reach affected communities and support recovery and resilience in times of disaster and displacement.',
 
     // News (Home)
     'news.title': 'News & Updates',
     'news.badge': 'Latest',
     'news.viewAll': 'View All News',
+    'news.pageLead': 'Stay informed about our latest programs, events, and impact.',
     'news.readMore': 'Read more',
+    'news.videoLabel': 'Video',
     'news.item1.title': 'Community Training Program Launched',
     'news.item1.date': 'March 2025',
     'news.item1.excerpt': 'We have launched a new capacity-building program to empower local communities with essential life skills and leadership development.',
@@ -64,7 +69,25 @@ export const translations = {
     'news.item4.date': 'December 2024',
     'news.item4.excerpt': 'Our community volunteer day brought together dozens of participants for hands-on service and solidarity.',
 
-    // Mission
+    // Where we are
+    'whereWeAre.title': 'Where we are',
+    'whereWeAre.text': 'Shams Roj has a presence in the region. Today we operate in Iraq, Jordan, Palestine and Syria.',
+    'whereWeAre.learnMore': 'Learn more',
+    'whereWeAre.iraq': 'Iraq',
+    'whereWeAre.jordan': 'Jordan',
+    'whereWeAre.palestine': 'Palestine',
+    'whereWeAre.syria': 'Syria',
+
+    // Our Promise (donations)
+    'promise.badge': 'Our Promise',
+    'promise.title': 'Your donation goes to those in need',
+    'promise.text': 'We ensure your donations reach those who need them most. Over 95% of Shams Roj\'s income goes directly to our work with communities in need.',
+    'promise.percent': '95%',
+    'promise.swish': 'Via Swish (Swedish transactions)',
+    'promise.swishNumber': 'Swish number: 123 110 028',
+    'promise.bankgirot': 'Via Bankgiro (Swedish transactions)',
+    'promise.bankgirotNumber': 'BG number: 5197-8187',
+    'promise.paypal': 'Via PayPal (International)',
     'mission.badge': 'Our Mission',
     'mission.title': 'Empowering Communities Through Compassionate Action',
     'mission.p1': 'Shams Roj is a non-profit entity dedicated to upholding principles of justice and equity. We believe in the power of collective action and the strength of ethical leadership to create lasting, meaningful change in communities.',
@@ -169,8 +192,13 @@ export const translations = {
     'objPage.4.act1': 'Volunteer skills training',
     'objPage.4.act2': 'Community service projects',
     'objPage.4.act3': 'Youth volunteer engagement',
+    'objPage.5.subtitle': 'Rapid Response',
+    'objPage.5.act0': 'Emergency food and shelter distribution',
+    'objPage.5.act1': 'Medical and hygiene kit delivery',
+    'objPage.5.act2': 'Coordination with local partners',
+    'objPage.5.act3': 'Recovery and resilience support',
     'objPage.supportTitle': 'Support Our Programs',
-    'objPage.supportP': 'Every contribution helps us reach more people and create deeper impact across all five areas.',
+    'objPage.supportP': 'Every contribution helps us reach more people and create deeper impact across all six areas.',
 
     // Founders page
     'foundersPage.badge': 'Leadership',
@@ -284,6 +312,7 @@ export const translations = {
     'nav.objectives': 'أهدافنا',
     'nav.founders': 'المؤسسون',
     'nav.principles': 'المبادئ',
+    'nav.news': 'الأخبار',
     'nav.contact': 'اتصل بنا',
     'nav.getInTouch': 'تواصل معنا',
 
@@ -313,12 +342,16 @@ export const translations = {
     'objective.3.desc': 'معالجة القضايا الاجتماعية وتقديم الدعم النفسي الاجتماعي الشامل. نقدم الاستشارات والاستجابة للأزمات ودعم الأسر لمساعدة الأفراد والمجتمعات على تجاوز المحن بكرامة وإعادة بناء الصمود.',
     'objective.4.title': 'التطوع',
     'objective.4.desc': 'تنظيم حملات تطوعية وبرامج تدريبية مؤثرة للمجتمعات. نوجّه طاقة ومهارات المتطوعين نحو خدمة منظمة لبناء القدرات الفردية والتأثير الجماعي من أجل تغيير دائم.',
+    'objective.5.title': 'الإغاثة الطارئة',
+    'objective.5.desc': 'الاستجابة السريعة للأزمات بالغذاء والمأوى والرعاية الطبية والمستلزمات الأساسية. نعمل مع شركاء محليين للوصول إلى المجتمعات المتضررة ودعم التعافي والصمود في أوقات الكوارث والنزوح.',
 
     // News (Home)
     'news.title': 'الأخبار والتحديثات',
     'news.badge': 'أحدث الأخبار',
     'news.viewAll': 'عرض كل الأخبار',
+    'news.pageLead': 'تابع آخر برامجنا وفعالياتنا وأثرنا في المجتمع.',
     'news.readMore': 'اقرأ المزيد',
+    'news.videoLabel': 'فيديو',
     'news.item1.title': 'إطلاق برنامج تدريبي مجتمعي',
     'news.item1.date': 'مارس 2025',
     'news.item1.excerpt': 'أطلقنا برنامجاً جديداً لبناء القدرات لتمكين المجتمعات المحلية بالمهارات الحياتية وتنمية القيادة.',
@@ -331,6 +364,24 @@ export const translations = {
     'news.item4.title': 'أبرز يوم التطوع',
     'news.item4.date': 'ديسمبر 2024',
     'news.item4.excerpt': 'جمع يوم التطوع المجتمعي عشرات المشاركين للعمل الميداني والتضامن.',
+
+    'whereWeAre.title': 'أين نحن',
+    'whereWeAre.text': 'شمس روج لها تواجد في المنطقة. نعمل اليوم في العراق والأردن وفلسطين وسوريا.',
+    'whereWeAre.learnMore': 'تعلم المزيد',
+    'whereWeAre.iraq': 'العراق',
+    'whereWeAre.jordan': 'الأردن',
+    'whereWeAre.palestine': 'فلسطين',
+    'whereWeAre.syria': 'سوريا',
+
+    'promise.badge': 'وعدنا',
+    'promise.title': 'تبرعك يصل إلى من يحتاجه',
+    'promise.text': 'نضمن وصول تبرعاتكم إلى من يحتاجها. أكثر من 95% من دخل شمس روج يذهب مباشرة إلى عملنا مع المجتمعات المحتاجة.',
+    'promise.percent': '95%',
+    'promise.swish': 'عبر Swish (معاملات سويدية)',
+    'promise.swishNumber': 'رقم Swish: 123 110 028',
+    'promise.bankgirot': 'عبر Bankgiro (معاملات سويدية)',
+    'promise.bankgirotNumber': 'رقم BG: 5197-8187',
+    'promise.paypal': 'عبر PayPal (دولي)',
 
     'mission.badge': 'رسالتنا',
     'mission.title': 'تمكين المجتمعات من خلال العمل الرحيم',
@@ -432,8 +483,13 @@ export const translations = {
     'objPage.4.act1': 'تدريب مهارات المتطوعين',
     'objPage.4.act2': 'مشاريع خدمة المجتمع',
     'objPage.4.act3': 'إشراك الشباب في التطوع',
+    'objPage.5.subtitle': 'الاستجابة السريعة',
+    'objPage.5.act0': 'توزيع الغذاء والمأوى الطارئ',
+    'objPage.5.act1': 'تقديم الطرود الطبية والنظافة',
+    'objPage.5.act2': 'التنسيق مع الشركاء المحليين',
+    'objPage.5.act3': 'دعم التعافي والصمود',
     'objPage.supportTitle': 'ادعم برامجنا',
-    'objPage.supportP': 'كل مساهمة تساعدنا على الوصول لمزيد من الناس وخلق أثر أعمق في المجالات الخمسة.',
+    'objPage.supportP': 'كل مساهمة تساعدنا على الوصول لمزيد من الناس وخلق أثر أعمق في المجالات الستة.',
 
     // Founders page
     'foundersPage.badge': 'القيادة',

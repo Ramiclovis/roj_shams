@@ -12,6 +12,7 @@ export const newsItems = [
     id: 2,
     image:
       'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=600&auto=format&fit=crop',
+    videoUrl: 'https://www.youtube.com/embed/2m3nSlToa_s', // مثال: فيديو تعليمي
     titleKey: 'news.item2.title',
     dateKey: 'news.item2.date',
     excerptKey: 'news.item2.excerpt',
