@@ -85,6 +85,13 @@ export const translations = {
     'whereWeAre.palestine': 'Palestine',
     'whereWeAre.syria': 'Syria',
 
+    // Donations impact (infographic before Where we are)
+    'donationsImpact.title': 'Donations makes a real difference',
+    'donationsImpact.amount': '$14.1 M',
+    'donationsImpact.amountLabel': 'Total fund received',
+    'donationsImpact.peopleCount': '1.3 Million',
+    'donationsImpact.peopleLabel': 'Individuals reached through Shams Roj programme activities',
+
     // Our Promise (donations)
     'promise.badge': 'Our Promise',
     'promise.title': 'Your donation goes to those in need',
@@ -386,6 +393,13 @@ export const translations = {
     'whereWeAre.jordan': 'الأردن',
     'whereWeAre.palestine': 'فلسطين',
     'whereWeAre.syria': 'سوريا',
+
+    // Donations impact
+    'donationsImpact.title': 'التبرعات تصنع فرقاً حقيقياً',
+    'donationsImpact.amount': '14.1 مليون $',
+    'donationsImpact.amountLabel': 'إجمالي الأموال المستلمة',
+    'donationsImpact.peopleCount': '1.3 مليون',
+    'donationsImpact.peopleLabel': 'فرد تم الوصول إليهم عبر أنشطة برنامج شمس روج',
 
     'promise.badge': 'وعدنا',
     'promise.title': 'تبرعك يصل إلى من يحتاجه',

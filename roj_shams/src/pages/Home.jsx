@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical, faDollarSign, faPeopleGroup } from '@fortawesome/free-solid-svg-icons'
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import { newsItems } from '../data/newsItems'
 import '../assets/components/Home.css'
+import mapImage from '../assets/photo/maps.jpeg'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
@@ -81,11 +82,13 @@ export default function Home() {
     const [isNarrow, setIsNarrow] = useState(false)
     const [promiseInView, setPromiseInView] = useState(false)
     const [promisePercent, setPromisePercent] = useState(0)
+    const [whereWeAreInView, setWhereWeAreInView] = useState(false)
     const activitiesRef = useRef(null)
     const wwdRef = useRef(null)
     const newsRef = useRef(null)
     const heroVideoRef = useRef(null)
     const promiseRef = useRef(null)
+    const whereWeAreRef = useRef(null)
     const { t } = useLanguage()
 
     useEffect(() => {
@@ -144,6 +147,19 @@ export default function Home() {
                 if (entry.isIntersecting) setNewsInView(true)
             },
             { threshold: 0.15 }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
+
+    useEffect(() => {
+        const el = whereWeAreRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) setWhereWeAreInView(true)
+            },
+            { threshold: 0.2 }
         )
         observer.observe(el)
         return () => observer.disconnect()
@@ -446,6 +462,52 @@ export default function Home() {
                     </div>
                     {/* Right half: clear image, no overlay */}
                     <div className="wwd-panel__right" />
+                </div>
+            </section>
+
+            {/* ── Donations impact (infographic) ──────────── */}
+            {/* <section className="donations-impact">
+                <div className="container donations-impact__inner">
+                    <h2 className="donations-impact__title">{t('donationsImpact.title')}</h2>
+                    <div className="donations-impact__stats">
+                        <div className="donations-impact__circle donations-impact__circle--left">
+                            <div className="donations-impact__icon-wrap">
+                                <FontAwesomeIcon icon={faDollarSign} className="donations-impact__icon" />
+                            </div>
+                            <span className="donations-impact__value">{t('donationsImpact.amount')}</span>
+                            <span className="donations-impact__label">{t('donationsImpact.amountLabel')}</span>
+                        </div>
+                        <div className="donations-impact__connector" aria-hidden="true" />
+                        <div className="donations-impact__circle donations-impact__circle--right">
+                            <div className="donations-impact__icon-wrap">
+                                <FontAwesomeIcon icon={faPeopleGroup} className="donations-impact__icon" />
+                            </div>
+                            <span className="donations-impact__value">{t('donationsImpact.peopleCount')}</span>
+                            <span className="donations-impact__label">{t('donationsImpact.peopleLabel')}</span>
+                        </div>
+                    </div>
+                </div>
+            </section> */}
+
+            {/* ── Where we are ───────────────────────────── */}
+            <section className={`where-we-are ${whereWeAreInView ? 'where-we-are--in-view' : ''}`} ref={whereWeAreRef}>
+                <div className="where-we-are__strip" aria-hidden="true" />
+                <div className="where-we-are__map-wrap">
+                    <img
+                        src={mapImage}
+                        alt={t('whereWeAre.title')}
+                        className="where-we-are__map-img"
+                    />
+                </div>
+                <div className="where-we-are__overlay" />
+                <div className="container where-we-are__inner">
+                    <div className="where-we-are__content">
+                        <h2 className="where-we-are__title">{t('whereWeAre.title')}</h2>
+                        <p className="where-we-are__text">{t('whereWeAre.text')}</p>
+                        <NavLink to="/contact" className="where-we-are__btn">
+                            {t('whereWeAre.learnMore')}
+                        </NavLink>
+                    </div>
                 </div>
             </section>
 

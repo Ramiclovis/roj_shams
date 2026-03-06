@@ -1505,14 +1505,141 @@
     }
 }
 
-/* ── Where we are ── خريطة كاملة + ماركر على سوريا */
+/* ── Donations impact ── إحصائيات التبرعات (دائرتان + رابط أصفر) */
+.donations-impact {
+    padding: var(--space-xxl) 0;
+    background: var(--clr-white);
+}
+
+.donations-impact__inner {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.donations-impact__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+    font-weight: 800;
+    color: var(--clr-primary-dark);
+    margin: 0 0 var(--space-xl);
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.donations-impact__stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+}
+
+.donations-impact__circle {
+    --donations-circle-size: clamp(180px, 22vw, 240px);
+    width: var(--donations-circle-size);
+    height: var(--donations-circle-size);
+    border-radius: 50%;
+    background: var(--clr-primary-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.donations-impact__circle--left {
+    --donations-circle-size: clamp(160px, 20vw, 220px);
+}
+
+.donations-impact__circle--right {
+    --donations-circle-size: clamp(200px, 26vw, 280px);
+}
+
+.donations-impact__icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid #fbbd14;
+    color: #fbbd14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.donations-impact__icon {
+    font-size: 1.4rem;
+}
+
+.donations-impact__circle--right .donations-impact__icon-wrap {
+    width: 52px;
+    height: 52px;
+}
+
+.donations-impact__circle--right .donations-impact__icon {
+    font-size: 1.5rem;
+}
+
+.donations-impact__value {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 800;
+    color: #fbbd14;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 0.35rem;
+}
+
+.donations-impact__label {
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    line-height: 1.25;
+    max-width: 90%;
+}
+
+.donations-impact__connector {
+    width: clamp(40px, 6vw, 70px);
+    height: 24px;
+    background: #fbbd14;
+    margin: 0 -2px;
+    align-self: center;
+    clip-path: polygon(0 0, 100% 15%, 100% 85%, 0 100%);
+    flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+    .donations-impact__stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .donations-impact__connector {
+        width: 24px;
+        height: 40px;
+        margin: 0;
+        clip-path: polygon(15% 0, 85% 0, 100% 100%, 0 100%);
+    }
+}
+
+/* ── Where we are ── خريطة بعرض محدود من اليمين واليسار */
 .where-we-are {
     position: relative;
-    min-height: 420px;
-    padding: var(--space-xxl) 0;
+    height: 420px;
+    max-height: 50vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-bottom: var(--space-md);
+    padding: 0 var(--space-lg);
     display: flex;
     align-items: center;
     overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
 }
 
 .where-we-are__strip {
@@ -1521,7 +1648,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: #fbbd14;
+    background: transparent;
     z-index: 3;
 }
 
@@ -1531,24 +1658,32 @@
     z-index: 0;
 }
 
-.where-we-are__map-iframe {
+.where-we-are__map-iframe,
+.where-we-are__map-img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     border: 0;
     display: block;
+    object-fit: cover;
 }
 
 .where-we-are__overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(90deg,
-            rgba(26, 74, 110, 0.92) 0%,
-            rgba(26, 74, 110, 0.5) 45%,
-            transparent 70%);
+    background: rgba(8, 28, 46, 0.82);
     pointer-events: none;
+}
+
+@media (min-width: 901px) {
+    .where-we-are__overlay {
+        background: linear-gradient(90deg,
+                rgba(8, 28, 46, 0.82) 0%,
+                rgba(8, 28, 46, 0.82) 50%,
+                transparent 50%);
+    }
 }
 
 .where-we-are__inner {
@@ -1569,6 +1704,15 @@
     margin: 0 0 1rem;
     line-height: 1.25;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.where-we-are--in-view .where-we-are__title {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
 }
 
 .where-we-are__text {
@@ -1577,6 +1721,15 @@
     color: #f0f4f0;
     margin: 0 0 1.5rem;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.where-we-are--in-view .where-we-are__text {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.25s;
 }
 
 .where-we-are__btn {
@@ -1587,31 +1740,38 @@
     font-size: 0.95rem;
     text-decoration: none;
     border-radius: 9999px;
-    border: 2px solid #fbbd14;
-    background: #fbbd14 !important;
+    border: 2px solid #f0a500;
+    background: #f0a500 !important;
     color: #0D2F45 !important;
-    box-shadow: 0 4px 14px rgba(251, 189, 20, 0.4);
-    transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 14px rgba(240, 165, 0, 0.4);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.where-we-are--in-view .where-we-are__btn {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.4s;
 }
 
 .where-we-are__btn:hover {
-    background: #f2d16a !important;
+    background: #f5b81a !important;
     color: #0D2F45 !important;
-    border-color: #f2d16a !important;
+    border-color: #f5b81a !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(251, 189, 20, 0.5);
+    box-shadow: 0 6px 20px rgba(240, 165, 0, 0.5);
+    transition-delay: 0s;
 }
 
 @media (max-width: 900px) {
     .where-we-are {
-        min-height: 380px;
+        height: 380px;
+        max-height: 45vh;
     }
 
     .where-we-are__overlay {
-        background: linear-gradient(180deg,
-                rgba(26, 74, 110, 0.88) 0%,
-                rgba(26, 74, 110, 0.45) 50%,
-                transparent 100%);
+        background: rgba(8, 28, 46, 0.82);
     }
 
     .where-we-are__content {
@@ -1626,10 +1786,16 @@
 }
 
 [dir="rtl"] .where-we-are__overlay {
-    background: linear-gradient(270deg,
-            rgba(26, 74, 110, 0.92) 0%,
-            rgba(26, 74, 110, 0.5) 45%,
-            transparent 70%);
+    background: rgba(8, 28, 46, 0.82);
+}
+
+@media (min-width: 901px) {
+    [dir="rtl"] .where-we-are__overlay {
+        background: linear-gradient(270deg,
+                rgba(8, 28, 46, 0.82) 0%,
+                rgba(8, 28, 46, 0.82) 50%,
+                transparent 50%);
+    }
 }
 
 /* ── Our Promise ── تصميم جديد: خلفية متدرجة + أيقونات كبيرة + بطاقات */

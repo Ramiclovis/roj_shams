@@ -33,6 +33,10 @@ export default function WhatWeDo() {
     const { t } = useLanguage()
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
+    useEffect(() => {
         const el = activitiesRef.current
         if (!el) return
         const observer = new IntersectionObserver(
@@ -70,7 +74,10 @@ export default function WhatWeDo() {
 
                     <div className="what-we-do-cards-grid">
                         {objectives.map((obj, i) => (
-                            <div key={i} className="what-we-do-card">
+                            <div
+                                key={i}
+                                className={`what-we-do-card what-we-do-card--${i % 2 === 0 ? 'from-right' : 'from-left'}`}
+                            >
                                 <div className="what-we-do-card-header">
                                     <div className="what-we-do-card-icon">
                                         <FontAwesomeIcon icon={obj.icon} />
