@@ -203,14 +203,14 @@ export default function Home() {
         const start = () => {
             video.muted = true
             video.playbackRate = heroVideoPlaybackRate
-            video.play().catch(() => {})
+            video.play().catch(() => { })
         }
         video.addEventListener('loadeddata', start)
         video.addEventListener('canplay', start)
         if (video.readyState >= 2) start()
         const onInteraction = () => {
             video.muted = true
-            video.play().catch(() => {})
+            video.play().catch(() => { })
             document.removeEventListener('touchstart', onInteraction)
             document.removeEventListener('click', onInteraction)
         }

@@ -7,8 +7,10 @@
 
 /* Intro section */
 .wwd-intro {
-    background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 100%);
-    padding: calc(var(--nav-offset) + 1.5rem) 0 var(--space-xl);
+    background-image: linear-gradient(135deg, rgba(13, 47, 69, 0.8) 0%, rgba(27, 79, 114, 0.8) 100%), url('https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=1600&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    padding: calc(var(--nav-offset) + 3rem) 0 calc(var(--space-xl) + 2rem);
 }
 
 .wwd-intro__inner {
@@ -58,310 +60,85 @@
     color: var(--clr-primary-dark);
 }
 
-.what-we-do-page .activities-nav {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
-    margin-bottom: var(--space-xl);
-}
-
-.what-we-do-page .activity-btn {
-    background: transparent;
-    border: none;
+/* Activities Cards Grid */
+.what-we-do-cards-grid {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    cursor: pointer;
-    width: 160px;
-    padding: 0;
-    transition: var(--transition);
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto var(--space-xl);
 }
 
-.what-we-do-page .activity-icon-wrapper {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: var(--clr-primary-dark);
+.what-we-do-card {
+    background: var(--clr-white);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.what-we-do-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.what-we-do-card-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 3px solid transparent;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.what-we-do-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--clr-primary-dark);
     color: var(--clr-accent);
-    opacity: 0;
-    transform: scale(0.6) translateY(15px);
-}
-
-.what-we-do-page .activities-section--in-view .activity-icon-wrapper {
-    animation: activityIconIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(1) .activity-icon-wrapper {
-    animation-delay: 0.05s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(2) .activity-icon-wrapper {
-    animation-delay: 0.12s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(3) .activity-icon-wrapper {
-    animation-delay: 0.19s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(4) .activity-icon-wrapper {
-    animation-delay: 0.26s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(5) .activity-icon-wrapper {
-    animation-delay: 0.33s;
-}
-
-.what-we-do-page .activity-icon {
-    font-size: 40px;
-    flex-shrink: 0;
-}
-
-.what-we-do-page .activity-label {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--clr-primary-dark);
-    text-align: center;
-    line-height: 1.3;
-    opacity: 0;
-    transform: translateY(12px);
-}
-
-.what-we-do-page .activities-section--in-view .activity-label {
-    animation: activityLabelIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(1) .activity-label {
-    animation-delay: 0.15s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(2) .activity-label {
-    animation-delay: 0.22s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(3) .activity-label {
-    animation-delay: 0.29s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(4) .activity-label {
-    animation-delay: 0.36s;
-}
-
-.what-we-do-page .activities-section--in-view .activity-btn:nth-child(5) .activity-label {
-    animation-delay: 0.43s;
-}
-
-@keyframes activityIconIn {
-    from {
-        opacity: 0;
-        transform: scale(0.6) translateY(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes activityLabelIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.what-we-do-page .activity-btn.active .activity-icon-wrapper {
-    background: var(--clr-accent);
-    color: var(--clr-primary-dark);
-    transform: scale(1.15);
-}
-
-.what-we-do-page .activity-btn:hover:not(.active) .activity-icon-wrapper {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-}
-
-.what-we-do-page .activity-details-wrapper {
-    background: transparent;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: 0;
-    overflow: hidden;
-}
-
-.what-we-do-page .activity-details-wrapper.open {
-    background: var(--clr-primary-dark);
-    max-height: 1000px;
-    padding: var(--space-xl) 0;
-}
-
-.what-we-do-page .activity-details {
-    display: flex;
-    gap: var(--space-xl);
-    align-items: flex-start;
-    color: var(--clr-white);
-}
-
-.what-we-do-page .activity-details-left {
-    flex: 0 0 35%;
-}
-
-.what-we-do-page .activity-details-title-row {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-}
-
-.what-we-do-page .activity-details-icon-large {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--clr-accent);
-    color: var(--clr-primary-dark);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
     flex-shrink: 0;
-    opacity: 0;
-    transform: scale(0.3) rotate(-15deg);
-    animation: detailsIconReveal 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
 }
 
-.what-we-do-page .activity-details-icon-large svg {
-    width: 32px;
-    height: 32px;
-}
-
-.what-we-do-page .activity-details-left h3 {
-    color: var(--clr-white);
-    font-size: 2rem;
+.what-we-do-card-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--clr-primary-dark);
     margin: 0;
-    line-height: 1.2;
-    opacity: 0;
-    transform: translateX(-25px);
-    animation: detailsTitleReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
 }
 
-@keyframes detailsIconReveal {
-    from {
-        opacity: 0;
-        transform: scale(0.3) rotate(-15deg);
-    }
+.what-we-do-card-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
 
-    to {
-        opacity: 1;
-        transform: scale(1) rotate(0);
+@media (min-width: 768px) {
+    .what-we-do-card-columns {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
     }
 }
 
-@keyframes detailsTitleReveal {
-    from {
-        opacity: 0;
-        transform: translateX(-25px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.what-we-do-card-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.what-we-do-page .activity-details-right {
-    flex: 1;
+.what-we-do-card-subtitle {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--clr-primary-dark);
+    margin: 0;
 }
 
-.what-we-do-page .activity-details-right h4 {
-    color: var(--clr-white);
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-}
-
-.what-we-do-page .activity-details-right p {
-    color: rgba(255, 255, 255, 0.85);
+.what-we-do-card-text {
+    font-size: 1rem;
+    color: var(--clr-text-muted);
     line-height: 1.7;
-    margin-bottom: 0;
-    font-size: 1.05rem;
-}
-
-.what-we-do-page .animate-fade-in {
-    animation: fadeInScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: translateY(25px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-    .what-we-do-page .activities-nav {
-        gap: 2rem;
-    }
-
-    .what-we-do-page .activity-btn {
-        width: 140px;
-    }
-
-    .what-we-do-page .activity-icon-wrapper {
-        width: 100px;
-        height: 100px;
-    }
-}
-
-@media (max-width: 600px) {
-    .what-we-do-page .activities-nav {
-        gap: 1rem;
-    }
-
-    .what-we-do-page .activity-btn {
-        width: 130px;
-    }
-
-    .what-we-do-page .activity-icon-wrapper {
-        width: 90px;
-        height: 90px;
-    }
-
-    .what-we-do-page .activity-details {
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .what-we-do-page .activity-details-left {
-        flex: 1;
-    }
-
-    .what-we-do-page .activity-details-left h3 {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .what-we-do-page .activity-btn {
-        width: 120px;
-    }
-
-    .what-we-do-page .activity-icon-wrapper {
-        width: 80px;
-        height: 80px;
-    }
+    margin: 0;
 }

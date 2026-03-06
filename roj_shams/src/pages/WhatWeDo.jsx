@@ -28,7 +28,6 @@ const objectives = [
 ]
 
 export default function WhatWeDo() {
-    const [activeObjective, setActiveObjective] = useState(null)
     const [activitiesInView, setActivitiesInView] = useState(false)
     const activitiesRef = useRef(null)
     const { t } = useLanguage()
@@ -66,45 +65,31 @@ export default function WhatWeDo() {
             >
                 <div className="container">
                     <div className="section-header activities-header">
-                        <h2>{t('activities.title')}</h2>
+
                     </div>
 
-                    <div className="activities-nav">
+                    <div className="what-we-do-cards-grid">
                         {objectives.map((obj, i) => (
-                            <button
-                                key={i}
-                                className={`activity-btn ${activeObjective === i ? 'active' : ''}`}
-                                onClick={() => setActiveObjective(activeObjective === i ? null : i)}
-                            >
-                                <div className="activity-icon-wrapper">
-                                    <FontAwesomeIcon icon={obj.icon} className="activity-icon" />
+                            <div key={i} className="what-we-do-card">
+                                <div className="what-we-do-card-header">
+                                    <div className="what-we-do-card-icon">
+                                        <FontAwesomeIcon icon={obj.icon} />
+                                    </div>
+                                    <h3 className="what-we-do-card-title">{t(`objective.${i}.title`)}</h3>
                                 </div>
-                                <span className="activity-label">{t(`objective.${i}.title`)}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={`activity-details-wrapper ${activeObjective !== null ? 'open' : ''}`}>
-                    {activeObjective !== null && (() => {
-                        const obj = objectives[activeObjective]
-                        return (
-                            <div className="container activity-details animate-fade-in">
-                                <div className="activity-details-left">
-                                    <div className="activity-details-title-row">
-                                        <div className="activity-details-icon-large">
-                                            <FontAwesomeIcon icon={obj.icon} />
-                                        </div>
-                                        <h3>{t(`objective.${activeObjective}.title`)}</h3>
+                                <div className="what-we-do-card-columns">
+                                    <div className="what-we-do-card-col">
+                                        <h4 className="what-we-do-card-subtitle">{t('activities.urgentNeeds')}</h4>
+                                        <p className="what-we-do-card-text">{t(`objective.${i}.needs`)}</p>
+                                    </div>
+                                    <div className="what-we-do-card-col">
+                                        <h4 className="what-we-do-card-subtitle">{t('activities.ourWork')}</h4>
+                                        <p className="what-we-do-card-text">{t(`objective.${i}.work`)}</p>
                                     </div>
                                 </div>
-                                <div className="activity-details-right">
-                                    <h4>{t('activities.ourWork')}</h4>
-                                    <p>{t(`objective.${activeObjective}.desc`)}</p>
-                                </div>
                             </div>
-                        )
-                    })()}
+                        ))}
+                    </div>
                 </div>
             </section>
         </div>
