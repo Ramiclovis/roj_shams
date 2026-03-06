@@ -1,14 +1,14 @@
 /* ── What Do We Do Page ── */
 
 .what-we-do-page {
-    padding-top: var(--nav-offset);
+    padding-top: 0;
     overflow-x: hidden;
 }
 
 /* Intro section */
 .wwd-intro {
     background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 100%);
-    padding: var(--space-xl) 0;
+    padding: calc(var(--nav-offset) + 1.5rem) 0 var(--space-xl);
 }
 
 .wwd-intro__inner {
