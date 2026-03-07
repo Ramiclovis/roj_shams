@@ -195,7 +195,8 @@
     top: calc(1.25rem + var(--nav-height) + 0.6rem);
     left: 1.5rem;
     right: 1.5rem;
-    background: rgba(13, 27, 42, 0.98);
+    background: var(--clr-primary-dark) !important;
+    background: rgba(45, 107, 62, 0.98) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 1rem var(--space-md) 1.5rem;
@@ -329,6 +330,8 @@
         top: calc(0.75rem + var(--nav-height) + 0.5rem);
         left: 0.75rem;
         right: 0.75rem;
+        background: var(--clr-primary-dark) !important;
+        background: rgba(45, 107, 62, 0.98) !important;
     }
 }
 
@@ -342,6 +345,8 @@
     .navbar__mobile {
         left: 0.5rem;
         right: 0.5rem;
+        background: var(--clr-primary-dark) !important;
+        background: rgba(45, 107, 62, 0.98) !important;
     }
 
     .navbar__logo-text {
