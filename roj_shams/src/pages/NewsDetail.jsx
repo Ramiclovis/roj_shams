@@ -120,10 +120,10 @@ export default function NewsDetail() {
                       {t('news.mediaContactName') || 'Secretary General'}
                     </p>
                     <a
-                      href="mailto:info@swedoaid.org"
+                      href={`mailto:${t('contact.emailValue')}`}
                       className="news-detail-contact-email"
                     >
-                      info@swedoaid.org
+                      {t('contact.emailValue')}
                     </a>
                   </div>
                 </aside>

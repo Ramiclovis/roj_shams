@@ -5,7 +5,7 @@
     right: 1.5rem;
     z-index: 1000;
     height: var(--nav-height);
-    background: rgba(11, 27, 42, 0.85);
+    background: rgba(45, 107, 62, 0.9);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -14,7 +14,7 @@
 }
 
 .navbar--scrolled {
-    background: rgba(13, 27, 42, 0.97);
+    background: rgba(45, 107, 62, 0.97);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     border-color: rgba(255, 255, 255, 0.16);
 }

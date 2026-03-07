@@ -1,14 +1,16 @@
 import { NavLink } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Objectives.css'
 
 const objectives = [
-    { icon: '🎯', color: '#2980B9' },
-    { icon: '📚', color: '#8E44AD' },
-    { icon: '🏥', color: '#27AE60' },
-    { icon: '🤝', color: '#E67E22' },
-    { icon: '🌱', color: '#16A085' },
-    { icon: '🚑', color: '#C0392B' },
+    { icon: faBullseye },
+    { icon: faBook },
+    { icon: faHeartbeat },
+    { icon: faUsers },
+    { icon: faLeaf },
+    { icon: faTruckMedical },
 ]
 
 const activityKeys = [
@@ -37,9 +39,9 @@ export default function Objectives() {
                     <div className="objectives__list">
                         {objectives.map((obj, i) => (
                             <div key={i} className={`obj-detail ${i % 2 === 1 ? 'obj-detail--reverse' : ''}`}>
-                                <div className="obj-detail__visual" style={{ '--obj-color': obj.color }}>
+                                <div className="obj-detail__visual">
                                     <div className="obj-detail__icon-wrapper">
-                                        <span className="obj-detail__icon">{obj.icon}</span>
+                                        <FontAwesomeIcon icon={obj.icon} className="obj-detail__icon" />
                                         <div className="obj-detail__number">0{i + 1}</div>
                                     </div>
                                 </div>

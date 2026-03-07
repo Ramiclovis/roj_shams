@@ -85,9 +85,26 @@
     box-shadow: var(--shadow-md);
 }
 
-.vm-card__icon {
-    font-size: 2.5rem;
+.vm-card__icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--clr-primary-dark);
+    color: var(--clr-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vm-card:hover .vm-card__icon-wrap {
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.vm-card__icon {
+    font-size: 1.75rem;
 }
 
 .vm-card h3 {

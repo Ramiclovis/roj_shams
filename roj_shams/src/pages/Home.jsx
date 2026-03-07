@@ -331,8 +331,10 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <div className="activity-details-right">
+                                    <h4>{t('activities.urgentNeeds')}</h4>
+                                    <p>{t(`objective.${activeObjective}.needs`)}</p>
                                     <h4>{t('activities.ourWork')}</h4>
-                                    <p>{t(`objective.${activeObjective}.desc`)}</p>
+                                    <p>{t(`objective.${activeObjective}.work`)}</p>
                                 </div>
                             </div>
                         )
@@ -528,14 +530,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="promise-section__payments">
-                        <div className="promise-section__payment">
-                            <div className="promise-section__payment-icon">
-                                <FontAwesomeIcon icon={faCreditCard} />
-                            </div>
-                            <span className="promise-section__payment-name">Swish</span>
-                            <span className="promise-section__payment-desc">{t('promise.swish')}</span>
-                            <span className="promise-section__payment-detail">{t('promise.swishNumber')}</span>
-                        </div>
+                      
                         <div className="promise-section__payment">
                             <div className="promise-section__payment-icon">
                                 <FontAwesomeIcon icon={faBuildingColumns} />
@@ -544,13 +539,7 @@ export default function Home() {
                             <span className="promise-section__payment-desc">{t('promise.bankgirot')}</span>
                             <span className="promise-section__payment-detail">{t('promise.bankgirotNumber')}</span>
                         </div>
-                        <div className="promise-section__payment">
-                            <div className="promise-section__payment-icon promise-section__payment-icon--paypal">
-                                <FontAwesomeIcon icon={faPaypal} />
-                            </div>
-                            <span className="promise-section__payment-name">PayPal</span>
-                            <span className="promise-section__payment-desc">{t('promise.paypal')}</span>
-                        </div>
+                       
                     </div>
                 </div>
             </section>

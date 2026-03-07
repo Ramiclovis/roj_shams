@@ -4,21 +4,32 @@
 
 /* --- CSS Custom Properties --- */
 :root {
-  /* Colors */
-  --clr-primary: #1B4F72;
-  --clr-primary-light: #2471A3;
-  --clr-primary-dark: #0D2F45;
-  --clr-accent: #F39C12;
-  --clr-accent-light: #F8C471;
-  --clr-accent-dark: #D68910;
+  /* Brand palette (Shams Roj) */
+  --clr-brand-red: #d20404;
+  --clr-brand-red-dark: #b4211f;
+  --clr-brand-green: #398950;
+  --clr-brand-gold: #fbbd14;
+  --clr-brand-cream: #f8fbf0;
+  --clr-brand-gold-light: #f2d16b;
+  --clr-brand-mint: #9dcca9;
+  --clr-brand-cream-light: #fdefb5;
+  --clr-brand-coral: #ea9190;
+
+  /* Colors (mapped to brand) */
+  --clr-primary: #398950;
+  --clr-primary-light: #9dcca9;
+  --clr-primary-dark: #2d6b3e;
+  --clr-accent: #fbbd14;
+  --clr-accent-light: #f2d16b;
+  --clr-accent-dark: #d68910;
 
   --clr-dark: #0D1B2A;
   --clr-text: #2C3E50;
   --clr-text-muted: #6C7A89;
-  --clr-surface: #F8F9FA;
-  --clr-surface-alt: #EEF2F7;
+  --clr-surface: #f8fbf0;
+  --clr-surface-alt: #fdefb5;
   --clr-white: #FFFFFF;
-  --clr-border: #D5E8F0;
+  --clr-border: #9dcca9;
 
   /* Typography */
   --font-heading: 'Inter', sans-serif;
@@ -32,10 +43,10 @@
   --space-xl: 4rem;
   --space-xxl: 6rem;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(27, 79, 114, 0.08);
-  --shadow-md: 0 8px 24px rgba(27, 79, 114, 0.14);
-  --shadow-lg: 0 16px 48px rgba(27, 79, 114, 0.18);
+  /* Shadows (green tint to match primary) */
+  --shadow-sm: 0 2px 8px rgba(45, 107, 62, 0.08);
+  --shadow-md: 0 8px 24px rgba(45, 107, 62, 0.14);
+  --shadow-lg: 0 16px 48px rgba(45, 107, 62, 0.18);
 
   /* Border Radius */
   --radius-sm: 6px;

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLeaf, faHandshake, faHeart } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Contact.css'
 
@@ -125,7 +127,7 @@ export default function Contact() {
                                         </div>
                                         <div>
                                             <strong>{t('contact.email')}</strong>
-                                            <a href="mailto:info@shamsroj.org">info@shamsroj.org</a>
+                                            <a href={`mailto:${t('contact.emailValue')}`}>{t('contact.emailValue')}</a>
                                         </div>
                                     </div>
                                     <div className="contact__info-item">
@@ -157,21 +159,27 @@ export default function Contact() {
                             <div className="contact__ways">
                                 <h4>{t('contact.waysTitle')}</h4>
                                 <div className="contact__way">
-                                    <span className="contact__way-icon">🌱</span>
+                                    <div className="contact__way-icon-wrap">
+                                        <FontAwesomeIcon icon={faLeaf} className="contact__way-icon" />
+                                    </div>
                                     <div>
                                         <strong>{t('contact.way1Title')}</strong>
                                         <p>{t('contact.way1P')}</p>
                                     </div>
                                 </div>
                                 <div className="contact__way">
-                                    <span className="contact__way-icon">🤝</span>
+                                    <div className="contact__way-icon-wrap">
+                                        <FontAwesomeIcon icon={faHandshake} className="contact__way-icon" />
+                                    </div>
                                     <div>
                                         <strong>{t('contact.way2Title')}</strong>
                                         <p>{t('contact.way2P')}</p>
                                     </div>
                                 </div>
                                 <div className="contact__way">
-                                    <span className="contact__way-icon">💛</span>
+                                    <div className="contact__way-icon-wrap">
+                                        <FontAwesomeIcon icon={faHeart} className="contact__way-icon" />
+                                    </div>
                                     <div>
                                         <strong>{t('contact.way3Title')}</strong>
                                         <p>{t('contact.way3P')}</p>

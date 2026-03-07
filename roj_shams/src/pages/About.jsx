@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSun, faBullseye, faScaleBalanced } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/About.css'
 
@@ -52,17 +54,23 @@ export default function About() {
                     </div>
                     <div className="vm-grid">
                         <div className="vm-card vm-card--vision">
-                            <div className="vm-card__icon">🌅</div>
+                            <div className="vm-card__icon-wrap">
+                                <FontAwesomeIcon icon={faSun} className="vm-card__icon" />
+                            </div>
                             <h3>{t('about.visionTitle')}</h3>
                             <p>{t('about.visionP')}</p>
                         </div>
                         <div className="vm-card vm-card--mission">
-                            <div className="vm-card__icon">🎯</div>
+                            <div className="vm-card__icon-wrap">
+                                <FontAwesomeIcon icon={faBullseye} className="vm-card__icon" />
+                            </div>
                             <h3>{t('about.missionTitle')}</h3>
                             <p>{t('about.missionP')}</p>
                         </div>
                         <div className="vm-card vm-card--values">
-                            <div className="vm-card__icon">⚖️</div>
+                            <div className="vm-card__icon-wrap">
+                                <FontAwesomeIcon icon={faScaleBalanced} className="vm-card__icon" />
+                            </div>
                             <h3>{t('about.valuesTitle')}</h3>
                             <p>{t('about.valuesP')}</p>
                         </div>

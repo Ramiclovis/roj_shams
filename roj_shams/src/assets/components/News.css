@@ -2,6 +2,12 @@
    News listing page — عصري ومرتب
    ============================================================ */
 
+/* هيرو صفحة الأخبار — لون أخضر متناسق مع الموقع */
+.news-page__hero,
+.news-page .page-hero {
+  background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 60%, var(--clr-primary-light) 100%);
+}
+
 .news-page__hero .container {
   position: relative;
   z-index: 1;
