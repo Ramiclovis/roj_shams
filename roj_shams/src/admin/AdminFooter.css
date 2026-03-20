@@ -1,0 +1,56 @@
+/* =============================================
+   ADMIN FOOTER
+   ============================================= */
+
+.adm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.5rem;
+  background: rgba(45, 107, 62, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  margin: 0 1.25rem 0.75rem;
+  box-shadow: 0 4px 16px rgba(29, 78, 45, 0.15);
+  flex-wrap: wrap;
+}
+
+.adm-footer__copy {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.adm-footer__copy strong {
+  color: #fbbd14;
+  font-weight: 700;
+}
+
+.adm-footer__datetime {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.76rem;
+}
+
+.adm-footer__dot {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .adm-footer {
+    flex-direction: column;
+    gap: 0.2rem;
+    text-align: center;
+    margin: 0 0.6rem 0.6rem;
+    padding: 0.65rem 1rem;
+  }
+}

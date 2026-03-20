@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { LanguageProvider } from './context/LanguageContext'
 import './App.css'
@@ -13,6 +13,57 @@ import Contact from './pages/Contact'
 import WhatWeDo from './pages/WhatWeDo'
 import NewsDetail from './pages/NewsDetail'
 import News from './pages/News'
+import Login from './admin/Login'
+import Layout from './admin/Layout'
+import Dashboard from './admin/Dashboard'
+import AdminNews from './admin/News'
+import AdminUsers from './admin/Users'
+import ProtectedRoute from './admin/ProtectedRoute'
+
+function AppContent() {
+  const location = useLocation()
+  const isAdmin = location.pathname.startsWith('/admin')
+
+  if (isAdmin) {
+    return (
+      <Routes>
+        <Route path="/admin/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="news" element={<AdminNews />} />
+          <Route path="users" element={<AdminUsers />} />
+        </Route>
+      </Routes>
+    )
+  }
+
+  return (
+    <div className="app">
+      <Navbar />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/objectives" element={<Objectives />} />
+          <Route path="/founders" element={<Founders />} />
+          <Route path="/principles" element={<Principles />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/what-we-do" element={<WhatWeDo />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  )
+}
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -41,23 +92,7 @@ function App() {
   return (
     <LanguageProvider>
       <Router>
-        <div className="app">
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/objectives" element={<Objectives />} />
-              <Route path="/founders" element={<Founders />} />
-              <Route path="/principles" element={<Principles />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/what-we-do" element={<WhatWeDo />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/news/:id" element={<NewsDetail />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </Router>
     </LanguageProvider>
   )
