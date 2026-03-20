@@ -1,18 +1,18 @@
 import { useLanguage } from '../context/LanguageContext'
+import { foundersBase } from '../data/foundersData'
 import '../assets/components/Founders.css'
 
-const founders = [
-    { initials: 'RH', name: 'Ms. Rasha Hayel Mousa', color: '#2980B9', bioKey: 'foundersPage.bio.0' },
-    { initials: 'NO', name: 'Ms. Nadia Omar Salim', color: '#8E44AD', bioKey: 'foundersPage.bio.1' },
-    { initials: 'JB', name: 'Ms. Judy Badr Hassan', color: '#16A085', bioKey: 'foundersPage.bio.2' },
-    { initials: 'MS', name: 'Mr. Mohi Al-Din Sa\'dou Sa\'dou', color: '#D35400', bioKey: 'foundersPage.bio.3' },
-    { initials: 'CH', name: 'Dr. Carmen Hassan Ibrahim', color: '#27AE60', bioKey: 'foundersPage.bio.4' },
-    { initials: 'LI', name: 'Eng. Lilas Ibrahim Salim', color: '#C0392B', bioKey: 'foundersPage.bio.5' },
-    { initials: 'DA', name: 'Lawyer Doaa Abdul Fattah Al-Jazmati', color: '#1A5276', bioKey: 'foundersPage.bio.6' },
-]
+function loadFounders() {
+    try {
+        const stored = localStorage.getItem('admin_founders')
+        if (stored) return JSON.parse(stored).filter(f => f.active !== false)
+    } catch { /* ignore */ }
+    return foundersBase.filter(f => f.active !== false)
+}
 
 export default function Founders() {
-    const { t } = useLanguage()
+    const { t, lang } = useLanguage()
+    const founders = loadFounders()
     return (
         <div className="founders">
             <section className="page-hero">
@@ -33,15 +33,17 @@ export default function Founders() {
                     </div>
                     <div className="founders__grid">
                         {founders.map((f, i) => (
-                            <div key={i} className="founder-card" style={{ '--founder-color': f.color }}>
+                            <div key={f.id ?? i} className="founder-card" style={{ '--founder-color': f.color }}>
                                 <div className="founder-card__top">
                                     <div className="founder-card__avatar">{f.initials}</div>
                                     <div className="founder-card__meta">
-                                        <h3>{f.name}</h3>
+                                        <h3>{lang === 'ar' ? (f.nameAr || f.nameEn) : (f.nameEn || f.nameAr)}</h3>
                                         <span className="founder-card__role">{t('founders.role')}</span>
                                     </div>
                                 </div>
-                                <p className="founder-card__bio">{t(f.bioKey)}</p>
+                                <p className="founder-card__bio">
+                                    {lang === 'ar' ? (f.bioAr || f.bioEn) : (f.bioEn || f.bioAr)}
+                                </p>
                                 <div className="founder-card__accent" />
                             </div>
                         ))}

@@ -19,6 +19,15 @@ const modules = [
     to: '/admin/news',
     internal: true,
   },
+  {
+    id: 3,
+    title: 'المؤسسون',
+    desc: 'إدارة بيانات مؤسسي المنظمة',
+    icon: '👤',
+    iconBg: '#2980B9',
+    to: '/admin/founders',
+    internal: true,
+  },
 ]
 
 export default function Dashboard() {
