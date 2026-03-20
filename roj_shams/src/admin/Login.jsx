@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faLock, faEye, faEyeSlash, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
-import '../assets/components/Admin.css'
+import './assets/Admin.css'
 
 const ADMIN_USER = 'admin'
 const ADMIN_PASS = 'ShamsRoj@2025'

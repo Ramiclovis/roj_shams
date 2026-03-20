@@ -102,37 +102,13 @@ export default function Users() {
 
       {/* ── Top Action Bar ── */}
       <div className="usr-topbar">
-        {/* Back + breadcrumb */}
+
+        {/* Right: Add + Filter + Search */}
         <div className="usr-topbar__right">
-          <button className="usr-back-btn" onClick={() => navigate('/admin')}>
-            <FontAwesomeIcon icon={faChevronLeft} />
-            <span>رجوع</span>
+          <button className="usr-btn usr-btn--add" onClick={openAdd}>
+            <FontAwesomeIcon icon={faPlus} />
+            <span>إضافة مستخدم</span>
           </button>
-          <div className="usr-breadcrumb">
-            <span>المستخدمون</span>
-            <FontAwesomeIcon icon={faArrowRight} className="usr-breadcrumb__sep" />
-            <span>لوحة التحكم</span>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="usr-search">
-          <FontAwesomeIcon icon={faSearch} className="usr-search__icon" />
-          <input
-            type="text"
-            placeholder="بحث..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          {search && (
-            <button className="usr-search__clear" onClick={() => setSearch('')}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          )}
-        </div>
-
-        {/* Buttons */}
-        <div className="usr-topbar__left">
           <div className="usr-filter-wrap">
             <button
               className={`usr-btn usr-btn--filter ${showFilter ? 'active' : ''}`}
@@ -155,12 +131,35 @@ export default function Users() {
               </div>
             )}
           </div>
+          <div className="usr-search">
+            <FontAwesomeIcon icon={faSearch} className="usr-search__icon" />
+            <input
+              type="text"
+              placeholder="بحث..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            {search && (
+              <button className="usr-search__clear" onClick={() => setSearch('')}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            )}
+          </div>
+        </div>
 
-          <button className="usr-btn usr-btn--add" onClick={openAdd}>
-            <FontAwesomeIcon icon={faPlus} />
-            <span>إضافة مستخدم</span>
+        {/* Left: Back + breadcrumb */}
+        <div className="usr-topbar__left">
+          <div className="usr-breadcrumb">
+            <span>لوحة التحكم</span>
+            <FontAwesomeIcon icon={faArrowRight} className="usr-breadcrumb__sep" />
+            <span>المستخدمون</span>
+          </div>
+          <button className="usr-back-btn" onClick={() => navigate('/admin')}>
+            <span>رجوع</span>
+            <FontAwesomeIcon icon={faChevronLeft} />
           </button>
         </div>
+
       </div>
 
       {/* ── Cards Grid ── */}
@@ -172,10 +171,10 @@ export default function Users() {
       ) : (
         <div className="usr-grid">
           {filtered.map(u => (
-            <div key={u.id} className="usr-card">
+            <div key={u.id} className="usr-card" onClick={() => openEdit(u)}>
 
-              {/* Card Header */}
-              <div className="usr-card__header">
+              {/* Top row: badges right, avatar left */}
+              <div className="usr-card__top">
                 <div className="usr-card__badges">
                   <span className={`usr-status ${u.status === 'نشط' ? 'usr-status--active' : 'usr-status--inactive'}`}>
                     <span className="usr-status__dot" />
@@ -205,18 +204,6 @@ export default function Users() {
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="usr-card__actions">
-                <button className="usr-icon-btn usr-icon-btn--edit" onClick={() => openEdit(u)}>
-                  <FontAwesomeIcon icon={faPen} />
-                  <span>تعديل</span>
-                </button>
-                <button className="usr-icon-btn usr-icon-btn--del" onClick={() => handleDelete(u.id)}>
-                  <FontAwesomeIcon icon={faTrash} />
-                  <span>حذف</span>
-                </button>
-              </div>
-
             </div>
           ))}
         </div>
@@ -233,7 +220,18 @@ export default function Users() {
           <div className="admin-modal" onClick={e => e.stopPropagation()}>
             <div className="admin-modal__header">
               <h2>{modal === 'add' ? 'إضافة مستخدم جديد' : 'تعديل المستخدم'}</h2>
-              <button className="admin-modal__close" onClick={closeModal}>✕</button>
+              <div className="admin-modal__header-actions">
+                <button className="admin-btn admin-btn--ghost" onClick={closeModal}>إلغاء</button>
+                {modal === 'edit' && (
+                  <button className="admin-btn admin-btn--danger" onClick={() => { closeModal(); handleDelete(editId) }}>
+                    <FontAwesomeIcon icon={faTrash} />
+                    <span>حذف</span>
+                  </button>
+                )}
+                <button className="admin-btn admin-btn--primary" onClick={handleSave}>
+                  {modal === 'add' ? 'إضافة' : 'حفظ'}
+                </button>
+              </div>
             </div>
             <div className="admin-modal__body">
               {[
@@ -259,12 +257,6 @@ export default function Users() {
                   {statuses.map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
-            </div>
-            <div className="admin-modal__footer">
-              <button className="admin-btn admin-btn--ghost" onClick={closeModal}>إلغاء</button>
-              <button className="admin-btn admin-btn--primary" onClick={handleSave}>
-                {modal === 'add' ? 'إضافة' : 'حفظ'}
-              </button>
             </div>
           </div>
         </div>

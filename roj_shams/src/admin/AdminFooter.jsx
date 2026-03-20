@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import './AdminFooter.css'
+import './assets/AdminFooter.css'
 
 export default function AdminFooter() {
   const [now, setNow] = useState(new Date())
