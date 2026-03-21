@@ -19,6 +19,7 @@ import Dashboard from './admin/Dashboard'
 import AdminNews from './admin/News'
 import AdminUsers from './admin/Users'
 import AdminFounders from './admin/Founders'
+import AdminObjectives from './admin/Objectives'
 import ProtectedRoute from './admin/ProtectedRoute'
 
 function AppContent() {
@@ -41,6 +42,7 @@ function AppContent() {
           <Route path="news" element={<AdminNews />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="founders" element={<AdminFounders />} />
+          <Route path="objectives" element={<AdminObjectives />} />
         </Route>
       </Routes>
     )

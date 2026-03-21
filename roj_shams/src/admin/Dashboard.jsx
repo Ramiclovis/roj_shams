@@ -28,6 +28,15 @@ const modules = [
     to: '/admin/founders',
     internal: true,
   },
+  {
+    id: 4,
+    title: 'الأنشطة والبرامج',
+    desc: 'إدارة الأهداف والأنشطة والوسائط',
+    icon: '📋',
+    iconBg: '#16A085',
+    to: '/admin/objectives',
+    internal: true,
+  },
 ]
 
 export default function Dashboard() {
