@@ -70,11 +70,13 @@
 }
 
 .what-we-do-card {
+    display: block;
     background: var(--clr-white);
     border-radius: 12px;
     padding: 2.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    text-decoration: none;
     opacity: 0;
     transform: translateX(80px);
     transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
@@ -106,6 +108,11 @@
 .what-we-do-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.what-we-do-card:focus-visible {
+    outline: 3px solid rgba(57, 137, 80, 0.45);
+    outline-offset: 4px;
 }
 
 .what-we-do-page .activities-section--in-view .what-we-do-card:hover {

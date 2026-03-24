@@ -11,6 +11,7 @@ import Founders from './pages/Founders'
 import Principles from './pages/Principles'
 import Contact from './pages/Contact'
 import WhatWeDo from './pages/WhatWeDo'
+import WhatWeDoDetail from './pages/WhatWeDoDetail'
 import NewsDetail from './pages/NewsDetail'
 import News from './pages/News'
 import Login from './admin/Login'
@@ -60,6 +61,7 @@ function AppContent() {
           <Route path="/principles" element={<Principles />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/what-we-do" element={<WhatWeDo />} />
+          <Route path="/what-we-do/:id" element={<WhatWeDoDetail />} />
           <Route path="/news" element={<News />} />
           <Route path="/news/:id" element={<NewsDetail />} />
         </Routes>

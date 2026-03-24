@@ -272,10 +272,10 @@ export default function Home() {
                         <NavLink to="/contact" className="btn btn-outline">{t('hero.getInvolved')}</NavLink>
                     </div>
                     <div className="hero__social animate-fade-up-delay-4" aria-label="Social media">
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Instagram">
+                        <a href="https://www.instagram.com/shamsroj?igsh=cW9leDhtN2hwYnRk&utm_source=gr" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Instagram">
                             <FontAwesomeIcon icon={faInstagram} />
                         </a>
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Facebook">
+                        <a href="https://www.facebook.com/share/18HJjbiDib/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Facebook">
                             <FontAwesomeIcon icon={faFacebookF} />
                         </a>
                         <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="YouTube">

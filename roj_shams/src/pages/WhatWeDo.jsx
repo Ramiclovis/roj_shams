@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical,
@@ -76,9 +77,11 @@ export default function WhatWeDo() {
                             const needs = lang === 'ar' ? (obj.needsAr || obj.needsEn) : (obj.needsEn || obj.needsAr)
                             const work  = lang === 'ar' ? (obj.workAr  || obj.workEn)  : (obj.workEn  || obj.workAr)
                             return (
-                            <div
+                            <NavLink
                                 key={obj.id ?? i}
+                                to={`/what-we-do/${obj.id ?? i}`}
                                 className={`what-we-do-card what-we-do-card--${i % 2 === 0 ? 'from-right' : 'from-left'}`}
+                                aria-label={title}
                             >
                                 <div className="what-we-do-card-header">
                                     <div className="what-we-do-card-icon">
@@ -96,7 +99,7 @@ export default function WhatWeDo() {
                                         <p className="what-we-do-card-text">{work}</p>
                                     </div>
                                 </div>
-                            </div>
+                            </NavLink>
                             )
                         })}
                     </div>
