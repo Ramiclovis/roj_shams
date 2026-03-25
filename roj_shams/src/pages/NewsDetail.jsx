@@ -92,7 +92,13 @@ export default function NewsDetail() {
                   </p>
                   <ul className="news-detail-share-list">
                     <li>
-                      <a href="#" className="news-detail-share-link" aria-label="Facebook">
+                      <a
+                        href="https://www.facebook.com/share/18HJjbiDib/?mibextid=wwXIfr"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="news-detail-share-link"
+                        aria-label="Facebook"
+                      >
                         <FontAwesomeIcon icon={faFacebookF} />
                       </a>
                     </li>
@@ -102,7 +108,13 @@ export default function NewsDetail() {
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="news-detail-share-link" aria-label="Instagram">
+                      <a
+                        href="https://www.instagram.com/shamsroj?igsh=cW9leDhtN2hwYnRk&utm_source=gr"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="news-detail-share-link"
+                        aria-label="Instagram"
+                      >
                         <FontAwesomeIcon icon={faInstagram} />
                       </a>
                     </li>

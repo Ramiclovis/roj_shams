@@ -42,7 +42,7 @@ The following individuals should be prominently featured as members and founders
 *   Ms. Judy Badr Hassan
 *   Mr. Mohi Al-Din Sa'dou Sa'dou
 *   Dr. Carmen Hassan Ibrahim
-*   Eng. Lilas Ibrahim Salim
+*   Ms. Lilas Ibrahim Salim
 *   Lawyer Doaa Abdul Fattah Al-Jazmati
 
 #### **C. Guiding and Ethical Principles (from "المبادئالتوجيهيةوالأخلاقيةلمنظمةشمسروج.pdf")**

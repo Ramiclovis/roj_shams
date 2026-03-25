@@ -16,6 +16,43 @@ const ICON_MAP = {
   faHandshake, faGlobe, faChild, faHome, faChartLine,
 }
 
+function normalizeUrlList(list) {
+  if (!Array.isArray(list)) return []
+  return list
+    .map((item) => {
+      if (!item) return null
+      if (typeof item === 'string') return item
+      if (typeof item === 'object') return item.url || item.src || null
+      return null
+    })
+    .filter(Boolean)
+}
+
+function getYouTubeEmbedUrl(url) {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('youtu.be')) {
+      const id = u.pathname.replace('/', '').trim()
+      return id ? `https://www.youtube.com/embed/${id}` : null
+    }
+    if (u.hostname.includes('youtube.com')) {
+      const idFromQuery = u.searchParams.get('v')
+      if (idFromQuery) return `https://www.youtube.com/embed/${idFromQuery}`
+      const parts = u.pathname.split('/').filter(Boolean)
+      // /embed/<id> or /shorts/<id>
+      const idFromPath = parts[parts.length - 1]
+      if (parts[0] === 'embed' || parts[0] === 'shorts' || parts[0] === 'live') {
+        return idFromPath ? `https://www.youtube.com/embed/${idFromPath}` : null
+      }
+      // Fallback: try last segment
+      return idFromPath ? `https://www.youtube.com/embed/${idFromPath}` : null
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 function loadObjectives() {
   try {
     const stored = localStorage.getItem('admin_objectives')
@@ -59,24 +96,20 @@ export default function WhatWeDoDetail() {
   const acts = lang === 'ar'
     ? (objective.activitiesAr?.filter(Boolean) || [])
     : (objective.activitiesEn?.filter(Boolean) || [])
+  const images = normalizeUrlList(objective.images)
+  const videos = normalizeUrlList(objective.videos)
+  const hasImages = images.length > 0
+  const hasVideos = videos.length > 0
 
   return (
     <div className="what-we-do-detail-page">
       <section className="wwd-detail-hero">
-        <div className="container wwd-detail-hero__container">
-          <nav className="wwd-detail-breadcrumbs" aria-label="Breadcrumb">
-            <NavLink className="wwd-detail-breadcrumbs__link" to="/">{t('nav.home') || 'Home'}</NavLink>
-            <span className="wwd-detail-breadcrumbs__sep" aria-hidden="true">/</span>
-            <NavLink className="wwd-detail-breadcrumbs__link" to="/what-we-do">{t('whatWeDo.title')}</NavLink>
-            <span className="wwd-detail-breadcrumbs__sep" aria-hidden="true">/</span>
-            <span className="wwd-detail-breadcrumbs__current" aria-current="page">{title}</span>
-          </nav>
-
+        <div className="wwd-container-fluid wwd-detail-hero__container">
+         
           <div className="wwd-detail-hero__grid">
             <div className="wwd-detail-hero__main">
-              <div className="wwd-detail-hero__badge-row">
+              <div className="wwd-detail-hero__badge">
                 <div className="badge">{t('whatWeDo.title')}</div>
-                <span className="wwd-detail-hero__id">#{String(objective.id ?? id)}</span>
               </div>
 
               <div className="wwd-detail-hero__title-row">
@@ -87,21 +120,6 @@ export default function WhatWeDoDetail() {
                   <h1 className="wwd-detail-hero__title">{title}</h1>
                   <p className="wwd-detail-hero__lead">{needs}</p>
                 </div>
-              </div>
-
-              <div className="wwd-detail-hero__chips" role="list" aria-label="Highlights">
-                {needs && (
-                  <div className="wwd-chip" role="listitem">
-                    <span className="wwd-chip__label">{t('activities.urgentNeeds')}</span>
-                    <span className="wwd-chip__value">{needs}</span>
-                  </div>
-                )}
-                {work && (
-                  <div className="wwd-chip" role="listitem">
-                    <span className="wwd-chip__label">{t('activities.ourWork')}</span>
-                    <span className="wwd-chip__value">{work}</span>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -123,51 +141,109 @@ export default function WhatWeDoDetail() {
       </section>
 
       <section className="section">
-        <div className="container">
-          <div className="wwd-detail-content">
-            <article className="wwd-surface">
-              <header className="wwd-surface__header">
-                <h2 className="wwd-surface__title">{t('activities.ourWork')}</h2>
-                <p className="wwd-surface__subtitle">{title}</p>
-              </header>
+        <div className="wwd-container-fluid">
+          <article className="wwd-surface wwd-surface--full">
+            <header className="wwd-surface__header">
+              <h2 className="wwd-surface__title">{t('activities.ourWork')}</h2>
+              <p className="wwd-surface__subtitle">{title}</p>
+            </header>
 
-              {work && <p className="wwd-prose">{work}</p>}
+            {work && <p className="wwd-prose">{work}</p>}
 
-              {acts.length > 0 && (
-                <section className="wwd-section" aria-label="Activities list">
-                  <h3 className="wwd-section__title">{lang === 'ar' ? 'الأنشطة' : 'Activities'}</h3>
-                  <ul className="wwd-list">
-                    {acts.map((a, idx) => (
-                      <li key={idx} className="wwd-list__item">
-                        <span className="wwd-list__icon" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </span>
-                        <span className="wwd-list__text">{a}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-            </article>
+            {acts.length > 0 && (
+              <section className="wwd-section" aria-label="Activities list">
+                <h3 className="wwd-section__title">{lang === 'ar' ? 'الأنشطة' : 'Activities'}</h3>
+                <ul className="wwd-list">
+                  {acts.map((a, idx) => (
+                    <li key={idx} className="wwd-list__item">
+                      <span className="wwd-list__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
+                      <span className="wwd-list__text">{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-            <aside className="wwd-side">
-              <div className="wwd-surface wwd-surface--compact">
-                <h3 className="wwd-side__title">{t('activities.urgentNeeds')}</h3>
-                {needs ? <p className="wwd-side__text">{needs}</p> : <p className="wwd-side__text">—</p>}
-              </div>
-
-              <div className="wwd-surface wwd-surface--compact">
-                <h3 className="wwd-side__title">{lang === 'ar' ? 'روابط سريعة' : 'Quick links'}</h3>
-                <div className="wwd-side__links">
-                  <NavLink to="/what-we-do" className="wwd-link">{t('whatWeDo.title')}</NavLink>
-                  <NavLink to="/objectives" className="wwd-link">{t('nav.objectives') || 'Objectives'}</NavLink>
-                  <NavLink to="/contact" className="wwd-link">{t('nav.contact') || 'Contact'}</NavLink>
+            <section className="wwd-media" aria-label="Media">
+              {!hasImages && !hasVideos && (
+                <div className="wwd-media__empty">
+                  <div className="wwd-media__empty-icon" aria-hidden="true">🖼️</div>
+                  <h3 className="wwd-media__empty-title">
+                    {lang === 'ar' ? 'لا توجد صور أو فيديو حاليا' : 'No photos or videos yet'}
+                  </h3>
+                  <p className="wwd-media__empty-text">
+                    {lang === 'ar'
+                      ? 'قم بإضافة وسائط من لوحة التحكم للعرض هنا.'
+                      : 'Add media from the admin panel to show it here.'}
+                  </p>
                 </div>
-              </div>
-            </aside>
-          </div>
+              )}
+
+              {hasImages && (
+                <>
+                  <h3 className="wwd-media__title">{lang === 'ar' ? 'الصور' : 'Photos'}</h3>
+                  <div className="wwd-media__grid wwd-media__grid--images">
+                    {images.map((src, idx) => (
+                      <div className="wwd-media-card" key={idx}>
+                        <img className="wwd-media-card__img" src={src} alt={`${title} - photo ${idx + 1}`} loading="lazy" />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {hasVideos && (
+                <>
+                  <h3 className="wwd-media__title">{lang === 'ar' ? 'الفيديوهات' : 'Videos'}</h3>
+                  <div className="wwd-media__grid wwd-media__grid--videos">
+                    {videos.map((urlOrSrc, idx) => {
+                      const youtubeEmbed = getYouTubeEmbedUrl(urlOrSrc)
+                      const isFile =
+                        /\.(mp4|webm|ogg)(\?.*)?$/i.test(String(urlOrSrc))
+                      return (
+                        <div className="wwd-media-card" key={idx}>
+                          {youtubeEmbed ? (
+                            <iframe
+                              className="wwd-media-card__iframe"
+                              src={youtubeEmbed}
+                              title={`${title} - video ${idx + 1}`}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              referrerPolicy="strict-origin-when-cross-origin"
+                              allowFullScreen
+                            />
+                          ) : isFile ? (
+                            <video
+                              className="wwd-media-card__video"
+                              controls
+                              preload="none"
+                              src={urlOrSrc}
+                            >
+                              {lang === 'ar' ? 'متصفحك لا يدعم تشغيل الفيديو.' : 'Your browser does not support video.'}
+                            </video>
+                          ) : (
+                            <iframe
+                              className="wwd-media-card__iframe"
+                              src={urlOrSrc}
+                              title={`${title} - video ${idx + 1}`}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              referrerPolicy="strict-origin-when-cross-origin"
+                              allowFullScreen
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+            </section>
+          </article>
         </div>
       </section>
     </div>

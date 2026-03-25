@@ -6,7 +6,7 @@ import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fo
 import { useLanguage } from '../context/LanguageContext'
 import { newsItems } from '../data/newsItems'
 import '../assets/components/Home.css'
-import mapImage from '../assets/photo/maps.jpeg'
+import mapImage from '../assets/photo/syria_map.jpg'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
@@ -67,7 +67,7 @@ const founders = [
     { name: 'Judy Badr Hassan', initials: 'JB', roleKey: 'founders.role' },
     { name: 'Mohi Al-Din Sa\'dou', initials: 'MS', roleKey: 'founders.role' },
     { name: 'Dr. Carmen Hassan Ibrahim', initials: 'CH', roleKey: 'founders.role' },
-    { name: 'Eng. Lilas Ibrahim Salim', initials: 'LI', roleKey: 'founders.role' },
+    { name: 'Ms. Lilas Ibrahim Salim', initials: 'LI', roleKey: 'founders.role' },
     { name: 'Lawyer Doaa Al-Jazmati', initials: 'DA', roleKey: 'founders.role' },
 ]
 
@@ -89,7 +89,8 @@ export default function Home() {
     const heroVideoRef = useRef(null)
     const promiseRef = useRef(null)
     const whereWeAreRef = useRef(null)
-    const { t } = useLanguage()
+    const { t, lang } = useLanguage()
+    const isRtl = lang === 'AR'
 
     useEffect(() => {
         const mql = window.matchMedia('(max-width: 900px)')
@@ -355,7 +356,9 @@ export default function Home() {
                     <div className="news-featured-slider">
                         <div
                             className="news-featured-slider__track"
-                            style={{ transform: `translateX(-${currentFeaturedIndex * 100}%)` }}
+                            style={{
+                                transform: `translateX(${isRtl ? currentFeaturedIndex * 100 : -currentFeaturedIndex * 100}%)`,
+                            }}
                         >
                             {newsItems.map((item, i) => (
                                 <div key={item.id} className="news-featured-slider__slide">
@@ -390,7 +393,7 @@ export default function Home() {
                         <div
                             className="news-tiles-slider__track"
                             style={{
-                                transform: `translateX(-${currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
+                                transform: `translateX(${isRtl ? currentTileIndex * (isNarrow ? 100 : 100 / 3) : -currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
                             }}
                         >
                             {newsItems.map((item) => (
@@ -526,7 +529,7 @@ export default function Home() {
                             style={{ '--promise-deg': (promisePercent / 100) * 360 + 'deg' }}
                             aria-hidden="true"
                         >
-                            <span className="promise-section__percent">{promisePercent}%</span>
+                            <span className="promise-section__percent">{t('promise.percent')}</span>
                         </div>
                     </div>
                     <div className="promise-section__payments">
@@ -535,9 +538,9 @@ export default function Home() {
                             <div className="promise-section__payment-icon">
                                 <FontAwesomeIcon icon={faBuildingColumns} />
                             </div>
-                            <span className="promise-section__payment-name">Bankgiro</span>
-                            <span className="promise-section__payment-desc">{t('promise.bankgirot')}</span>
-                            <span className="promise-section__payment-detail">{t('promise.bankgirotNumber')}</span>
+                            <span className="promise-section__payment-name">CHAM BANK</span>
+                            <span className="promise-section__payment-desc">{t('promise.CHAM BANK')}</span>
+                            <span className="promise-section__payment-detail">{t('promise.CHAM BANKNumber')}</span>
                         </div>
                        
                     </div>

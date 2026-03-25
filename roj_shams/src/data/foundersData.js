@@ -53,7 +53,7 @@ export const foundersBase = [
   {
     id: 6,
     initials: 'LI',
-    nameEn: 'Eng. Lilas Ibrahim Salim',
+    nameEn: 'Ms. Lilas Ibrahim Salim',
     nameAr: 'المهندسة ليلاس إبراهيم سالم',
     color: '#C0392B',
     bioEn: 'A skilled engineer who applies technical expertise to humanitarian challenges. Lilas oversees infrastructure development and the establishment of educational and medical facilities.',
