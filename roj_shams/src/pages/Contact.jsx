@@ -14,7 +14,7 @@ const subjectOptions = [
 
 export default function Contact() {
     const { t } = useLanguage()
-    const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+    const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
     const [submitted, setSubmitted] = useState(false)
 
     const handleChange = e => {
@@ -45,7 +45,7 @@ export default function Contact() {
                                     <div className="contact__success-icon">✅</div>
                                     <h3>{t('contact.successTitle')}</h3>
                                     <p>{t('contact.successP')}</p>
-                                    <button className="btn btn-outline-dark" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', subject: '', message: '' }) }}>
+                                    <button className="btn btn-outline-dark" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }) }}>
                                         {t('contact.sendAnother')}
                                     </button>
                                 </div>
@@ -81,14 +81,28 @@ export default function Contact() {
                                         </div>
                                     </div>
 
-                                    <div className="form-field">
-                                        <label htmlFor="subject">{t('contact.labelSubject')}</label>
-                                        <select id="subject" name="subject" value={form.subject} onChange={handleChange} required>
-                                            <option value="">{t('contact.subjectPlaceholder')}</option>
-                                            {subjectOptions.map((opt, i) => (
-                                                <option key={i} value={opt.value}>{t(opt.labelKey)}</option>
-                                            ))}
-                                        </select>
+                                    <div className="form-row">
+                                        <div className="form-field">
+                                            <label htmlFor="phone">{t('contact.labelPhone')}</label>
+                                            <input
+                                                type="text"
+                                                id="phone"
+                                                name="phone"
+                                                value={form.phone}
+                                                onChange={handleChange}
+                                                placeholder={t('contact.placeholderPhone')}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-field">
+                                            <label htmlFor="subject">{t('contact.labelSubject')}</label>
+                                            <select id="subject" name="subject" value={form.subject} onChange={handleChange} required>
+                                                <option value="">{t('contact.subjectPlaceholder')}</option>
+                                                {subjectOptions.map((opt, i) => (
+                                                    <option key={i} value={opt.value}>{t(opt.labelKey)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div className="form-field">
@@ -138,7 +152,7 @@ export default function Contact() {
                                         </div>
                                         <div>
                                             <strong>{t('contact.phone')}</strong>
-                                            <span>+963 000 000 000</span>
+                                            <a href="https://wa.me/963935919318" target="_blank" rel="noopener noreferrer">+963 935 919 318</a>
                                         </div>
                                     </div>
                                     <div className="contact__info-item">

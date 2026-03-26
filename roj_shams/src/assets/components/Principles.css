@@ -26,7 +26,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: 
+    background:
         radial-gradient(ellipse 80% 50% at 50% -20%, rgba(243, 156, 18, 0.25) 0%, transparent 50%),
         radial-gradient(ellipse 60% 40% at 100% 100%, rgba(243, 156, 18, 0.12) 0%, transparent 50%);
     pointer-events: none;
@@ -38,21 +38,6 @@
     padding-top: clamp(2rem, 6vw, 4rem);
 }
 
-.principles-hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--clr-primary-dark);
-    background: var(--clr-accent);
-    border-radius: var(--radius-full);
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 14px rgba(243, 156, 18, 0.4);
-}
 
 .principles-hero__title {
     font-family: var(--font-heading);

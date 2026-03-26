@@ -95,7 +95,7 @@ export default function Principles() {
             {/* Hero */}
             <header className="principles-hero">
                 <div className="container">
-                    <span className="principles-hero__badge">{t('principles.badge')}</span>
+                    <div className="badge">{t('principles.badge')}</div>
                     <h1 className="principles-hero__title">{t('principles.title')}</h1>
                     <p className="principles-hero__lead">{t('principles.lead')}</p>
                 </div>
@@ -207,8 +207,8 @@ export default function Principles() {
                 </div>
             </section>
 
-           
-           
+
+
 
             {/* 7. Reporting Channels & What to Report */}
             <section className="principles-section" aria-labelledby="section-channels">
