@@ -16,6 +16,7 @@ export const translations = {
     'nav.news': 'News',
     'nav.contact': 'Contact',
     'nav.getInTouch': 'Get in Touch',
+    'nav.back': 'Back to Objectives',
 
     // Hero
     'hero.badge': '☀ Non-Profit Organization',
@@ -377,6 +378,7 @@ export const translations = {
     'nav.news': 'الأخبار',
     'nav.contact': 'اتصل بنا',
     'nav.getInTouch': 'تواصل معنا',
+    'nav.back': 'العودة إلى الأهداف',
 
     'hero.badge': '☀ منظمة غير ربحية',
     'hero.titleLine1': 'نبني مجتمعات',

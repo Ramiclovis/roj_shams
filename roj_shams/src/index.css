@@ -250,6 +250,20 @@ p {
   transform: translateY(-1px);
 }
 
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--clr-white);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--clr-white);
+  color: var(--clr-white);
+  transform: translateY(-1px);
+}
+
 /* --- Animations --- */
 @keyframes fadeInUp {
   from {

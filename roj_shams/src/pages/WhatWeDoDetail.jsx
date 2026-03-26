@@ -81,7 +81,7 @@ export default function WhatWeDoDetail() {
             <h1>{t('news.notFoundTitle') || 'Not found'}</h1>
             <p>{t('news.notFoundText') || 'This item does not exist.'}</p>
             <NavLink to="/objectives" className="btn btn-primary">
-              {t('nav.back') || t('nav.home') || 'Back'}
+              {t('nav.back')}
             </NavLink>
           </div>
         </section>
@@ -132,7 +132,7 @@ export default function WhatWeDoDetail() {
                 </p>
                 <div className="wwd-detail-aside-card__actions">
                   <NavLink to="/contact" className="btn btn-primary">{t('hero.getInvolved')}</NavLink>
-                  <NavLink to="/objectives" className="btn btn-secondary">{t('nav.back') || 'Back'}</NavLink>
+                  <NavLink to="/objectives" className="btn btn-secondary">{t('nav.back')}</NavLink>
                 </div>
               </div>
             </aside>
