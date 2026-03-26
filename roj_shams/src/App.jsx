@@ -23,6 +23,16 @@ import AdminFounders from './admin/Founders'
 import AdminObjectives from './admin/Objectives'
 import ProtectedRoute from './admin/ProtectedRoute'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [pathname])
+
+  return null
+}
+
 function AppContent() {
   const location = useLocation()
   const isAdmin = location.pathname.startsWith('/admin')
@@ -51,6 +61,7 @@ function AppContent() {
 
   return (
     <div className="app">
+      <ScrollToTop />
       <Navbar />
       <main>
         <Routes>
