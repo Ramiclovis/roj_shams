@@ -6,7 +6,6 @@ import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fo
 import { useLanguage } from '../context/LanguageContext'
 import { newsItems } from '../data/newsItems'
 import '../assets/components/Home.css'
-import mapImage from '../assets/photo/syria_map.jpg'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
@@ -70,6 +69,92 @@ const founders = [
     { name: 'Ms. Lilas Ibrahim Salim', initials: 'LI', roleKey: 'founders.role' },
     { name: 'Lawyer Doaa Al-Jazmati', initials: 'DA', roleKey: 'founders.role' },
 ]
+
+function MiddleEastMap({ isRtl }) {
+    /*
+     * In LTR (English) the green overlay covers the LEFT half → Syria (x≈159-256
+     * out of 600) would be hidden.  Shifting the viewBox left by 141 units puts
+     * Syria's left edge at exactly 50 % of any container width so the pin is
+     * always in the transparent right half.
+     * In RTL (Arabic)  the overlay covers the RIGHT half → Syria at the normal
+     * left-of-centre position is already in the transparent left half.
+     */
+    const vb = isRtl ? '0 0 600 400' : '-141 0 600 400'
+    return (
+        <svg
+            viewBox={vb}
+            preserveAspectRatio="xMidYMin slice"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
+            aria-hidden="true"
+        >
+            <defs>
+                <style>{`
+                    @keyframes map-pin-pulse {
+                        0%  { transform: scale(1);   opacity: 0.55; }
+                        100%{ transform: scale(3);   opacity: 0;    }
+                    }
+                    .mp1 { animation: map-pin-pulse 2.2s ease-out infinite;       transform-box: fill-box; transform-origin: center; }
+                    .mp2 { animation: map-pin-pulse 2.2s ease-out 1s infinite;    transform-box: fill-box; transform-origin: center; }
+                `}</style>
+            </defs>
+
+            {/* Ocean — wide rect covers any viewBox shift */}
+            <rect x="-300" width="1200" height="400" fill="#0d2b45"/>
+
+            {/* Country fills */}
+            <g fill="#1b3a28" stroke="#0a1e12" strokeWidth="0.8">
+                {/* Turkey */}
+                <path d="M 7,99 L 7,16 L 285,16 L 285,64 L 256,85 L 170,87 L 74,85 L 14,92 Z"/>
+                {/* Iraq */}
+                <path d="M 208,136 L 256,85 L 285,83 L 353,127 L 353,182 L 323,196 L 286,196 L 256,182 L 240,162 L 194,140 Z"/>
+                {/* Iran */}
+                <path d="M 285,64 L 353,58 L 495,58 L 570,86 L 570,238 L 465,252 L 377,224 L 353,182 L 285,83 Z"/>
+                {/* Jordan */}
+                <path d="M 149,148 L 194,148 L 188,196 L 147,188 Z"/>
+                {/* Lebanon */}
+                <path d="M 151,126 L 159,141 L 173,133 L 173,126 L 163,119 Z"/>
+                {/* Israel / Palestine */}
+                <path d="M 141,170 L 159,141 L 151,141 L 141,188 Z"/>
+                {/* Saudi Arabia */}
+                <path d="M 194,148 L 256,182 L 286,196 L 323,196 L 452,295 L 272,350 L 178,308 L 165,308 L 165,210 L 181,196 Z"/>
+                {/* Kuwait */}
+                <path d="M 323,182 L 353,182 L 353,203 L 323,203 Z"/>
+                {/* Egypt (northern) */}
+                <path d="M 0,168 L 141,188 L 165,210 L 165,310 L 0,310 Z"/>
+            </g>
+
+            {/* Syria — highlighted */}
+            <path
+                d="M 160,104 L 160,89 L 170,87 L 194,85 L 232,85 L 256,85
+                   L 256,100 L 250,127 L 243,133 L 225,133 L 208,136
+                   L 194,148 L 163,148 L 159,141 L 163,119 Z"
+                fill="#2d6a4f"
+                stroke="#52b788"
+                strokeWidth="1.5"
+            />
+
+            {/* Pulse rings on the pin */}
+            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp1"/>
+            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp2"/>
+
+            {/* Location pin — tip ≈ centre of Syria */}
+            <path
+                d="M 207,74 C 197,74 189,82 189,92
+                   C 189,104 207,126 207,126
+                   C 207,126 225,104 225,92
+                   C 225,82 217,74 207,74 Z"
+                fill="#f0a500"
+                stroke="#b8780a"
+                strokeWidth="1.5"
+            />
+            <circle cx="207" cy="91" r="6" fill="white"/>
+
+            {/* Syria label */}
+            <text x="207" y="141" textAnchor="middle" fontSize="7.5" fill="rgba(255,255,255,0.55)"
+                  fontFamily="Arial,sans-serif" letterSpacing="1.8">SYRIA</text>
+        </svg>
+    )
+}
 
 export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -460,7 +545,7 @@ export default function Home() {
                             <h2 className="wwd-panel__title">{t('whatWeDo.title')}</h2>
                             <div className="wwd-panel__divider" />
                             <p className="wwd-panel__text">{t('whatWeDo.text')}</p>
-                            <NavLink to="/what-we-do" className="wwd-panel__btn">
+                            <NavLink to="/objectives" className="wwd-panel__btn">
                                 {t('whatWeDo.learnMore')}
                             </NavLink>
                         </div>
@@ -471,7 +556,7 @@ export default function Home() {
             </section>
 
             {/* ── Donations impact (infographic) ──────────── */}
-            {/* <section className="donations-impact">
+            <section className="donations-impact">
                 <div className="container donations-impact__inner">
                     <h2 className="donations-impact__title">{t('donationsImpact.title')}</h2>
                     <div className="donations-impact__stats">
@@ -492,17 +577,13 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-            </section> */}
+            </section>
 
             {/* ── Where we are ───────────────────────────── */}
             <section className={`where-we-are ${whereWeAreInView ? 'where-we-are--in-view' : ''}`} ref={whereWeAreRef}>
                 <div className="where-we-are__strip" aria-hidden="true" />
                 <div className="where-we-are__map-wrap">
-                    <img
-                        src={mapImage}
-                        alt={t('whereWeAre.title')}
-                        className="where-we-are__map-img"
-                    />
+                    <MiddleEastMap isRtl={isRtl} />
                 </div>
                 <div className="where-we-are__overlay" />
                 <div className="container where-we-are__inner">

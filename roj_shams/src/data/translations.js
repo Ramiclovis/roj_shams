@@ -84,7 +84,7 @@ export const translations = {
 
     // Where we are
     'whereWeAre.title': 'Where we are',
-    'whereWeAre.text': 'Shams Roj has a presence in the region. Today we operate in Iraq, Jordan, Palestine and Syria.',
+    'whereWeAre.text': 'Shams Roj operates in Syria, dedicated to serving vulnerable communities through our humanitarian and development programs.',
     'whereWeAre.learnMore': 'Learn more',
     'whereWeAre.iraq': 'Iraq',
     'whereWeAre.jordan': 'Jordan',
@@ -441,7 +441,7 @@ export const translations = {
     'news.item4.excerpt': 'جمع يوم التطوع المجتمعي عشرات المشاركين للعمل الميداني والتضامن.',
 
     'whereWeAre.title': 'أين نحن',
-    'whereWeAre.text': 'شمس روج لها تواجد في المنطقة. نعمل اليوم في العراق والأردن وفلسطين وسوريا.',
+    'whereWeAre.text': 'شمس روج تعمل في سوريا، مكرّسةً لخدمة المجتمعات الضعيفة من خلال برامجنا الإنسانية والتنموية.',
     'whereWeAre.learnMore': 'تعلم المزيد',
     'whereWeAre.iraq': 'العراق',
     'whereWeAre.jordan': 'الأردن',
@@ -459,9 +459,9 @@ export const translations = {
     'promise.title': 'تبرعك يصل إلى من يحتاجه',
     'promise.text': 'نضمن وصول تبرعاتكم إلى من يحتاجها. أكثر من 90% من دخل شمس روج يذهب مباشرة إلى عملنا مع المجتمعات المحتاجة.',
     'promise.percent': '90%',
-    'promise.swish': 'عبر Swish (معاملات سويدية)',
+    'promise.swish': 'عبر Swish (معاملات سوريا)',
     'promise.swishNumber': 'رقم Swish: 123 110 028',
-    'promise.CHAM BANK': 'عبر CHAM BANK (معاملات سويدية)',
+    'promise.CHAM BANK': 'عبر CHAM BANK (معاملات سوريا)',
     'promise.CHAM BANKNumber': 'رقم BG: 7003257',
     'promise.paypal': 'عبر PayPal (دولي)',
 

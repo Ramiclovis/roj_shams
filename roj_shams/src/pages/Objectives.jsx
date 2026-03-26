@@ -49,7 +49,12 @@ export default function Objectives() {
                                 ? (obj.activitiesAr?.filter(Boolean) || [])
                                 : (obj.activitiesEn?.filter(Boolean) || [])
                             return (
-                            <div key={obj.id ?? i} className={`obj-detail ${i % 2 === 1 ? 'obj-detail--reverse' : ''}`}>
+                            <NavLink
+                                key={obj.id ?? i}
+                                to={`/what-we-do/${obj.id ?? i}`}
+                                className={`obj-detail ${i % 2 === 1 ? 'obj-detail--reverse' : ''}`}
+                                style={{ textDecoration: 'none', color: 'inherit', display: 'flex', cursor: 'pointer' }}
+                            >
                                 <div className="obj-detail__visual">
                                     <div className="obj-detail__icon-wrapper">
                                         <FontAwesomeIcon icon={icon} className="obj-detail__icon" />
@@ -72,7 +77,7 @@ export default function Objectives() {
                                         </ul>
                                     )}
                                 </div>
-                            </div>
+                            </NavLink>
                             )
                         })}
                     </div>
