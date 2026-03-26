@@ -145,7 +145,7 @@ export const translations = {
     'footer.focusAreas': 'Our Focus Areas',
     'footer.contactUs': 'Contact Us',
     'footer.rights': 'All rights reserved.',
-    'footer.builtWith': 'Built with ❤ for community development',
+    'footer.builtWith': 'Built with ❤ for community development by Rami & Mohammad',
 
     // About page
     'about.badge': 'About Us',
@@ -499,7 +499,7 @@ export const translations = {
     'footer.focusAreas': 'مجالات تركيزنا',
     'footer.contactUs': 'اتصل بنا',
     'footer.rights': 'جميع الحقوق محفوظة.',
-    'footer.builtWith': 'بُني بـ ❤ من أجل التنمية المجتمعية',
+    'footer.builtWith': 'بُني بـ ❤ من أجل التنمية المجتمعية بواسطة رامي ومحمد',
 
     // About page
     'about.badge': 'من نحن',
