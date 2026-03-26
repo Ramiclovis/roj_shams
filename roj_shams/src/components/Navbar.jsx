@@ -37,21 +37,17 @@ export default function Navbar() {
         <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
             <div className="navbar__inner container">
                 {/* Logo - click refreshes page and goes to home */}
-                <a
-                    href="#/"
+                <NavLink
+                    to="/"
                     className="navbar__logo"
-                    onClick={(e) => {
-                        e.preventDefault()
-                        window.location.hash = '/'
-                        window.location.reload()
-                    }}
                     aria-label="Shams Roj - Go to home"
+                    onClick={() => window.scrollTo(0, 0)}
                 >
                     <span className="navbar__logo-icon">☀</span>
                     <span className="navbar__logo-text">
                         Shams <strong>Roj</strong>
                     </span>
-                </a>
+                </NavLink>
 
                 {/* Desktop Nav */}
                 <nav className="navbar__links" aria-label="Main navigation">
