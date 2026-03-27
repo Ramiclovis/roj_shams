@@ -1,9 +1,20 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import './assets/Topbar.css'
 
 export default function Topbar() {
   const navigate = useNavigate()
+  const adminName = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('admin_user')
+      if (!raw) return 'Admin'
+      const parsed = JSON.parse(raw)
+      return parsed?.name || 'Admin'
+    } catch {
+      return 'Admin'
+    }
+  }, [])
 
   const handleLogout = async () => {
     const result = await Swal.fire({
@@ -20,6 +31,7 @@ export default function Topbar() {
     })
     if (result.isConfirmed) {
       localStorage.removeItem('admin_auth')
+      localStorage.removeItem('admin_user')
       navigate('/admin/login', { replace: true })
     }
   }
@@ -38,7 +50,7 @@ export default function Topbar() {
       {/* Welcome */}
       <div className="adm-topbar__welcome">
         <span className="adm-topbar__wave">👋</span>
-        <span>مرحباً، <strong>Admin</strong></span>
+        <span>مرحباً، <strong>{adminName}</strong></span>
       </div>
 
       {/* Logout */}

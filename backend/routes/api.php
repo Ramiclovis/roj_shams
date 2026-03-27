@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\FounderController;
 use App\Http\Controllers\ObjectiveController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +47,22 @@ Route::prefix('objectives')->group(function () {
     Route::put('/{objective}',     [ObjectiveController::class, 'update']);  // PUT    /api/objectives/{id}
     Route::delete('/{objective}',  [ObjectiveController::class, 'destroy']); // DELETE /api/objectives/{id}
     Route::patch('/{objective}/toggle', [ObjectiveController::class, 'toggle']); // PATCH /api/objectives/{id}/toggle
+});
+
+/* ── Reporting Channels ─────────────────────────── */
+Route::prefix('reports')->group(function () {
+    Route::get('/',  [ReportController::class, 'index']); // GET  /api/reports
+    Route::post('/', [ReportController::class, 'store']); // POST /api/reports
+});
+
+/* ── Admin Users (staff list) ─────────────────────── */
+Route::prefix('admin-users')->group(function () {
+    Route::get('/', [AdminUserController::class, 'index']); // GET /api/admin-users
+    Route::post('/', [AdminUserController::class, 'store']); // POST /api/admin-users
+    Route::post('/login', [AdminUserController::class, 'login']); // POST /api/admin-users/login
+
+    Route::put('/{adminUser}', [AdminUserController::class, 'update']); // PUT /api/admin-users/{id}
+    Route::delete('/{adminUser}', [AdminUserController::class, 'destroy']); // DELETE /api/admin-users/{id}
+
+    Route::patch('/{adminUser}/toggle', [AdminUserController::class, 'toggle']); // PATCH /api/admin-users/{id}/toggle
 });

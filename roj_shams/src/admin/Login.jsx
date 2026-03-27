@@ -1,32 +1,51 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faLock, faEye, faEyeSlash, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faLock, faEye, faEyeSlash, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import './assets/Admin.css'
 
-const ADMIN_USER = 'admin'
-const ADMIN_PASS = 'ShamsRoj@2025'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 export default function Login() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ username: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-    setTimeout(() => {
-      if (form.username === ADMIN_USER && form.password === ADMIN_PASS) {
-        localStorage.setItem('admin_auth', 'true')
-        navigate('/admin', { replace: true })
-      } else {
-        setError('اسم المستخدم أو كلمة المرور غير صحيحة')
+    try {
+      const res = await fetch(`${API_BASE}/admin-users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email.trim(),
+          password: form.password,
+        }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(data?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
         setLoading(false)
+        return
       }
-    }, 800)
+
+        localStorage.setItem('admin_auth', 'true')
+        try {
+          localStorage.setItem('admin_user', JSON.stringify(data?.user || null))
+        } catch {}
+        navigate('/admin', { replace: true })
+    } catch {
+      setError('تعذر الاتصال بالخادم. تأكد من تشغيل الباك إند.')
+      setLoading(false)
+    }
   }
 
   return (
@@ -44,16 +63,16 @@ export default function Login() {
 
         <form className="admin-login__form" onSubmit={handleSubmit}>
           <div className="admin-login__field">
-            <label htmlFor="username">اسم المستخدم</label>
+            <label htmlFor="email">البريد الإلكتروني</label>
             <div className="admin-login__input-wrap">
-              <span className="admin-login__icon"><FontAwesomeIcon icon={faUser} /></span>
+              <span className="admin-login__icon"><FontAwesomeIcon icon={faEnvelope} /></span>
               <input
-                id="username"
-                type="text"
-                placeholder="أدخل اسم المستخدم"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                autoComplete="username"
+                id="email"
+                type="email"
+                placeholder="admin@example.com"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                autoComplete="email"
                 required
               />
             </div>

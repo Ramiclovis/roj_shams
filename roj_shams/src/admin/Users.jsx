@@ -3,42 +3,29 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser, faPhone, faEnvelope, faFilter,
-  faPlus, faSearch, faTimes, faPen, faTrash,
+  faPlus, faSearch, faTimes, faPen, faTrash, faEye, faEyeSlash,
   faArrowRight, faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2'
 
-const STORAGE_KEY = 'admin_users'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
-const defaultUsers = [
-  { id: 1, name: 'أحمد محمد',   phone: '0750-123-4567', email: 'ahmed@shamsroj.org',   role: 'مدير',  status: 'نشط',   createdAt: '2025-01-10' },
-  { id: 2, name: 'سارة علي',    phone: '0771-234-5678', email: 'sara@shamsroj.org',    role: 'مشرف',  status: 'نشط',   createdAt: '2025-02-15' },
-  { id: 3, name: 'محمود حسن',  phone: '0780-345-6789', email: 'mahmoud@shamsroj.org', role: 'مشرف',  status: 'معطّل', createdAt: '2025-03-01' },
-  { id: 4, name: 'ليلى كريم',  phone: '0790-456-7890', email: 'layla@shamsroj.org',   role: 'مشرف',  status: 'نشط',   createdAt: '2025-03-10' },
-  { id: 5, name: 'عمر صالح',   phone: '0751-567-8901', email: 'omar@shamsroj.org',    role: 'مشرف',  status: 'نشط',   createdAt: '2025-04-01' },
-]
-
-function loadUsers() {
-  try {
-    const s = localStorage.getItem(STORAGE_KEY)
-    return s ? JSON.parse(s) : defaultUsers
-  } catch { return defaultUsers }
-}
-function saveUsers(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)) }
-
-const emptyForm = { name: '', phone: '', email: '', role: 'مشرف', status: 'نشط' }
+const emptyForm = { name: '', phone: '', email: '', password: '', role: 'مشرف', status: 'نشط' }
 const roles     = ['مدير', 'مشرف']
 const statuses  = ['نشط', 'معطّل']
 
 export default function Users() {
   const navigate = useNavigate()
-  const [users, setUsers]       = useState(loadUsers)
+  const [users, setUsers]       = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [fetchError, setFetchError] = useState('')
   const [modal, setModal]       = useState(null)
   const [form, setForm]         = useState(emptyForm)
   const [editId, setEditId]     = useState(null)
   const [search, setSearch]     = useState('')
   const [filterRole, setFilterRole] = useState('الكل')
   const [showFilter, setShowFilter] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [toast, setToast]       = useState('')
 
   useEffect(() => {
@@ -47,30 +34,112 @@ export default function Users() {
     return () => clearTimeout(t)
   }, [toast])
 
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      setLoading(true)
+      setFetchError('')
+      try {
+        // Remove old mock data so the UI shows DB only
+        try { localStorage.removeItem('admin_users') } catch {}
+        const res = await fetch(`${API_BASE}/admin-users`, {
+          headers: { Accept: 'application/json' },
+        })
+        if (!res.ok) throw new Error('failed')
+        const data = await res.json()
+        if (mounted) setUsers(Array.isArray(data) ? data : [])
+      } catch {
+        if (mounted) setFetchError('تعذر تحميل المستخدمين من الخادم.')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
+
   const filtered = users.filter(u => {
     const matchSearch = u.name.includes(search) || u.email.includes(search) || u.phone?.includes(search)
     const matchRole   = filterRole === 'الكل' || u.role === filterRole
     return matchSearch && matchRole
   })
 
-  const openAdd  = () => { setForm(emptyForm); setEditId(null); setModal('add') }
+  const openAdd  = () => { setForm(emptyForm); setEditId(null); setShowPassword(false); setModal('add') }
   const openEdit = (u) => {
-    setForm({ name: u.name, phone: u.phone || '', email: u.email, role: u.role, status: u.status })
-    setEditId(u.id); setModal('edit')
+    setForm({ name: u.name, phone: u.phone || '', email: u.email, password: '', role: u.role, status: u.status })
+    setEditId(u.id); setShowPassword(false); setModal('edit')
   }
-  const closeModal = () => { setModal(null); setForm(emptyForm); setEditId(null) }
+  const closeModal = () => { setModal(null); setForm(emptyForm); setEditId(null); setShowPassword(false) }
 
-  const handleSave = () => {
-    if (!form.name.trim() || !form.email.trim()) { setToast('⚠️ الاسم والبريد مطلوبان'); return }
-    let updated
-    if (modal === 'add') {
-      updated = [...users, { id: Date.now(), ...form, createdAt: new Date().toISOString().slice(0,10) }]
-      setToast('✅ تمت إضافة المستخدم')
-    } else {
-      updated = users.map(u => u.id === editId ? { ...u, ...form } : u)
-      setToast('✅ تم تحديث المستخدم')
+  const refresh = async () => {
+    const res = await fetch(`${API_BASE}/admin-users`, {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw new Error('failed')
+    const data = await res.json()
+    setUsers(Array.isArray(data) ? data : [])
+  }
+
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.email.trim()) {
+      setToast('⚠️ الاسم والبريد مطلوبان')
+      return
     }
-    setUsers(updated); saveUsers(updated); closeModal()
+    if (modal === 'add' && (!form.password || form.password.length < 6)) {
+      setToast('⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل')
+      return
+    }
+    try {
+      if (modal === 'add') {
+        const res = await fetch(`${API_BASE}/admin-users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            name: form.name.trim(),
+            phone: form.phone.trim(),
+            email: form.email.trim(),
+            password: form.password,
+            role: form.role,
+            status: form.status,
+          }),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          const firstValidation = err?.errors ? Object.values(err.errors)[0]?.[0] : null
+          throw new Error(firstValidation || err?.message || 'failed')
+        }
+        setToast('✅ تمت إضافة المستخدم')
+      } else {
+        const res = await fetch(`${API_BASE}/admin-users/${editId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            name: form.name.trim(),
+            phone: form.phone.trim(),
+            email: form.email.trim(),
+            role: form.role,
+            status: form.status,
+            ...(form.password ? { password: form.password } : {}),
+          }),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          const firstValidation = err?.errors ? Object.values(err.errors)[0]?.[0] : null
+          throw new Error(firstValidation || err?.message || 'failed')
+        }
+        setToast('✅ تم تحديث المستخدم')
+      }
+
+      await refresh()
+      closeModal()
+    } catch (e) {
+      setToast(`⚠️ ${e?.message || 'حدث خطأ أثناء الحفظ'}`)
+    }
   }
 
   const handleDelete = async (id) => {
@@ -87,13 +156,33 @@ export default function Users() {
       customClass: { popup: 'swal-rtl' },
     })
     if (!res.isConfirmed) return
-    const updated = users.filter(u => u.id !== id)
-    setUsers(updated); saveUsers(updated); setToast('🗑️ تم الحذف')
+
+    try {
+      const r = await fetch(`${API_BASE}/admin-users/${id}`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('failed')
+      await refresh()
+      setToast('🗑️ تم الحذف')
+    } catch {
+      setToast('⚠️ تعذر حذف المستخدم')
+    }
   }
 
   const toggleStatus = (id) => {
-    const updated = users.map(u => u.id === id ? { ...u, status: u.status === 'نشط' ? 'معطّل' : 'نشط' } : u)
-    setUsers(updated); saveUsers(updated)
+    ;(async () => {
+      try {
+        const r = await fetch(`${API_BASE}/admin-users/${id}/toggle`, {
+          method: 'PATCH',
+          headers: { Accept: 'application/json' },
+        })
+        if (!r.ok) throw new Error('failed')
+        await refresh()
+      } catch {
+        setToast('⚠️ تعذر تغيير الحالة')
+      }
+    })()
   }
 
   return (
@@ -163,7 +252,17 @@ export default function Users() {
       </div>
 
       {/* ── Cards Grid ── */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="admin-empty">
+          <div className="admin-empty__icon">⏳</div>
+          <div>جاري تحميل المستخدمين...</div>
+        </div>
+      ) : fetchError ? (
+        <div className="admin-empty">
+          <div className="admin-empty__icon">⚠️</div>
+          <div>{fetchError}</div>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="admin-empty">
           <div className="admin-empty__icon">👤</div>
           <div>لا توجد نتائج</div>
@@ -238,11 +337,35 @@ export default function Users() {
                 { label: 'الاسم الكامل *', key: 'name',  type: 'text',  ph: 'اسم المستخدم' },
                 { label: 'رقم الهاتف',     key: 'phone', type: 'text',  ph: '07XX-XXX-XXXX' },
                 { label: 'البريد الإلكتروني *', key: 'email', type: 'email', ph: 'example@shamsroj.org' },
+                { label: modal === 'add' ? 'كلمة المرور *' : 'كلمة المرور الجديدة (اختياري)', key: 'password', type: 'password', ph: modal === 'add' ? 'أدخل كلمة المرور' : 'اتركها فارغة للإبقاء على الحالية' },
               ].map(f => (
                 <div className="admin-form-row" key={f.key}>
                   <label>{f.label}</label>
-                  <input type={f.type} placeholder={f.ph}
-                    value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} />
+                  {f.key === 'password' ? (
+                    <div className="admin-login__input-wrap">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder={f.ph}
+                        value={form[f.key]}
+                        onChange={e => setForm({ ...form, [f.key]: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        className="admin-login__toggle-pass"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                      >
+                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                      </button>
+                    </div>
+                  ) : (
+                    <input
+                      type={f.type}
+                      placeholder={f.ph}
+                      value={form[f.key]}
+                      onChange={e => setForm({ ...form, [f.key]: e.target.value })}
+                    />
+                  )}
                 </div>
               ))}
               <div className="admin-form-row">

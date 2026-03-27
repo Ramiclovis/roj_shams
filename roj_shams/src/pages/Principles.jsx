@@ -77,17 +77,47 @@ function Accordion({ items, t }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────
 export default function Principles() {
-    const { t } = useLanguage()
+    const { t, lang } = useLanguage()
     const [reportForm, setReportForm] = useState({ name: '', address: '', phone: '', message: '' })
     const [reportSubmitted, setReportSubmitted] = useState(false)
+    const [reportSubmitting, setReportSubmitting] = useState(false)
+    const [reportError, setReportError] = useState('')
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+    const isAr = lang === 'AR'
 
     const handleReportChange = (e) => {
         setReportForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
-    const handleReportSubmit = (e) => {
+    const handleReportSubmit = async (e) => {
         e.preventDefault()
-        setReportSubmitted(true)
+        setReportError('')
+        setReportSubmitting(true)
+        try {
+            const res = await fetch(`${apiBase}/reports`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: reportForm.name.trim(),
+                    address: reportForm.address.trim(),
+                    phone: reportForm.phone.trim(),
+                    message: reportForm.message.trim(),
+                }),
+            })
+            if (!res.ok) {
+                throw new Error('failed')
+            }
+            setReportSubmitted(true)
+            setReportForm({ name: '', address: '', phone: '', message: '' })
+        } catch {
+            setReportError(
+                isAr
+                    ? 'تعذر إرسال البلاغ حالياً. يرجى المحاولة مرة أخرى.'
+                    : 'Unable to submit your report right now. Please try again.'
+            )
+        } finally {
+            setReportSubmitting(false)
+        }
     }
 
     return (
@@ -239,7 +269,7 @@ export default function Principles() {
                                     <button
                                         type="button"
                                         className="principles-report__btn principles-report__btn--secondary"
-                                        onClick={() => { setReportSubmitted(false); setReportForm({ name: '', address: '', phone: '', message: '' }) }}
+                                        onClick={() => { setReportSubmitted(false); setReportError(''); setReportForm({ name: '', address: '', phone: '', message: '' }) }}
                                     >
                                         {t('contact.sendAnother')}
                                     </button>
@@ -291,8 +321,13 @@ export default function Principles() {
                                             rows={4}
                                         />
                                     </div>
+                                    {reportError && (
+                                        <p className="principles-report-form__error">{reportError}</p>
+                                    )}
                                     <button type="submit" className="principles-report__btn">
-                                        {t('principles.reportSubmitButton')}
+                                        {reportSubmitting
+                                            ? (isAr ? 'جارٍ الإرسال...' : 'Submitting...')
+                                            : t('principles.reportSubmitButton')}
                                     </button>
                                 </form>
                             )}

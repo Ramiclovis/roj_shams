@@ -37,6 +37,15 @@ const modules = [
     to: '/admin/objectives',
     internal: true,
   },
+  {
+    id: 5,
+    title: 'البلاغات',
+    desc: 'عرض بلاغات صفحة المبادئ مع تاريخ الإرسال',
+    icon: '📣',
+    iconBg: '#8B5CF6',
+    to: '/admin/reports',
+    internal: true,
+  },
 ]
 
 export default function Dashboard() {

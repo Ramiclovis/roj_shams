@@ -575,6 +575,17 @@
     color: var(--clr-white);
 }
 
+.principles-report-form__error {
+    margin: 0.5rem 0 0;
+    color: #b42318;
+    background: #fee4e2;
+    border: 1px solid #fecdca;
+    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
 .principles-report__btn--secondary {
     background: transparent;
     color: var(--clr-primary);
