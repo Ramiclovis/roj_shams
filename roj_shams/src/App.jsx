@@ -22,6 +22,7 @@ import AdminUsers from './admin/Users'
 import AdminFounders from './admin/Founders'
 import AdminObjectives from './admin/Objectives'
 import AdminReports from './admin/Reports'
+import AdminContacts from './admin/Contacts'
 import ProtectedRoute from './admin/ProtectedRoute'
 
 function ScrollToTop() {
@@ -56,6 +57,7 @@ function AppContent() {
           <Route path="founders" element={<AdminFounders />} />
           <Route path="objectives" element={<AdminObjectives />} />
           <Route path="reports" element={<AdminReports />} />
+          <Route path="contacts" element={<AdminContacts />} />
         </Route>
       </Routes>
     )

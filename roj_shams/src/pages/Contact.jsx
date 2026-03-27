@@ -4,6 +4,8 @@ import { faLeaf, faHandshake, faHeart } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Contact.css'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 const subjectOptions = [
     { value: 'volunteer', labelKey: 'contact.subjectVolunteer' },
     { value: 'partnership', labelKey: 'contact.subjectPartnership' },
@@ -12,18 +14,48 @@ const subjectOptions = [
     { value: 'other', labelKey: 'contact.subjectOther' },
 ]
 
+const emptyForm = { name: '', email: '', phone: '', subject: '', message: '' }
+
 export default function Contact() {
     const { t } = useLanguage()
-    const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
+    const [form, setForm]         = useState(emptyForm)
     const [submitted, setSubmitted] = useState(false)
+    const [sending, setSending]   = useState(false)
+    const [error, setError]       = useState('')
 
     const handleChange = e => {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+        if (error) setError('')
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault()
-        setSubmitted(true)
+        if (!form.name.trim() || !form.message.trim()) {
+            setError(t('contact.errorRequired') || 'الاسم والرسالة مطلوبان')
+            return
+        }
+        setSending(true)
+        setError('')
+        try {
+            const res = await fetch(`${API_BASE}/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(form),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                const msg = data?.errors
+                    ? Object.values(data.errors).flat().join(' — ')
+                    : data?.message || 'حدث خطأ'
+                setError(msg)
+                return
+            }
+            setSubmitted(true)
+        } catch {
+            setError(t('contact.errorNetwork') || 'تعذّر الاتصال بالخادم، يرجى المحاولة لاحقاً')
+        } finally {
+            setSending(false)
+        }
     }
 
     return (
@@ -45,7 +77,7 @@ export default function Contact() {
                                     <div className="contact__success-icon">✅</div>
                                     <h3>{t('contact.successTitle')}</h3>
                                     <p>{t('contact.successP')}</p>
-                                    <button className="btn btn-outline-dark" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }) }}>
+                                    <button className="btn btn-outline-dark" onClick={() => { setSubmitted(false); setForm(emptyForm) }}>
                                         {t('contact.sendAnother')}
                                     </button>
                                 </div>
@@ -118,11 +150,26 @@ export default function Contact() {
                                         />
                                     </div>
 
-                                    <button type="submit" className="btn btn-primary contact__submit">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                                            <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
-                                        </svg>
-                                        {t('contact.sendButton')}
+                                    {error && (
+                                        <div className="contact__error">
+                                            <span>⚠️</span> {error}
+                                        </div>
+                                    )}
+
+                                    <button type="submit" className="btn btn-primary contact__submit" disabled={sending}>
+                                        {sending ? (
+                                            <>
+                                                <span className="contact__spinner" />
+                                                {t('contact.sending') || 'جاري الإرسال...'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                                                    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                                </svg>
+                                                {t('contact.sendButton')}
+                                            </>
+                                        )}
                                     </button>
                                 </form>
                             )}

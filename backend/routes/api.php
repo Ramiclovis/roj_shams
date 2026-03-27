@@ -7,6 +7,7 @@ use App\Http\Controllers\ObjectiveController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\MediaUploadController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,14 @@ Route::prefix('admin-users')->group(function () {
     Route::delete('/{adminUser}', [AdminUserController::class, 'destroy']); // DELETE /api/admin-users/{id}
 
     Route::patch('/{adminUser}/toggle', [AdminUserController::class, 'toggle']); // PATCH /api/admin-users/{id}/toggle
+});
+
+/* ── Contact Messages ─────────────────────────────── */
+Route::prefix('contact')->group(function () {
+    Route::get('/',                        [ContactController::class, 'index']);   // GET    /api/contact
+    Route::post('/',                       [ContactController::class, 'store']);   // POST   /api/contact
+    Route::patch('/{contactMessage}/read', [ContactController::class, 'markRead']); // PATCH  /api/contact/{id}/read
+    Route::delete('/{contactMessage}',     [ContactController::class, 'destroy']); // DELETE /api/contact/{id}
 });
 
 /* ── Media Uploads ────────────────────────────────── */

@@ -46,6 +46,15 @@ const modules = [
     to: '/admin/reports',
     internal: true,
   },
+  {
+    id: 6,
+    title: 'رسائل التواصل',
+    desc: 'رسائل الزوار من صفحة تواصل معنا',
+    icon: '✉️',
+    iconBg: '#0ea5e9',
+    to: '/admin/contacts',
+    internal: true,
+  },
 ]
 
 export default function Dashboard() {
