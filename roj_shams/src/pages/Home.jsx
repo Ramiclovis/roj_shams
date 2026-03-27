@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical, faDollarSign, faPeopleGroup } from '@fortawesome/free-solid-svg-icons'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical, faDollarSign, faPeopleGroup, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
-import { newsItems } from '../data/newsItems'
 import '../assets/components/Home.css'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
@@ -168,6 +167,8 @@ export default function Home() {
     const [promiseInView, setPromiseInView] = useState(false)
     const [promisePercent, setPromisePercent] = useState(0)
     const [whereWeAreInView, setWhereWeAreInView] = useState(false)
+    const [newsItems, setNewsItems] = useState([])
+    const [newsImageTick, setNewsImageTick] = useState(0)
     const activitiesRef = useRef(null)
     const wwdRef = useRef(null)
     const newsRef = useRef(null)
@@ -176,6 +177,85 @@ export default function Home() {
     const whereWeAreRef = useRef(null)
     const { t, lang } = useLanguage()
     const isRtl = lang === 'AR'
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+    const featuredCount = newsItems.length
+    const tileItems = newsItems.filter((_, idx) => idx !== currentFeaturedIndex)
+    const tileMaxIndex = isNarrow ? Math.max(0, tileItems.length - 1) : Math.max(0, tileItems.length - 3)
+    const prevFeatured = () => {
+        if (!featuredCount) return
+        setCurrentFeaturedIndex((prev) => (prev - 1 + featuredCount) % featuredCount)
+    }
+    const nextFeatured = () => {
+        if (!featuredCount) return
+        setCurrentFeaturedIndex((prev) => (prev + 1) % featuredCount)
+    }
+    const prevTiles = () => {
+        if (!tileMaxIndex) return
+        setCurrentTileIndex((prev) => (prev - 1 + tileMaxIndex + 1) % (tileMaxIndex + 1))
+    }
+    const nextTiles = () => {
+        if (!tileMaxIndex) return
+        setCurrentTileIndex((prev) => (prev + 1) % (tileMaxIndex + 1))
+    }
+    const resolveMediaUrl = (url) => {
+        if (!url || typeof url !== 'string') return ''
+        const trimmed = url.trim()
+        if (!trimmed) return ''
+        const baseOrigin = (API_BASE.replace(/\/api\/?$/, '')).replace(/\/$/, '')
+        if (/^((uploads\/)?news\/images|(uploads\/)?news\/videos)\//i.test(trimmed)) {
+            return `${baseOrigin}/storage/${trimmed}`
+        }
+        if (trimmed.startsWith('data:')) return trimmed
+        if (/^https?:\/\//i.test(trimmed)) {
+            try {
+                const parsed = new URL(trimmed)
+                if (parsed.pathname.startsWith('/storage/') && parsed.origin !== baseOrigin) {
+                    return `${baseOrigin}${parsed.pathname}${parsed.search || ''}`
+                }
+            } catch {}
+            return trimmed
+        }
+        return `${baseOrigin}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`
+    }
+    const formatDate = (value) => {
+        if (!value) return '—'
+        const d = new Date(value)
+        if (Number.isNaN(d.getTime())) return value
+        return d.toLocaleDateString(lang === 'AR' ? 'ar-EG' : 'en-GB', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+    }
+
+    useEffect(() => {
+        let mounted = true
+        ;(async () => {
+            try {
+                const res = await fetch(`${API_BASE}/news?active_only=1`, {
+                    headers: { Accept: 'application/json' },
+                })
+                if (!res.ok) throw new Error('failed')
+                const data = await res.json()
+                if (!mounted) return
+                const mapped = (Array.isArray(data) ? data : []).map((n) => ({
+                    id: n.id,
+                    image: resolveMediaUrl(Array.isArray(n.images) && n.images.length ? n.images[0] : ''),
+                    images: (Array.isArray(n.images) ? n.images : []).map(resolveMediaUrl).filter(Boolean),
+                    videoUrl: resolveMediaUrl(Array.isArray(n.videos) && n.videos.length ? n.videos[0] : ''),
+                    dateLabel: formatDate(n.date),
+                    titleLabel: lang === 'AR' ? (n.title_ar || n.title_en) : (n.title_en || n.title_ar),
+                    excerptLabel: lang === 'AR' ? (n.excerpt_ar || n.excerpt_en) : (n.excerpt_en || n.excerpt_ar),
+                }))
+                setNewsItems(mapped)
+                setCurrentFeaturedIndex(0)
+                setCurrentTileIndex(0)
+            } catch {
+                if (mounted) setNewsItems([])
+            }
+        })()
+        return () => { mounted = false }
+    }, [lang])
 
     useEffect(() => {
         const mql = window.matchMedia('(max-width: 900px)')
@@ -186,9 +266,10 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
+        if (!tileItems.length) return
+        const maxIndex = isNarrow ? tileItems.length - 1 : Math.max(0, tileItems.length - 3)
         setCurrentTileIndex((prev) => Math.min(prev, maxIndex))
-    }, [isNarrow])
+    }, [isNarrow, tileItems.length])
 
     /* سلايدر صور الهيرو معطّل — كان يغيّر currentImageIndex كل 2 ثانية
     useEffect(() => {
@@ -280,19 +361,32 @@ export default function Home() {
     }, [promiseInView])
 
     useEffect(() => {
-        const maxIndex = isNarrow ? newsItems.length - 1 : Math.max(0, newsItems.length - 3)
+        if (!tileItems.length) return
+        const maxIndex = isNarrow ? tileItems.length - 1 : Math.max(0, tileItems.length - 3)
         const interval = setInterval(() => {
             setCurrentTileIndex((prev) => (prev + 1) % (maxIndex + 1))
         }, 4500)
         return () => clearInterval(interval)
-    }, [isNarrow])
+    }, [isNarrow, tileItems.length])
 
     useEffect(() => {
+        if (!newsItems.length) return
         const interval = setInterval(() => {
             setCurrentFeaturedIndex((prev) => (prev + 1) % newsItems.length)
         }, 4500)
         return () => clearInterval(interval)
-    }, [])
+    }, [newsItems.length])
+
+    // تبديل صور الخبر نفسه تلقائياً إذا كان يحتوي أكثر من صورة
+    useEffect(() => {
+        if (!newsItems.length) return
+        const hasMultiImages = newsItems.some((item) => (item.images?.length || 0) > 1)
+        if (!hasMultiImages) return
+        const interval = setInterval(() => {
+            setNewsImageTick((prev) => prev + 1)
+        }, 2600)
+        return () => clearInterval(interval)
+    }, [newsItems])
 
     /* تشغيل الفيديو في الهيرو — سرعة + تشغيل تلقائي ومساعدة Safari */
     useEffect(() => {
@@ -445,13 +539,16 @@ export default function Home() {
                                 transform: `translateX(${isRtl ? currentFeaturedIndex * 100 : -currentFeaturedIndex * 100}%)`,
                             }}
                         >
-                            {newsItems.map((item, i) => (
+                            {newsItems.map((item, i) => {
+                                const imgList = item.images?.length ? item.images : (item.image ? [item.image] : [])
+                                const currentImage = imgList.length ? imgList[newsImageTick % imgList.length] : ''
+                                return (
                                 <div key={item.id} className="news-featured-slider__slide">
                                     <article className={`news-featured ${item.videoUrl ? 'news-featured--has-video' : ''}`}>
                                         <NavLink to={`/news/${item.id}`} className="news-featured__media">
                                             <div
                                                 className="news-featured__image"
-                                                style={{ backgroundImage: `url(${item.image})` }}
+                                                style={{ backgroundImage: `url(${currentImage || item.image})` }}
                                             />
                                             {item.videoUrl && (
                                                 <span className="news-featured__play" aria-hidden="true">
@@ -462,18 +559,41 @@ export default function Home() {
                                                 <span className="news-featured__video-badge">{t('news.videoLabel')}</span>
                                             )}
                                             <div className="news-featured__overlay">
-                                                <time className="news-featured__date">{t(item.dateKey)}</time>
-                                                <h3 className="news-featured__title">{t(item.titleKey)}</h3>
-                                                <p className="news-featured__excerpt">{t(item.excerptKey)}</p>
+                                                <time className="news-featured__date">{item.dateLabel || '—'}</time>
+                                                <h3 className="news-featured__title">{item.titleLabel}</h3>
+                                                <p className="news-featured__excerpt">{item.excerptLabel}</p>
                                             </div>
                                         </NavLink>
                                     </article>
                                 </div>
-                            ))}
+                                )
+                            })}
                         </div>
+                        {featuredCount > 1 && (
+                            <>
+                                <button type="button" className="news-slider__arrow news-slider__arrow--prev" onClick={prevFeatured} aria-label="Previous featured news">
+                                    <FontAwesomeIcon icon={isRtl ? faChevronRight : faChevronLeft} />
+                                </button>
+                                <button type="button" className="news-slider__arrow news-slider__arrow--next" onClick={nextFeatured} aria-label="Next featured news">
+                                    <FontAwesomeIcon icon={isRtl ? faChevronLeft : faChevronRight} />
+                                </button>
+                                <div className="news-featured-slider__dots" aria-hidden="true">
+                                    {newsItems.map((_, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            className={`news-featured-slider__dot ${i === currentFeaturedIndex ? 'active' : ''}`}
+                                            onClick={() => setCurrentFeaturedIndex(i)}
+                                            aria-label={`Featured slide ${i + 1}`}
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* سلايدر: 3 بطاقات ظاهرة، الانزلاق يكشف الرابعة */}
+                    {tileItems.length > 0 && (
                     <div className="news-tiles-slider">
                         <div
                             className="news-tiles-slider__track"
@@ -481,14 +601,17 @@ export default function Home() {
                                 transform: `translateX(${isRtl ? currentTileIndex * (isNarrow ? 100 : 100 / 3) : -currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
                             }}
                         >
-                            {newsItems.map((item) => (
+                            {tileItems.map((item) => {
+                                const imgList = item.images?.length ? item.images : (item.image ? [item.image] : [])
+                                const currentImage = imgList.length ? imgList[newsImageTick % imgList.length] : ''
+                                return (
                                 <div key={item.id} className="news-tiles-slider__slide">
                                     <article className={`news-tile ${item.videoUrl ? 'news-tile--has-video' : ''}`}>
                                         <NavLink to={`/news/${item.id}`} className="news-tile__link">
                                             <div className="news-tile__media">
                                                 <div
                                                     className="news-tile__image"
-                                                    style={{ backgroundImage: `url(${item.image})` }}
+                                                    style={{ backgroundImage: `url(${currentImage || item.image})` }}
                                                 />
                                                 {item.videoUrl && (
                                                     <span className="news-tile__play" aria-hidden="true">
@@ -500,18 +623,19 @@ export default function Home() {
                                                 )}
                                             </div>
                                             <div className="news-tile__overlay">
-                                                <time className="news-tile__date">{t(item.dateKey)}</time>
-                                                <h3 className="news-tile__title">{t(item.titleKey)}</h3>
+                                                <time className="news-tile__date">{item.dateLabel || '—'}</time>
+                                                <h3 className="news-tile__title">{item.titleLabel}</h3>
                                                 <span className="news-tile__read">{t('news.readMore')} →</span>
                                             </div>
                                         </NavLink>
                                     </article>
                                 </div>
-                            ))}
+                                )
+                            })}
                         </div>
                         <div className="news-tiles-slider__dots" aria-hidden="true">
                             {Array.from({
-                                length: isNarrow ? newsItems.length : Math.max(1, newsItems.length - 2),
+                                length: isNarrow ? tileItems.length : Math.max(1, tileItems.length - 2),
                             }).map((_, i) => (
                                 <button
                                     key={i}
@@ -522,7 +646,18 @@ export default function Home() {
                                 />
                             ))}
                         </div>
+                        {tileMaxIndex > 0 && (
+                            <>
+                                <button type="button" className="news-slider__arrow news-slider__arrow--prev news-slider__arrow--tiles" onClick={prevTiles} aria-label="Previous news cards">
+                                    <FontAwesomeIcon icon={isRtl ? faChevronRight : faChevronLeft} />
+                                </button>
+                                <button type="button" className="news-slider__arrow news-slider__arrow--next news-slider__arrow--tiles" onClick={nextTiles} aria-label="Next news cards">
+                                    <FontAwesomeIcon icon={isRtl ? faChevronLeft : faChevronRight} />
+                                </button>
+                            </>
+                        )}
                     </div>
+                    )}
 
                     <div className="news-section__footer">
                         <NavLink to="/news" className="news-section__cta">{t('news.viewAll')}</NavLink>

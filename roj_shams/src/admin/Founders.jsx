@@ -7,33 +7,22 @@ import {
   faUsers, faToggleOn, faToggleOff,
 } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2'
-import { foundersBase } from '../data/foundersData'
 import './assets/Founders.css'
 
-const STORAGE_KEY = 'admin_founders'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 function normalize(item) {
   return {
     id:      item.id,
     initials: item.initials || '',
-    nameEn:  item.nameEn   || '',
-    nameAr:  item.nameAr   || '',
+    nameEn:  item.name_en || item.nameEn || '',
+    nameAr:  item.name_ar || item.nameAr || '',
     color:   item.color    || '#2d6b3e',
-    bioEn:   item.bioEn    || '',
-    bioAr:   item.bioAr    || '',
+    bioEn:   item.bio_en || item.bioEn || '',
+    bioAr:   item.bio_ar || item.bioAr || '',
     active:  item.active !== false,
   }
 }
-
-function loadFounders() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) return JSON.parse(stored).map(normalize)
-    return foundersBase.map(normalize)
-  } catch { return foundersBase.map(normalize) }
-}
-
-function saveFounders(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)) }
 
 const emptyForm = {
   initials: '', nameEn: '', nameAr: '',
@@ -42,7 +31,8 @@ const emptyForm = {
 
 export default function Founders() {
   const navigate = useNavigate()
-  const [list, setList]         = useState(loadFounders)
+  const [list, setList]         = useState([])
+  const [loading, setLoading]   = useState(true)
   const [modal, setModal]       = useState(null)
   const [form, setForm]         = useState(emptyForm)
   const [editId, setEditId]     = useState(null)
@@ -55,6 +45,35 @@ export default function Founders() {
     const t = setTimeout(() => setToast(''), 2500)
     return () => clearTimeout(t)
   }, [toast])
+
+  const refresh = async () => {
+    const res = await fetch(`${API_BASE}/founders`, {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw new Error('failed')
+    const data = await res.json()
+    setList(Array.isArray(data) ? data.map(normalize) : [])
+  }
+
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`${API_BASE}/founders`, {
+          headers: { Accept: 'application/json' },
+        })
+        if (!res.ok) throw new Error('failed')
+        const data = await res.json()
+        if (mounted) setList(Array.isArray(data) ? data.map(normalize) : [])
+      } catch {
+        if (mounted) setToast('⚠️ تعذر تحميل المؤسسين من الخادم')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
 
   const filtered = list.filter(f =>
     f.nameAr.toLowerCase().includes(search.toLowerCase()) ||
@@ -76,20 +95,49 @@ export default function Founders() {
   const closeModal = () => { setModal(null); setForm(emptyForm); setEditId(null) }
   const f = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.nameAr.trim() && !form.nameEn.trim()) {
       setToast('⚠️ أدخل الاسم بالعربي أو الإنجليزي'); return
     }
-    const entry = { ...form }
-    let updated
-    if (modal === 'add') {
-      updated = [...list, { id: Date.now(), ...entry }]
-      setToast('✅ تمت إضافة المؤسس')
-    } else {
-      updated = list.map(item => item.id === editId ? { ...item, ...entry } : item)
-      setToast('✅ تم تحديث المؤسس')
+    const payload = {
+      name_ar: form.nameAr.trim(),
+      name_en: form.nameEn.trim(),
+      bio_ar: form.bioAr.trim(),
+      bio_en: form.bioEn.trim(),
+      initials: form.initials.trim(),
+      color: form.color,
+      active: !!form.active,
     }
-    setList(updated); saveFounders(updated); closeModal()
+
+    try {
+      if (modal === 'add') {
+        const res = await fetch(`${API_BASE}/founders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('failed')
+        setToast('✅ تمت إضافة المؤسس')
+      } else {
+        const res = await fetch(`${API_BASE}/founders/${editId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('failed')
+        setToast('✅ تم تحديث المؤسس')
+      }
+      await refresh()
+      closeModal()
+    } catch {
+      setToast('⚠️ حدث خطأ أثناء الحفظ')
+    }
   }
 
   const handleDelete = async (id) => {
@@ -100,15 +148,30 @@ export default function Founders() {
       reverseButtons: true, customClass: { popup: 'swal-rtl' },
     })
     if (!res.isConfirmed) return
-    const updated = list.filter(item => item.id !== id)
-    setList(updated); saveFounders(updated); setToast('🗑️ تم الحذف')
+    try {
+      const r = await fetch(`${API_BASE}/founders/${id}`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('failed')
+      await refresh()
+      setToast('🗑️ تم الحذف')
+    } catch {
+      setToast('⚠️ تعذر الحذف')
+    }
   }
 
-  const toggleActive = (id) => {
-    const updated = list.map(item =>
-      item.id === id ? { ...item, active: !item.active } : item
-    )
-    setList(updated); saveFounders(updated)
+  const toggleActive = async (id) => {
+    try {
+      const r = await fetch(`${API_BASE}/founders/${id}/toggle`, {
+        method: 'PATCH',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('failed')
+      await refresh()
+    } catch {
+      setToast('⚠️ تعذر تحديث الحالة')
+    }
   }
 
   return (
@@ -145,7 +208,12 @@ export default function Founders() {
       </div>
 
       {/* ── Grid ── */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="admin-empty">
+          <div className="admin-empty__icon">⏳</div>
+          <div>جاري تحميل المؤسسين...</div>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="admin-empty">
           <div className="admin-empty__icon">👤</div>
           <div>لا توجد نتائج</div>

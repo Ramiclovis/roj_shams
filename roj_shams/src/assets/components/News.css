@@ -60,6 +60,51 @@
   background-position: center;
 }
 
+.news-card__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(13, 47, 69, 0.85);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.news-card__arrow--prev { left: 10px; }
+.news-card__arrow--next { right: 10px; }
+
+.news-card__dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  z-index: 2;
+}
+
+.news-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.news-card__dot.active {
+  background: #fff;
+}
+
 /* فيديو: أيقونة تشغيل + شارة */
 .news-card__play {
   position: absolute;

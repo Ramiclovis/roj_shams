@@ -6,6 +6,7 @@ use App\Http\Controllers\FounderController;
 use App\Http\Controllers\ObjectiveController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\MediaUploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,4 +66,9 @@ Route::prefix('admin-users')->group(function () {
     Route::delete('/{adminUser}', [AdminUserController::class, 'destroy']); // DELETE /api/admin-users/{id}
 
     Route::patch('/{adminUser}/toggle', [AdminUserController::class, 'toggle']); // PATCH /api/admin-users/{id}/toggle
+});
+
+/* ── Media Uploads ────────────────────────────────── */
+Route::prefix('uploads')->group(function () {
+    Route::post('/media', [MediaUploadController::class, 'store']); // POST /api/uploads/media
 });

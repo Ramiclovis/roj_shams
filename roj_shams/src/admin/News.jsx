@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -8,22 +8,13 @@ import {
   faUpload, faFilm,
 } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2'
-import { newsItems as baseNews } from '../data/newsItems'
 import './assets/News.css'
 
-const STORAGE_KEY  = 'admin_news'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 const MAX_IMG_SIZE = 5  * 1024 * 1024   // 5 MB
-const MAX_VID_SIZE = 80 * 1024 * 1024   // 80 MB
+const MAX_VID_SIZE = 500 * 1024 * 1024   // 500 MB
 
 /* ── helpers ── */
-function readAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader()
-    r.onload  = e => resolve(e.target.result)
-    r.onerror = reject
-    r.readAsDataURL(file)
-  })
-}
 
 function fmtBytes(n) {
   if (n < 1024) return n + ' B'
@@ -31,36 +22,74 @@ function fmtBytes(n) {
   return (n / 1024 / 1024).toFixed(1) + ' MB'
 }
 
+function resolveMediaUrl(url) {
+  if (!url || typeof url !== 'string') return ''
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  const baseOrigin = (API_BASE.replace(/\/api\/?$/, '')).replace(/\/$/, '')
+  if (/^((uploads\/)?news\/images|(uploads\/)?news\/videos)\//i.test(trimmed)) {
+    return `${baseOrigin}/storage/${trimmed}`
+  }
+  if (trimmed.startsWith('data:')) return trimmed
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed)
+      if (parsed.pathname.startsWith('/storage/') && parsed.origin !== baseOrigin) {
+        return `${baseOrigin}${parsed.pathname}${parsed.search || ''}`
+      }
+    } catch {}
+    return trimmed
+  }
+  return `${baseOrigin}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`
+}
+
+async function uploadMedia(file, type) {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('type', type)
+
+  const res = await fetch(`${API_BASE}/uploads/media`, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+    body: fd,
+  })
+
+  let body = null
+  try { body = await res.json() } catch {}
+
+  if (!res.ok) {
+    if (res.status === 413) {
+      throw new Error('حجم الملف كبير جدًا بالنسبة لإعدادات الخادم')
+    }
+    const msg =
+      body?.errors
+        ? Object.values(body.errors).flat().find(Boolean)
+        : body?.message
+    throw new Error(msg || 'فشل رفع الملف')
+  }
+
+  if (!body?.url) {
+    throw new Error('لم يتم إرجاع رابط الملف')
+  }
+
+  return body.url
+}
+
 function normalizeItem(item) {
-  const images = item.images?.length
-    ? item.images
-    : item.image ? [item.image] : []
+  const images = Array.isArray(item.images) ? item.images : []
+  const videos = Array.isArray(item.videos) ? item.videos : []
   return {
     id:        item.id,
-    title:     item.title     || '',
-    titleEn:   item.titleEn   || '',
+    title:     item.title_ar   || item.title || '',
+    titleEn:   item.title_en   || item.titleEn || '',
     date:      item.date      || '',
-    excerpt:   item.excerpt   || '',
-    excerptEn: item.excerptEn || '',
-    images,
-    videoUrl:  item.videoUrl  || '',
+    excerpt:   item.excerpt_ar   || item.excerpt || '',
+    excerptEn: item.excerpt_en || item.excerptEn || '',
+    images: images.map(resolveMediaUrl),
+    videoUrl:  resolveMediaUrl(videos[0] || item.videoUrl || ''),
+    active:    item.active !== false,
   }
 }
-
-function loadNews() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      const hasStaleKeys = parsed.some(item => item.title?.startsWith('news.'))
-      if (hasStaleKeys) { localStorage.removeItem(STORAGE_KEY); return baseNews.map(normalizeItem) }
-      return parsed.map(normalizeItem)
-    }
-    return baseNews.map(normalizeItem)
-  } catch { return baseNews.map(normalizeItem) }
-}
-
-function saveNews(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)) }
 
 const emptyForm = {
   title: '', titleEn: '', date: '',
@@ -71,7 +100,8 @@ const emptyForm = {
 
 export default function News() {
   const navigate = useNavigate()
-  const [newsList, setNewsList]   = useState(loadNews)
+  const [newsList, setNewsList]   = useState([])
+  const [loading, setLoading]     = useState(true)
   const [modal, setModal]         = useState(null)
   const [form, setForm]           = useState(emptyForm)
   const [editId, setEditId]       = useState(null)
@@ -80,12 +110,42 @@ export default function News() {
   const [mediaType, setMediaType] = useState('image')
   const [activeTab, setActiveTab] = useState('ar')
   const [videoSrc, setVideoSrc]   = useState('url')  // 'url' | 'file'
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false)
 
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(''), 2800)
     return () => clearTimeout(t)
   }, [toast])
+
+  const refresh = async () => {
+    const res = await fetch(`${API_BASE}/news`, {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw new Error('failed')
+    const data = await res.json()
+    setNewsList(Array.isArray(data) ? data.map(normalizeItem) : [])
+  }
+
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`${API_BASE}/news`, {
+          headers: { Accept: 'application/json' },
+        })
+        if (!res.ok) throw new Error('failed')
+        const data = await res.json()
+        if (mounted) setNewsList(Array.isArray(data) ? data.map(normalizeItem) : [])
+      } catch {
+        if (mounted) setToast('⚠️ تعذر تحميل الأخبار من الخادم')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
 
   const filtered = newsList.filter(item =>
     item.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -96,6 +156,7 @@ export default function News() {
   const openAdd = () => {
     setForm(emptyForm); setEditId(null); setModal('add')
     setMediaType('image'); setActiveTab('ar'); setVideoSrc('url')
+    setIsUploadingVideo(false)
   }
 
   const openEdit = (item) => {
@@ -111,9 +172,10 @@ export default function News() {
     setMediaType(item.videoUrl ? 'video' : 'image')
     setVideoSrc('url')
     setActiveTab('ar')
+    setIsUploadingVideo(false)
   }
 
-  const closeModal = () => { setModal(null); setForm(emptyForm); setEditId(null) }
+  const closeModal = () => { setModal(null); setForm(emptyForm); setEditId(null); setIsUploadingVideo(false) }
   const f = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
 
   /* ── images ── */
@@ -135,8 +197,13 @@ export default function News() {
       if (file.size > MAX_IMG_SIZE) {
         setToast(`⚠️ ${file.name} أكبر من 5 MB (${fmtBytes(file.size)})`); continue
       }
-      const dataUrl = await readAsDataURL(file)
-      results.push(dataUrl)
+      try {
+        setToast(`⏳ جاري رفع ${file.name}...`)
+        const uploadedUrl = await uploadMedia(file, 'image')
+        results.push(uploadedUrl)
+      } catch (err) {
+        setToast(`⚠️ ${err.message || 'فشل رفع الصورة'}`)
+      }
     }
     if (!results.length) return
     if (slotIndex !== null) {
@@ -158,37 +225,73 @@ export default function News() {
     if (!file) return
     if (!file.type.startsWith('video/')) { setToast('⚠️ يُسمح فقط بملفات الفيديو'); return }
     if (file.size > MAX_VID_SIZE) {
-      setToast(`⚠️ ${file.name} أكبر من 80 MB (${fmtBytes(file.size)})`); return
+      setToast(`⚠️ ${file.name} أكبر من 500 MB (${fmtBytes(file.size)})`); return
     }
-    setToast('⏳ جاري تحميل الفيديو...')
-    const dataUrl = await readAsDataURL(file)
-    f('videoUrl', dataUrl)
-    setToast('✅ تم تحميل الفيديو')
+    try {
+      setIsUploadingVideo(true)
+      setToast('⏳ جاري رفع الفيديو...')
+      const uploadedUrl = await uploadMedia(file, 'video')
+      f('videoUrl', uploadedUrl)
+      setToast('✅ تم رفع الفيديو')
+    } catch (err) {
+      setToast(`⚠️ ${err.message || 'فشل رفع الفيديو'}`)
+    } finally {
+      setIsUploadingVideo(false)
+    }
     e.target.value = ''
   }
 
   /* ── save ── */
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isUploadingVideo) {
+      setToast('⏳ يرجى الانتظار حتى يكتمل رفع الفيديو')
+      return
+    }
     if (!form.title.trim() || !form.date.trim()) {
       setToast('⚠️ العنوان العربي والتاريخ مطلوبان'); return
     }
     const cleanImages = mediaType === 'image'
       ? form.images.map(s => s.trim()).filter(Boolean)
       : []
-    const entry = {
-      ...form,
-      images:   cleanImages,
-      videoUrl: mediaType === 'video' ? form.videoUrl.trim() : '',
+    const payload = {
+      title_ar: form.title.trim(),
+      title_en: form.titleEn.trim(),
+      excerpt_ar: form.excerpt.trim(),
+      excerpt_en: form.excerptEn.trim(),
+      date: form.date,
+      images: cleanImages,
+      videos: mediaType === 'video' && form.videoUrl.trim() ? [form.videoUrl.trim()] : [],
+      active: true,
     }
-    let updated
-    if (modal === 'add') {
-      updated = [...newsList, { id: Date.now(), ...entry }]
-      setToast('✅ تمت إضافة الخبر')
-    } else {
-      updated = newsList.map(item => item.id === editId ? { ...item, ...entry } : item)
-      setToast('✅ تم تحديث الخبر')
+    try {
+      if (modal === 'add') {
+        const res = await fetch(`${API_BASE}/news`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('failed')
+        setToast('✅ تمت إضافة الخبر')
+      } else {
+        const res = await fetch(`${API_BASE}/news/${editId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('failed')
+        setToast('✅ تم تحديث الخبر')
+      }
+      await refresh()
+      closeModal()
+    } catch {
+      setToast('⚠️ حدث خطأ أثناء الحفظ')
     }
-    setNewsList(updated); saveNews(updated); closeModal()
   }
 
   const handleDelete = async (id) => {
@@ -199,8 +302,17 @@ export default function News() {
       reverseButtons: true, customClass: { popup: 'swal-rtl' },
     })
     if (!res.isConfirmed) return
-    const updated = newsList.filter(item => item.id !== id)
-    setNewsList(updated); saveNews(updated); setToast('🗑️ تم الحذف')
+    try {
+      const r = await fetch(`${API_BASE}/news/${id}`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('failed')
+      await refresh()
+      setToast('🗑️ تم الحذف')
+    } catch {
+      setToast('⚠️ تعذر الحذف')
+    }
   }
 
   const handleReset = async () => {
@@ -212,8 +324,7 @@ export default function News() {
       reverseButtons: true, customClass: { popup: 'swal-rtl' },
     })
     if (!res.isConfirmed) return
-    const base = baseNews.map(normalizeItem)
-    setNewsList(base); saveNews(base); setToast('🔄 تمت الاستعادة')
+    setToast('⚠️ تم إلغاء الاستعادة، الإدارة الآن من قاعدة البيانات فقط')
   }
 
   const fmtDate = (d) => {
@@ -222,8 +333,8 @@ export default function News() {
     catch { return d }
   }
 
-  /* ── Check if stored value is base64 ── */
-  const isDataUrl = (s) => s?.startsWith('data:')
+  /* ── Check if URL exists ── */
+  const hasUrl = (s) => typeof s === 'string' && s.trim().length > 0
 
   return (
     <div className="nws-page">
@@ -259,7 +370,12 @@ export default function News() {
       </div>
 
       {/* ── Cards Grid ── */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="admin-empty">
+          <div className="admin-empty__icon">⏳</div>
+          <div>جاري تحميل الأخبار...</div>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="admin-empty">
           <div className="admin-empty__icon">📭</div>
           <div>لا توجد نتائج</div>
@@ -325,9 +441,18 @@ export default function News() {
                     <FontAwesomeIcon icon={faTrash} /><span>حذف</span>
                   </button>
                 )}
-                <button className="admin-btn admin-btn--primary" onClick={handleSave}>
+                <button
+                  className="admin-btn admin-btn--primary"
+                  onClick={handleSave}
+                  disabled={isUploadingVideo}
+                  title={isUploadingVideo ? 'انتظر حتى يكتمل رفع الفيديو' : ''}
+                >
                   <FontAwesomeIcon icon={faSave} />
-                  <span>{modal === 'add' ? 'إضافة' : 'حفظ'}</span>
+                  <span>
+                    {isUploadingVideo
+                      ? 'جاري رفع الفيديو...'
+                      : (modal === 'add' ? 'إضافة' : 'حفظ')}
+                  </span>
                 </button>
               </div>
             </div>
@@ -430,8 +555,7 @@ export default function News() {
                               type="url"
                               placeholder="https://... رابط الصورة أو اختر ملفاً"
                               dir="ltr"
-                              value={isDataUrl(url) ? '' : url}
-                              readOnly={isDataUrl(url)}
+                                value={url}
                               onChange={e => setImageAt(i, e.target.value)}
                             />
 
@@ -447,11 +571,6 @@ export default function News() {
                           {/* Preview */}
                           {url && (
                             <div className="nws-img-preview-wrap">
-                              {isDataUrl(url) && (
-                                <span className="nws-img-local-badge">
-                                  <FontAwesomeIcon icon={faUpload} /> من الجهاز
-                                </span>
-                              )}
                               <img
                                 src={url}
                                 alt={`preview-${i}`}
@@ -505,24 +624,39 @@ export default function News() {
 
                     {videoSrc === 'file' ? (
                       <>
+                        {isUploadingVideo && (
+                          <div className="admin-form-row nws-modal__full" style={{ marginTop: '0.35rem' }}>
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              fontWeight: 700,
+                              color: '#2d6b3e',
+                            }}>
+                              <span className="admin-empty__icon" style={{ fontSize: '1rem' }}>⏳</span>
+                              <span>جاري رفع الفيديو... يرجى الانتظار</span>
+                            </div>
+                          </div>
+                        )}
                         {/* Drop zone */}
                         <label className="nws-video-dropzone">
                           <FontAwesomeIcon icon={faFilm} className="nws-video-dropzone__icon" />
                           <span className="nws-video-dropzone__text">
-                            {form.videoUrl && isDataUrl(form.videoUrl)
+                            {hasUrl(form.videoUrl)
                               ? '✅ تم رفع الفيديو — انقر للتغيير'
-                              : 'انقر لاختيار ملف فيديو (MP4 / WebM — حتى 80 MB)'}
+                              : 'انقر لاختيار ملف فيديو (MP4 / WebM — حتى 500 MB)'}
                           </span>
                           <input
                             type="file"
                             accept="video/*"
                             hidden
                             onChange={handleVideoFile}
+                            disabled={isUploadingVideo}
                           />
                         </label>
 
                         {/* Video preview */}
-                        {form.videoUrl && isDataUrl(form.videoUrl) && (
+                        {hasUrl(form.videoUrl) && (
                           <video
                             src={form.videoUrl}
                             controls
@@ -536,10 +670,10 @@ export default function News() {
                           type="url"
                           placeholder="https://www.youtube.com/embed/VIDEO_ID"
                           dir="ltr"
-                          value={isDataUrl(form.videoUrl) ? '' : form.videoUrl}
+                          value={form.videoUrl}
                           onChange={e => f('videoUrl', e.target.value)}
                         />
-                        {form.videoUrl && !isDataUrl(form.videoUrl) && (
+                        {hasUrl(form.videoUrl) && (
                           <iframe
                             src={form.videoUrl}
                             className="nws-iframe-preview"

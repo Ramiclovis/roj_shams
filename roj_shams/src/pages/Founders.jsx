@@ -1,18 +1,43 @@
 import { useLanguage } from '../context/LanguageContext'
-import { foundersBase } from '../data/foundersData'
+import { useEffect, useState } from 'react'
 import '../assets/components/Founders.css'
-
-function loadFounders() {
-    try {
-        const stored = localStorage.getItem('admin_founders')
-        if (stored) return JSON.parse(stored).filter(f => f.active !== false)
-    } catch { /* ignore */ }
-    return foundersBase.filter(f => f.active !== false)
-}
 
 export default function Founders() {
     const { t, lang } = useLanguage()
-    const founders = loadFounders()
+    const [founders, setFounders] = useState([])
+    const [loading, setLoading] = useState(true)
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
+    useEffect(() => {
+        let mounted = true
+        ;(async () => {
+            setLoading(true)
+            try {
+                const res = await fetch(`${API_BASE}/founders?active_only=1`, {
+                    headers: { Accept: 'application/json' },
+                })
+                if (!res.ok) throw new Error('failed')
+                const data = await res.json()
+                if (!mounted) return
+                const mapped = (Array.isArray(data) ? data : []).map((f) => ({
+                    id: f.id,
+                    initials: f.initials || '',
+                    nameAr: f.name_ar || '',
+                    nameEn: f.name_en || '',
+                    bioAr: f.bio_ar || '',
+                    bioEn: f.bio_en || '',
+                    color: f.color || '#2d6b3e',
+                }))
+                setFounders(mapped)
+            } catch {
+                if (mounted) setFounders([])
+            } finally {
+                if (mounted) setLoading(false)
+            }
+        })()
+        return () => { mounted = false }
+    }, [])
+
     return (
         <div className="founders">
             <section className="page-hero">
@@ -32,7 +57,9 @@ export default function Founders() {
                         <p>{t('foundersPage.meetP')}</p>
                     </div>
                     <div className="founders__grid">
-                        {founders.map((f, i) => (
+                        {loading ? (
+                            <p style={{ textAlign: 'center', width: '100%' }}>Loading...</p>
+                        ) : founders.map((f, i) => (
                             <div key={f.id ?? i} className="founder-card" style={{ '--founder-color': f.color }}>
                                 <div className="founder-card__top">
                                     <div className="founder-card__avatar">{f.initials}</div>
