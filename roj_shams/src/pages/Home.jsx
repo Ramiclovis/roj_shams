@@ -585,7 +585,6 @@ export default function Home() {
                 <div className="where-we-are__map-wrap">
                     <MiddleEastMap isRtl={isRtl} />
                 </div>
-                <div className="where-we-are__overlay" />
                 <div className="container where-we-are__inner">
                     <div className="where-we-are__content">
                         <h2 className="where-we-are__title">{t('whereWeAre.title')}</h2>
