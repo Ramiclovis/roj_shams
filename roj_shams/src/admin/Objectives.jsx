@@ -11,12 +11,12 @@ import {
   faLink, faFilm,
 } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2'
-import { objectivesBase, ICON_OPTIONS } from '../data/objectivesData'
+import { ICON_OPTIONS } from '../data/objectivesData'
 import './assets/Objectives.css'
 
-const STORAGE_KEY  = 'admin_objectives'
-const MAX_IMG_SIZE = 5  * 1024 * 1024
-const MAX_VID_SIZE = 80 * 1024 * 1024
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+const MAX_IMG_SIZE = 5   * 1024 * 1024   // 5 MB
+const MAX_VID_SIZE = 500 * 1024 * 1024   // 500 MB
 
 /* ── Icon map ── */
 const ICON_MAP = {
@@ -33,42 +33,76 @@ function fmtBytes(n) {
   return (n / 1024 / 1024).toFixed(1) + ' MB'
 }
 
-function readAsDataURL(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader()
-    r.onload  = e => res(e.target.result)
-    r.onerror = rej
-    r.readAsDataURL(file)
-  })
+/* ── URL helpers ── */
+function resolveMediaUrl(url) {
+  if (!url || typeof url !== 'string') return ''
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  const baseOrigin = (API_BASE.replace(/\/api\/?$/, '')).replace(/\/$/, '')
+  if (/^((uploads\/)?news\/images|(uploads\/)?news\/videos|(uploads\/)?objectives\/images|(uploads\/)?objectives\/videos)\//i.test(trimmed)) {
+    return `${baseOrigin}/storage/${trimmed}`
+  }
+  if (trimmed.startsWith('data:')) return trimmed
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed)
+      if (parsed.pathname.startsWith('/storage/') && parsed.origin !== baseOrigin) {
+        return `${baseOrigin}${parsed.pathname}${parsed.search || ''}`
+      }
+    } catch {}
+    return trimmed
+  }
+  return `${baseOrigin}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`
 }
 
+async function uploadMedia(file, type) {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('type', type)
+
+  const res = await fetch(`${API_BASE}/uploads/media`, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+    body: fd,
+  })
+
+  let body = null
+  try { body = await res.json() } catch {}
+
+  if (!res.ok) {
+    if (res.status === 413) throw new Error('حجم الملف كبير جدًا بالنسبة لإعدادات الخادم')
+    const msg = body?.errors
+      ? Object.values(body.errors).flat().find(Boolean)
+      : body?.message
+    throw new Error(msg || 'فشل رفع الملف')
+  }
+
+  if (!body?.url) throw new Error('لم يتم إرجاع رابط الملف')
+  return body.url
+}
+
+/* ── Normalize API response → frontend state ── */
 function normalize(item) {
+  const actsAr = Array.isArray(item.activities_ar || item.activitiesAr)
+    ? (item.activities_ar || item.activitiesAr) : []
+  const actsEn = Array.isArray(item.activities_en || item.activitiesEn)
+    ? (item.activities_en || item.activitiesEn) : []
   return {
     id:           item.id,
-    iconName:     item.iconName     || 'faBullseye',
-    titleAr:      item.titleAr      || '',
-    titleEn:      item.titleEn      || '',
-    needsAr:      item.needsAr      || '',
-    needsEn:      item.needsEn      || '',
-    workAr:       item.workAr       || '',
-    workEn:       item.workEn       || '',
-    activitiesAr: item.activitiesAr?.length ? item.activitiesAr : [''],
-    activitiesEn: item.activitiesEn?.length ? item.activitiesEn : [''],
-    images:       item.images       || [],
-    videos:       item.videos       || [],
+    iconName:     item.icon_name    || item.iconName    || 'faBullseye',
+    titleAr:      item.title_ar     || item.titleAr     || '',
+    titleEn:      item.title_en     || item.titleEn     || '',
+    needsAr:      item.needs_ar     || item.needsAr     || '',
+    needsEn:      item.needs_en     || item.needsEn     || '',
+    workAr:       item.work_ar      || item.workAr      || '',
+    workEn:       item.work_en      || item.workEn      || '',
+    activitiesAr: actsAr.filter(Boolean).length ? actsAr : [''],
+    activitiesEn: actsEn.filter(Boolean).length ? actsEn : [''],
+    images:       (Array.isArray(item.images) ? item.images : []).map(resolveMediaUrl),
+    videos:       (Array.isArray(item.videos) ? item.videos : []).map(resolveMediaUrl),
     active:       item.active !== false,
   }
 }
-
-function loadObjectives() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) return JSON.parse(stored).map(normalize)
-    return objectivesBase.map(normalize)
-  } catch { return objectivesBase.map(normalize) }
-}
-
-function saveObjectives(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)) }
 
 const emptyForm = {
   iconName: 'faBullseye',
@@ -84,20 +118,44 @@ const emptyForm = {
 
 export default function Objectives() {
   const navigate = useNavigate()
-  const [list, setList]           = useState(loadObjectives)
-  const [modal, setModal]         = useState(null)
-  const [form, setForm]           = useState(emptyForm)
-  const [editId, setEditId]       = useState(null)
-  const [search, setSearch]       = useState('')
-  const [toast, setToast]         = useState('')
-  const [activeTab, setActiveTab] = useState('ar')
-  const [videoSrc, setVideoSrc]   = useState('url')
+  const [list, setList]               = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [modal, setModal]             = useState(null)
+  const [form, setForm]               = useState(emptyForm)
+  const [editId, setEditId]           = useState(null)
+  const [search, setSearch]           = useState('')
+  const [toast, setToast]             = useState('')
+  const [activeTab, setActiveTab]     = useState('ar')
+  const [videoSrc, setVideoSrc]       = useState('url')
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false)
+  const [isSaving, setIsSaving]       = useState(false)
+
+  useEffect(() => {
+    fetchObjectives()
+  }, [])
 
   useEffect(() => {
     if (!toast) return
+    if (toast.startsWith('⏳')) return  // keep loading toasts until replaced
     const t = setTimeout(() => setToast(''), 2800)
     return () => clearTimeout(t)
   }, [toast])
+
+  async function fetchObjectives() {
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/objectives`, {
+        headers: { Accept: 'application/json' },
+      })
+      if (!res.ok) throw new Error('فشل جلب الأنشطة')
+      const data = await res.json()
+      setList(data.map(normalize))
+    } catch (err) {
+      setToast('⚠️ ' + (err.message || 'خطأ في الاتصال'))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filtered = list.filter(o =>
     o.titleAr.toLowerCase().includes(search.toLowerCase()) ||
@@ -150,7 +208,13 @@ export default function Objectives() {
     for (const file of files) {
       if (!file.type.startsWith('image/')) { setToast('⚠️ يُسمح فقط بملفات الصور'); continue }
       if (file.size > MAX_IMG_SIZE) { setToast(`⚠️ ${file.name} أكبر من 5 MB`); continue }
-      results.push(await readAsDataURL(file))
+      try {
+        setToast('⏳ جاري رفع الصورة...')
+        const url = await uploadMedia(file, 'image')
+        results.push(url)
+      } catch (err) {
+        setToast('⚠️ ' + err.message)
+      }
     }
     if (!results.length) return
     if (slotIdx !== null) {
@@ -160,6 +224,7 @@ export default function Objectives() {
     } else {
       f('images', [...form.images.filter(Boolean), ...results])
     }
+    setToast('✅ تم رفع الصور')
     e.target.value = ''
   }
 
@@ -177,12 +242,21 @@ export default function Objectives() {
     const file = e.target.files[0]
     if (!file) return
     if (!file.type.startsWith('video/')) { setToast('⚠️ يُسمح فقط بملفات الفيديو'); return }
-    if (file.size > MAX_VID_SIZE) { setToast(`⚠️ ${file.name} أكبر من 80 MB`); return }
-    setToast('⏳ جاري التحميل...')
-    const dataUrl = await readAsDataURL(file)
-    f('videos', [...form.videos, dataUrl])
-    setToast('✅ تم تحميل الفيديو')
-    e.target.value = ''
+    if (file.size > MAX_VID_SIZE) {
+      setToast(`⚠️ ${file.name} أكبر من ${fmtBytes(MAX_VID_SIZE)}`); return
+    }
+    setIsUploadingVideo(true)
+    setToast('⏳ جاري رفع الفيديو...')
+    try {
+      const url = await uploadMedia(file, 'video')
+      f('videos', [...form.videos, url])
+      setToast('✅ تم رفع الفيديو')
+    } catch (err) {
+      setToast('⚠️ ' + err.message)
+    } finally {
+      setIsUploadingVideo(false)
+      e.target.value = ''
+    }
   }
 
   const addVideoUrl   = () => f('videos', [...form.videos, ''])
@@ -191,23 +265,59 @@ export default function Objectives() {
   }
   const removeVideoAt = (i) => f('videos', form.videos.filter((_, idx) => idx !== i))
 
-  const isDataUrl = (s) => s?.startsWith('data:')
+  const hasUrl = (s) => s && s.trim().length > 0
 
   /* ── Save ── */
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.titleAr.trim() && !form.titleEn.trim()) {
       setToast('⚠️ أدخل العنوان بالعربي أو الإنجليزي'); return
     }
-    const entry = { ...form }
-    let updated
-    if (modal === 'add') {
-      updated = [...list, { id: Date.now(), ...entry }]
-      setToast('✅ تمت الإضافة')
-    } else {
-      updated = list.map(item => item.id === editId ? { ...item, ...entry } : item)
-      setToast('✅ تم التحديث')
+
+    const payload = {
+      icon_name:     form.iconName,
+      title_ar:      form.titleAr,
+      title_en:      form.titleEn,
+      needs_ar:      form.needsAr,
+      needs_en:      form.needsEn,
+      work_ar:       form.workAr,
+      work_en:       form.workEn,
+      activities_ar: form.activitiesAr.filter(Boolean),
+      activities_en: form.activitiesEn.filter(Boolean),
+      images:        form.images.filter(Boolean),
+      videos:        form.videos.filter(Boolean),
+      active:        form.active,
     }
-    setList(updated); saveObjectives(updated); closeModal()
+
+    setIsSaving(true)
+    try {
+      let res, data
+      if (modal === 'add') {
+        res = await fetch(`${API_BASE}/objectives`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        data = await res.json()
+        if (!res.ok) throw new Error(data?.message || 'فشل الإضافة')
+        setList(prev => [...prev, normalize(data)])
+        setToast('✅ تمت الإضافة')
+      } else {
+        res = await fetch(`${API_BASE}/objectives/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        data = await res.json()
+        if (!res.ok) throw new Error(data?.message || 'فشل التحديث')
+        setList(prev => prev.map(item => item.id === editId ? normalize(data) : item))
+        setToast('✅ تم التحديث')
+      }
+      closeModal()
+    } catch (err) {
+      setToast('⚠️ ' + err.message)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleDelete = async (id) => {
@@ -218,15 +328,31 @@ export default function Objectives() {
       reverseButtons: true, customClass: { popup: 'swal-rtl' },
     })
     if (!res.isConfirmed) return
-    const updated = list.filter(item => item.id !== id)
-    setList(updated); saveObjectives(updated); setToast('🗑️ تم الحذف')
+    try {
+      const r = await fetch(`${API_BASE}/objectives/${id}`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('فشل الحذف')
+      setList(prev => prev.filter(item => item.id !== id))
+      setToast('🗑️ تم الحذف')
+    } catch (err) {
+      setToast('⚠️ ' + err.message)
+    }
   }
 
-  const toggleActive = (id) => {
-    const updated = list.map(item =>
-      item.id === id ? { ...item, active: !item.active } : item
-    )
-    setList(updated); saveObjectives(updated)
+  const toggleActive = async (id) => {
+    try {
+      const r = await fetch(`${API_BASE}/objectives/${id}/toggle`, {
+        method: 'PATCH',
+        headers: { Accept: 'application/json' },
+      })
+      if (!r.ok) throw new Error('فشل تغيير الحالة')
+      const data = await r.json()
+      setList(prev => prev.map(item => item.id === id ? normalize(data) : item))
+    } catch (err) {
+      setToast('⚠️ ' + err.message)
+    }
   }
 
   return (
@@ -263,7 +389,12 @@ export default function Objectives() {
       </div>
 
       {/* ── Grid ── */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="admin-empty">
+          <div className="admin-empty__icon">⏳</div>
+          <div>جاري التحميل...</div>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="admin-empty">
           <div className="admin-empty__icon">📋</div>
           <div>لا توجد نتائج</div>
@@ -339,9 +470,13 @@ export default function Objectives() {
                     <FontAwesomeIcon icon={faTrash} /><span>حذف</span>
                   </button>
                 )}
-                <button className="admin-btn admin-btn--primary" onClick={handleSave}>
+                <button
+                  className="admin-btn admin-btn--primary"
+                  onClick={handleSave}
+                  disabled={isSaving || isUploadingVideo}
+                >
                   <FontAwesomeIcon icon={faSave} />
-                  <span>{modal === 'add' ? 'إضافة' : 'حفظ'}</span>
+                  <span>{isSaving ? 'جاري الحفظ...' : modal === 'add' ? 'إضافة' : 'حفظ'}</span>
                 </button>
               </div>
             </div>
@@ -464,8 +599,7 @@ export default function Objectives() {
                           </label>
                           <input type="url"
                             placeholder={`https://... رابط الصورة ${i + 1}`} dir="ltr"
-                            value={isDataUrl(url) ? '' : url}
-                            readOnly={isDataUrl(url)}
+                            value={url}
                             onChange={e => setImageUrlAt(i, e.target.value)} />
                           <button type="button" className="obj-media-list__remove"
                             onClick={() => removeImageAt(i)}>
@@ -474,11 +608,6 @@ export default function Objectives() {
                         </div>
                         {url && (
                           <div className="obj-img-preview-wrap">
-                            {isDataUrl(url) && (
-                              <span className="obj-local-badge">
-                                <FontAwesomeIcon icon={faUpload} /> من الجهاز
-                              </span>
-                            )}
                             <img src={url} alt={`img-${i}`} className="obj-img-preview"
                               onError={e => { e.target.style.display = 'none' }} />
                           </div>
@@ -515,29 +644,29 @@ export default function Objectives() {
                     </button>
                   </div>
 
+                  {isUploadingVideo && (
+                    <div className="obj-upload-progress">
+                      <div className="obj-upload-progress__bar" />
+                      <span>جاري رفع الفيديو، يرجى الانتظار...</span>
+                    </div>
+                  )}
+
                   <div className="obj-media-list" style={{ marginTop: '0.65rem' }}>
                     {form.videos.map((v, i) => (
                       <div key={i} className="obj-media-list__item">
                         <div className="obj-media-list__row">
-                          {isDataUrl(v) ? (
-                            <span className="obj-local-badge" style={{ marginLeft: 'auto' }}>
-                              <FontAwesomeIcon icon={faUpload} /> ملف مرفوع
-                            </span>
-                          ) : (
-                            <input type="url" placeholder="https://... رابط الفيديو" dir="ltr"
-                              value={v} onChange={e => setVideoUrlAt(i, e.target.value)} />
-                          )}
+                          <input type="url" placeholder="https://... رابط الفيديو" dir="ltr"
+                            value={v} onChange={e => setVideoUrlAt(i, e.target.value)} />
                           <button type="button" className="obj-media-list__remove"
                             onClick={() => removeVideoAt(i)}>
                             <FontAwesomeIcon icon={faTrash} />
                           </button>
                         </div>
-                        {isDataUrl(v) && v.startsWith('data:video') && (
+                        {v && /\.(mp4|webm|ogg)(\?.*)?$/i.test(v) ? (
                           <video src={v} controls className="obj-video-preview" />
-                        )}
-                        {!isDataUrl(v) && v && (
+                        ) : v ? (
                           <iframe src={v} className="obj-iframe-preview" title={`vid-${i}`} allowFullScreen />
-                        )}
+                        ) : null}
                       </div>
                     ))}
 
@@ -547,9 +676,12 @@ export default function Objectives() {
                           <FontAwesomeIcon icon={faLink} /> إضافة رابط فيديو
                         </button>
                       ) : (
-                        <label className="obj-media-add obj-media-add--upload">
-                          <FontAwesomeIcon icon={faUpload} /> رفع فيديو من الجهاز
-                          <input type="file" accept="video/*" hidden onChange={handleVideoFile} />
+                        <label className={`obj-media-add obj-media-add--upload ${isUploadingVideo ? 'disabled' : ''}`}>
+                          <FontAwesomeIcon icon={isUploadingVideo ? faVideo : faUpload} />
+                          {isUploadingVideo ? ' جاري الرفع...' : ' رفع فيديو من الجهاز'}
+                          <input type="file" accept="video/*" hidden
+                            disabled={isUploadingVideo}
+                            onChange={handleVideoFile} />
                         </label>
                       )}
                     </div>

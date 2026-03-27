@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical, faDollarSign, faPeopleGroup, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard, faBuildingColumns, faTruckMedical, faDollarSign, faPeopleGroup, faChevronLeft, faChevronRight, faHandHoldingHeart, faGraduationCap, faHospital, faStar, faHandshake, faGlobe, faChild, faHome, faChartLine } from '@fortawesome/free-solid-svg-icons'
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Home.css'
@@ -20,44 +20,11 @@ const heroImages = [] /* فارغ لأن السلايدر معطّل */
 const heroVideoSrc = '/2.mp4'
 const heroVideoPlaybackRate = 1.5
 
-const objectives = [
-    {
-        icon: faBullseye,
-        title: 'Capacity Building',
-        desc: 'Developing life skills and empowering individuals to foster sustainable community growth. We design and deliver comprehensive programs that build leadership, professional competencies, and resilience so communities can thrive from within.',
-        link: '/objectives',
-    },
-    {
-        icon: faBook,
-        title: 'Education',
-        desc: 'Establishing educational centers and kindergartens across all stages of learning. We ensure every child and adult has access to quality education regardless of circumstance, and we support teachers and learning environments for lasting impact.',
-        link: '/objectives',
-    },
-    {
-        icon: faHeartbeat,
-        title: 'Healthcare',
-        desc: 'Providing medical care for vulnerable groups and improving health standards through medical centers. Our work includes preventive care, mental health support, and outreach in underserved areas so that health becomes a right, not a privilege.',
-        link: '/objectives',
-    },
-    {
-        icon: faUsers,
-        title: 'Social Support',
-        desc: 'Addressing social issues and providing comprehensive psychosocial support (PSS). We offer counseling, crisis response, and family support to help individuals and communities navigate hardship with dignity and rebuild resilience.',
-        link: '/objectives',
-    },
-    {
-        icon: faLeaf,
-        title: 'Volunteering',
-        desc: 'Organizing volunteer campaigns and impactful training programs for communities. We channel the energy and skills of volunteers into structured service, building both individual capacity and collective impact for lasting change.',
-        link: '/objectives',
-    },
-    {
-        icon: faTruckMedical,
-        title: 'Emergency Relief',
-        desc: 'Responding swiftly to crises with food, shelter, medical aid, and essential supplies. We work with local partners to reach affected communities and support recovery and resilience in times of disaster and displacement.',
-        link: '/objectives',
-    },
-]
+const ICON_MAP = {
+    faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical,
+    faHandHoldingHeart, faGraduationCap, faHospital, faStar,
+    faHandshake, faGlobe, faChild, faHome, faChartLine,
+}
 
 const founders = [
     { name: 'Rasha Hayel Mousa', initials: 'RH', roleKey: 'founders.role' },
@@ -159,6 +126,7 @@ export default function Home() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0)
     const [currentTileIndex, setCurrentTileIndex] = useState(0)
+    const [objectives, setObjectives] = useState([])
     const [activeObjective, setActiveObjective] = useState(null)
     const [activitiesInView, setActivitiesInView] = useState(false)
     const [wwdInView, setWwdInView] = useState(false)
@@ -256,6 +224,29 @@ export default function Home() {
         })()
         return () => { mounted = false }
     }, [lang])
+
+    useEffect(() => {
+        let mounted = true
+        fetch(`${API_BASE}/objectives?active_only=1`, {
+            headers: { Accept: 'application/json' },
+        })
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                if (!mounted) return
+                setObjectives((Array.isArray(data) ? data : []).map(o => ({
+                    id:      o.id,
+                    icon:    ICON_MAP[o.icon_name] || ICON_MAP[o.iconName] || faBullseye,
+                    titleAr: o.title_ar || o.titleAr || '',
+                    titleEn: o.title_en || o.titleEn || '',
+                    needsAr: o.needs_ar || o.needsAr || '',
+                    needsEn: o.needs_en || o.needsEn || '',
+                    workAr:  o.work_ar  || o.workAr  || '',
+                    workEn:  o.work_en  || o.workEn  || '',
+                })))
+            })
+            .catch(() => { if (mounted) setObjectives([]) })
+        return () => { mounted = false }
+    }, [])
 
     useEffect(() => {
         const mql = window.matchMedia('(max-width: 900px)')
@@ -481,16 +472,17 @@ export default function Home() {
 
                     <div className="activities-nav">
                         {objectives.map((obj, i) => {
+                            const label = lang === 'AR' ? (obj.titleAr || obj.titleEn) : (obj.titleEn || obj.titleAr)
                             return (
                                 <button
-                                    key={i}
+                                    key={obj.id ?? i}
                                     className={`activity-btn ${activeObjective === i ? 'active' : ''}`}
                                     onClick={() => setActiveObjective(activeObjective === i ? null : i)}
                                 >
                                     <div className="activity-icon-wrapper">
                                         <FontAwesomeIcon icon={obj.icon} className="activity-icon" />
                                     </div>
-                                    <span className="activity-label">{t(`objective.${i}.title`)}</span>
+                                    <span className="activity-label">{label}</span>
                                 </button>
                             )
                         })}
@@ -498,8 +490,11 @@ export default function Home() {
                 </div>
 
                 <div className={`activity-details-wrapper ${activeObjective !== null ? 'open' : ''}`}>
-                    {activeObjective !== null && (() => {
+                    {activeObjective !== null && objectives[activeObjective] && (() => {
                         const obj = objectives[activeObjective]
+                        const title = lang === 'AR' ? (obj.titleAr || obj.titleEn) : (obj.titleEn || obj.titleAr)
+                        const needs = lang === 'AR' ? (obj.needsAr || obj.needsEn) : (obj.needsEn || obj.needsAr)
+                        const work  = lang === 'AR' ? (obj.workAr  || obj.workEn)  : (obj.workEn  || obj.workAr)
                         return (
                             <div className="container activity-details animate-fade-in">
                                 <div className="activity-details-left">
@@ -507,14 +502,14 @@ export default function Home() {
                                         <div className="activity-details-icon-large">
                                             <FontAwesomeIcon icon={obj.icon} />
                                         </div>
-                                        <h3>{t(`objective.${activeObjective}.title`)}</h3>
+                                        <h3>{title}</h3>
                                     </div>
                                 </div>
                                 <div className="activity-details-right">
                                     <h4>{t('activities.urgentNeeds')}</h4>
-                                    <p>{t(`objective.${activeObjective}.needs`)}</p>
+                                    <p>{needs}</p>
                                     <h4>{t('activities.ourWork')}</h4>
-                                    <p>{t(`objective.${activeObjective}.work`)}</p>
+                                    <p>{work}</p>
                                 </div>
                             </div>
                         )

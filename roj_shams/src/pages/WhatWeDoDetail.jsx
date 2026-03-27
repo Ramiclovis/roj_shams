@@ -1,5 +1,5 @@
+import { useState, useEffect } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
-import { useEffect, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical,
@@ -7,8 +7,9 @@ import {
   faHandshake, faGlobe, faChild, faHome, faChartLine,
 } from '@fortawesome/free-solid-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
-import { objectivesBase } from '../data/objectivesData'
 import '../assets/components/WhatWeDoDetail.css'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 const ICON_MAP = {
   faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical,
@@ -16,16 +17,46 @@ const ICON_MAP = {
   faHandshake, faGlobe, faChild, faHome, faChartLine,
 }
 
-function normalizeUrlList(list) {
-  if (!Array.isArray(list)) return []
-  return list
-    .map((item) => {
-      if (!item) return null
-      if (typeof item === 'string') return item
-      if (typeof item === 'object') return item.url || item.src || null
-      return null
-    })
-    .filter(Boolean)
+function resolveMediaUrl(url) {
+  if (!url || typeof url !== 'string') return ''
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  const baseOrigin = (API_BASE.replace(/\/api\/?$/, '')).replace(/\/$/, '')
+  if (/^((uploads\/)?news\/images|(uploads\/)?news\/videos|(uploads\/)?objectives\/images|(uploads\/)?objectives\/videos)\//i.test(trimmed)) {
+    return `${baseOrigin}/storage/${trimmed}`
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed)
+      if (parsed.pathname.startsWith('/storage/') && parsed.origin !== baseOrigin) {
+        return `${baseOrigin}${parsed.pathname}${parsed.search || ''}`
+      }
+    } catch {}
+    return trimmed
+  }
+  return `${baseOrigin}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`
+}
+
+function normalize(item) {
+  const actsAr = Array.isArray(item.activities_ar || item.activitiesAr)
+    ? (item.activities_ar || item.activitiesAr) : []
+  const actsEn = Array.isArray(item.activities_en || item.activitiesEn)
+    ? (item.activities_en || item.activitiesEn) : []
+  return {
+    id:           item.id,
+    iconName:     item.icon_name    || item.iconName    || 'faBullseye',
+    titleAr:      item.title_ar     || item.titleAr     || '',
+    titleEn:      item.title_en     || item.titleEn     || '',
+    needsAr:      item.needs_ar     || item.needsAr     || '',
+    needsEn:      item.needs_en     || item.needsEn     || '',
+    workAr:       item.work_ar      || item.workAr      || '',
+    workEn:       item.work_en      || item.workEn      || '',
+    activitiesAr: actsAr.filter(Boolean),
+    activitiesEn: actsEn.filter(Boolean),
+    images:       (Array.isArray(item.images) ? item.images : []).map(resolveMediaUrl).filter(Boolean),
+    videos:       (Array.isArray(item.videos) ? item.videos : []).map(resolveMediaUrl).filter(Boolean),
+    active:       item.active !== false,
+  }
 }
 
 function getYouTubeEmbedUrl(url) {
@@ -39,12 +70,10 @@ function getYouTubeEmbedUrl(url) {
       const idFromQuery = u.searchParams.get('v')
       if (idFromQuery) return `https://www.youtube.com/embed/${idFromQuery}`
       const parts = u.pathname.split('/').filter(Boolean)
-      // /embed/<id> or /shorts/<id>
       const idFromPath = parts[parts.length - 1]
       if (parts[0] === 'embed' || parts[0] === 'shorts' || parts[0] === 'live') {
         return idFromPath ? `https://www.youtube.com/embed/${idFromPath}` : null
       }
-      // Fallback: try last segment
       return idFromPath ? `https://www.youtube.com/embed/${idFromPath}` : null
     }
     return null
@@ -53,24 +82,50 @@ function getYouTubeEmbedUrl(url) {
   }
 }
 
-function loadObjectives() {
-  try {
-    const stored = localStorage.getItem('admin_objectives')
-    if (stored) return JSON.parse(stored).filter((o) => o.active !== false)
-  } catch { /* ignore */ }
-  return objectivesBase.filter((o) => o.active !== false)
-}
-
 export default function WhatWeDoDetail() {
   const { id } = useParams()
   const { t, lang } = useLanguage()
+  const [objective, setObjective] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [videoOrientations, setVideoOrientations] = useState({})
 
-  const objectives = useMemo(() => loadObjectives(), [])
-  const objective = objectives.find((o) => String(o.id) === String(id))
+  const handleVideoMeta = (idx, e) => {
+    const { videoWidth, videoHeight } = e.target
+    if (!videoWidth || !videoHeight) return
+    setVideoOrientations(prev => ({
+      ...prev,
+      [idx]: videoHeight > videoWidth ? 'portrait' : 'landscape',
+    }))
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    setLoading(true)
+    fetch(`${API_BASE}/objectives/${id}`, {
+      headers: { Accept: 'application/json' },
+    })
+      .then(r => {
+        if (!r.ok) throw new Error('not found')
+        return r.json()
+      })
+      .then(data => setObjective(normalize(data)))
+      .catch(() => setObjective(null))
+      .finally(() => setLoading(false))
   }, [id])
+
+  if (loading) {
+    return (
+      <div className="what-we-do-detail-page">
+        <section className="page-hero">
+          <div className="container">
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+              جاري التحميل...
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
 
   if (!objective) {
     return (
@@ -92,12 +147,12 @@ export default function WhatWeDoDetail() {
   const icon = ICON_MAP[objective.iconName] || faBullseye
   const title = lang === 'ar' ? (objective.titleAr || objective.titleEn) : (objective.titleEn || objective.titleAr)
   const needs = lang === 'ar' ? (objective.needsAr || objective.needsEn) : (objective.needsEn || objective.needsAr)
-  const work = lang === 'ar' ? (objective.workAr || objective.workEn) : (objective.workEn || objective.workAr)
-  const acts = lang === 'ar'
-    ? (objective.activitiesAr?.filter(Boolean) || [])
-    : (objective.activitiesEn?.filter(Boolean) || [])
-  const images = normalizeUrlList(objective.images)
-  const videos = normalizeUrlList(objective.videos)
+  const work  = lang === 'ar' ? (objective.workAr  || objective.workEn)  : (objective.workEn  || objective.workAr)
+  const acts  = lang === 'ar'
+    ? objective.activitiesAr.filter(Boolean)
+    : objective.activitiesEn.filter(Boolean)
+  const images    = objective.images
+  const videos    = objective.videos
   const hasImages = images.length > 0
   const hasVideos = videos.length > 0
 
@@ -105,13 +160,11 @@ export default function WhatWeDoDetail() {
     <div className="what-we-do-detail-page">
       <section className="wwd-detail-hero">
         <div className="wwd-container-fluid wwd-detail-hero__container">
-         
           <div className="wwd-detail-hero__grid">
             <div className="wwd-detail-hero__main">
               <div className="wwd-detail-hero__badge">
                 <div className="badge">{t('whatWeDo.title')}</div>
               </div>
-
               <div className="wwd-detail-hero__title-row">
                 <div className="wwd-detail-hero__icon" aria-hidden="true">
                   <FontAwesomeIcon icon={icon} />
@@ -183,32 +236,55 @@ export default function WhatWeDoDetail() {
                 </div>
               )}
 
+              {/* ── Image gallery ── */}
               {hasImages && (
-                <>
-                  <h3 className="wwd-media__title">{lang === 'ar' ? 'الصور' : 'Photos'}</h3>
-                  <div className="wwd-media__grid wwd-media__grid--images">
+                <div className="wwd-gallery-section">
+                  <div className="wwd-gallery-header">
+                    <span className="wwd-gallery-header__icon">📷</span>
+                    <h3 className="wwd-gallery-header__title">
+                      {lang === 'ar' ? 'الصور' : 'Photos'}
+                      <span className="wwd-gallery-header__count"> ({images.length})</span>
+                    </h3>
+                  </div>
+                  <div className={`wwd-gallery wwd-gallery--${Math.min(images.length, 4)}`}>
                     {images.map((src, idx) => (
-                      <div className="wwd-media-card" key={idx}>
-                        <img className="wwd-media-card__img" src={src} alt={`${title} - photo ${idx + 1}`} loading="lazy" />
+                      <div className="wwd-gallery__item" key={idx}>
+                        <img
+                          className="wwd-gallery__img"
+                          src={src}
+                          alt={`${title} ${idx + 1}`}
+                          loading="lazy"
+                          onError={e => { e.target.parentElement.style.display = 'none' }}
+                        />
                       </div>
                     ))}
                   </div>
-                </>
+                </div>
               )}
 
+              {/* ── Videos ── */}
               {hasVideos && (
-                <>
-                  <h3 className="wwd-media__title">{lang === 'ar' ? 'الفيديوهات' : 'Videos'}</h3>
-                  <div className="wwd-media__grid wwd-media__grid--videos">
+                <div className="wwd-videos-section">
+                  <div className="wwd-gallery-header">
+                    <span className="wwd-gallery-header__icon">🎬</span>
+                    <h3 className="wwd-gallery-header__title">
+                      {lang === 'ar' ? 'الفيديوهات' : 'Videos'}
+                      <span className="wwd-gallery-header__count"> ({videos.length})</span>
+                    </h3>
+                  </div>
+                  <div className="wwd-videos-grid">
                     {videos.map((urlOrSrc, idx) => {
                       const youtubeEmbed = getYouTubeEmbedUrl(urlOrSrc)
-                      const isFile =
-                        /\.(mp4|webm|ogg)(\?.*)?$/i.test(String(urlOrSrc))
+                      const isFile = /\.(mp4|webm|ogg)(\?.*)?$/i.test(String(urlOrSrc))
+                      const orientation = videoOrientations[idx] || 'landscape'
+                      const itemClass = isFile
+                        ? `wwd-video-item wwd-video-item--file wwd-video-item--${orientation}`
+                        : 'wwd-video-item wwd-video-item--embed'
                       return (
-                        <div className="wwd-media-card" key={idx}>
+                        <div className={itemClass} key={idx}>
                           {youtubeEmbed ? (
                             <iframe
-                              className="wwd-media-card__iframe"
+                              className="wwd-video-item__frame"
                               src={youtubeEmbed}
                               title={`${title} - video ${idx + 1}`}
                               loading="lazy"
@@ -218,16 +294,17 @@ export default function WhatWeDoDetail() {
                             />
                           ) : isFile ? (
                             <video
-                              className="wwd-media-card__video"
+                              className="wwd-video-item__player"
                               controls
-                              preload="none"
+                              preload="metadata"
                               src={urlOrSrc}
+                              onLoadedMetadata={(e) => handleVideoMeta(idx, e)}
                             >
                               {lang === 'ar' ? 'متصفحك لا يدعم تشغيل الفيديو.' : 'Your browser does not support video.'}
                             </video>
                           ) : (
                             <iframe
-                              className="wwd-media-card__iframe"
+                              className="wwd-video-item__frame"
                               src={urlOrSrc}
                               title={`${title} - video ${idx + 1}`}
                               loading="lazy"
@@ -240,7 +317,7 @@ export default function WhatWeDoDetail() {
                       )
                     })}
                   </div>
-                </>
+                </div>
               )}
             </section>
           </article>
@@ -249,4 +326,3 @@ export default function WhatWeDoDetail() {
     </div>
   )
 }
-
