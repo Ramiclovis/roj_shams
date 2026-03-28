@@ -65,28 +65,28 @@ function MiddleEastMap({ isRtl }) {
             </defs>
 
             {/* Ocean — wide rect covers any viewBox shift */}
-            <rect x="-300" width="1200" height="400" fill="#0d2b45"/>
+            <rect x="-300" width="1200" height="400" fill="#0d2b45" />
 
             {/* Country fills */}
             <g fill="#1b3a28" stroke="#0a1e12" strokeWidth="0.8">
                 {/* Turkey */}
-                <path d="M 7,99 L 7,16 L 285,16 L 285,64 L 256,85 L 170,87 L 74,85 L 14,92 Z"/>
+                <path d="M 7,99 L 7,16 L 285,16 L 285,64 L 256,85 L 170,87 L 74,85 L 14,92 Z" />
                 {/* Iraq */}
-                <path d="M 208,136 L 256,85 L 285,83 L 353,127 L 353,182 L 323,196 L 286,196 L 256,182 L 240,162 L 194,140 Z"/>
+                <path d="M 208,136 L 256,85 L 285,83 L 353,127 L 353,182 L 323,196 L 286,196 L 256,182 L 240,162 L 194,140 Z" />
                 {/* Iran */}
-                <path d="M 285,64 L 353,58 L 495,58 L 570,86 L 570,238 L 465,252 L 377,224 L 353,182 L 285,83 Z"/>
+                <path d="M 285,64 L 353,58 L 495,58 L 570,86 L 570,238 L 465,252 L 377,224 L 353,182 L 285,83 Z" />
                 {/* Jordan */}
-                <path d="M 149,148 L 194,148 L 188,196 L 147,188 Z"/>
+                <path d="M 149,148 L 194,148 L 188,196 L 147,188 Z" />
                 {/* Lebanon */}
-                <path d="M 151,126 L 159,141 L 173,133 L 173,126 L 163,119 Z"/>
+                <path d="M 151,126 L 159,141 L 173,133 L 173,126 L 163,119 Z" />
                 {/* Israel / Palestine */}
-                <path d="M 141,170 L 159,141 L 151,141 L 141,188 Z"/>
+                <path d="M 141,170 L 159,141 L 151,141 L 141,188 Z" />
                 {/* Saudi Arabia */}
-                <path d="M 194,148 L 256,182 L 286,196 L 323,196 L 452,295 L 272,350 L 178,308 L 165,308 L 165,210 L 181,196 Z"/>
+                <path d="M 194,148 L 256,182 L 286,196 L 323,196 L 452,295 L 272,350 L 178,308 L 165,308 L 165,210 L 181,196 Z" />
                 {/* Kuwait */}
-                <path d="M 323,182 L 353,182 L 353,203 L 323,203 Z"/>
+                <path d="M 323,182 L 353,182 L 353,203 L 323,203 Z" />
                 {/* Egypt (northern) */}
-                <path d="M 0,168 L 141,188 L 165,210 L 165,310 L 0,310 Z"/>
+                <path d="M 0,168 L 141,188 L 165,210 L 165,310 L 0,310 Z" />
             </g>
 
             {/* Syria — highlighted */}
@@ -100,8 +100,8 @@ function MiddleEastMap({ isRtl }) {
             />
 
             {/* Pulse rings on the pin */}
-            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp1"/>
-            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp2"/>
+            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp1" />
+            <circle cx="207" cy="96" r="13" fill="#f0a500" className="mp2" />
 
             {/* Location pin — tip ≈ centre of Syria */}
             <path
@@ -113,11 +113,11 @@ function MiddleEastMap({ isRtl }) {
                 stroke="#b8780a"
                 strokeWidth="1.5"
             />
-            <circle cx="207" cy="91" r="6" fill="white"/>
+            <circle cx="207" cy="91" r="6" fill="white" />
 
             {/* Syria label */}
             <text x="207" y="141" textAnchor="middle" fontSize="7.5" fill="rgba(255,255,255,0.55)"
-                  fontFamily="Arial,sans-serif" letterSpacing="1.8">SYRIA</text>
+                fontFamily="Arial,sans-serif" letterSpacing="1.8">SYRIA</text>
         </svg>
     )
 }
@@ -180,7 +180,7 @@ export default function Home() {
                 if (parsed.pathname.startsWith('/storage/') && parsed.origin !== baseOrigin) {
                     return `${baseOrigin}${parsed.pathname}${parsed.search || ''}`
                 }
-            } catch {}
+            } catch { }
             return trimmed
         }
         return `${baseOrigin}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`
@@ -198,30 +198,30 @@ export default function Home() {
 
     useEffect(() => {
         let mounted = true
-        ;(async () => {
-            try {
-                const res = await fetch(`${API_BASE}/news?active_only=1`, {
-                    headers: { Accept: 'application/json' },
-                })
-                if (!res.ok) throw new Error('failed')
-                const data = await res.json()
-                if (!mounted) return
-                const mapped = (Array.isArray(data) ? data : []).map((n) => ({
-                    id: n.id,
-                    image: resolveMediaUrl(Array.isArray(n.images) && n.images.length ? n.images[0] : ''),
-                    images: (Array.isArray(n.images) ? n.images : []).map(resolveMediaUrl).filter(Boolean),
-                    videoUrl: resolveMediaUrl(Array.isArray(n.videos) && n.videos.length ? n.videos[0] : ''),
-                    dateLabel: formatDate(n.date),
-                    titleLabel: lang === 'AR' ? (n.title_ar || n.title_en) : (n.title_en || n.title_ar),
-                    excerptLabel: lang === 'AR' ? (n.excerpt_ar || n.excerpt_en) : (n.excerpt_en || n.excerpt_ar),
-                }))
-                setNewsItems(mapped)
-                setCurrentFeaturedIndex(0)
-                setCurrentTileIndex(0)
-            } catch {
-                if (mounted) setNewsItems([])
-            }
-        })()
+            ; (async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/news?active_only=1`, {
+                        headers: { Accept: 'application/json' },
+                    })
+                    if (!res.ok) throw new Error('failed')
+                    const data = await res.json()
+                    if (!mounted) return
+                    const mapped = (Array.isArray(data) ? data : []).map((n) => ({
+                        id: n.id,
+                        image: resolveMediaUrl(Array.isArray(n.images) && n.images.length ? n.images[0] : ''),
+                        images: (Array.isArray(n.images) ? n.images : []).map(resolveMediaUrl).filter(Boolean),
+                        videoUrl: resolveMediaUrl(Array.isArray(n.videos) && n.videos.length ? n.videos[0] : ''),
+                        dateLabel: formatDate(n.date),
+                        titleLabel: lang === 'AR' ? (n.title_ar || n.title_en) : (n.title_en || n.title_ar),
+                        excerptLabel: lang === 'AR' ? (n.excerpt_ar || n.excerpt_en) : (n.excerpt_en || n.excerpt_ar),
+                    }))
+                    setNewsItems(mapped)
+                    setCurrentFeaturedIndex(0)
+                    setCurrentTileIndex(0)
+                } catch {
+                    if (mounted) setNewsItems([])
+                }
+            })()
         return () => { mounted = false }
     }, [lang])
 
@@ -234,14 +234,14 @@ export default function Home() {
             .then(data => {
                 if (!mounted) return
                 setObjectives((Array.isArray(data) ? data : []).map(o => ({
-                    id:      o.id,
-                    icon:    ICON_MAP[o.icon_name] || ICON_MAP[o.iconName] || faBullseye,
+                    id: o.id,
+                    icon: ICON_MAP[o.icon_name] || ICON_MAP[o.iconName] || faBullseye,
                     titleAr: o.title_ar || o.titleAr || '',
                     titleEn: o.title_en || o.titleEn || '',
                     needsAr: o.needs_ar || o.needsAr || '',
                     needsEn: o.needs_en || o.needsEn || '',
-                    workAr:  o.work_ar  || o.workAr  || '',
-                    workEn:  o.work_en  || o.workEn  || '',
+                    workAr: o.work_ar || o.workAr || '',
+                    workEn: o.work_en || o.workEn || '',
                 })))
             })
             .catch(() => { if (mounted) setObjectives([]) })
@@ -449,7 +449,7 @@ export default function Home() {
                         <a href="https://www.facebook.com/share/18HJjbiDib/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="Facebook">
                             <FontAwesomeIcon icon={faFacebookF} />
                         </a>
-                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="YouTube">
+                        <a href="https://youtube.com/@shamsroj?si=8sD7om21k54hPSfg" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="YouTube">
                             <FontAwesomeIcon icon={faYoutube} />
                         </a>
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hero__social-link" aria-label="LinkedIn">
@@ -494,7 +494,7 @@ export default function Home() {
                         const obj = objectives[activeObjective]
                         const title = lang === 'AR' ? (obj.titleAr || obj.titleEn) : (obj.titleEn || obj.titleAr)
                         const needs = lang === 'AR' ? (obj.needsAr || obj.needsEn) : (obj.needsEn || obj.needsAr)
-                        const work  = lang === 'AR' ? (obj.workAr  || obj.workEn)  : (obj.workEn  || obj.workAr)
+                        const work = lang === 'AR' ? (obj.workAr || obj.workEn) : (obj.workEn || obj.workAr)
                         return (
                             <div className="container activity-details animate-fade-in">
                                 <div className="activity-details-left">
@@ -538,29 +538,29 @@ export default function Home() {
                                 const imgList = item.images?.length ? item.images : (item.image ? [item.image] : [])
                                 const currentImage = imgList.length ? imgList[newsImageTick % imgList.length] : ''
                                 return (
-                                <div key={item.id} className="news-featured-slider__slide">
-                                    <article className={`news-featured ${item.videoUrl ? 'news-featured--has-video' : ''}`}>
-                                        <NavLink to={`/news/${item.id}`} className="news-featured__media">
-                                            <div
-                                                className="news-featured__image"
-                                                style={{ backgroundImage: `url(${currentImage || item.image})` }}
-                                            />
-                                            {item.videoUrl && (
-                                                <span className="news-featured__play" aria-hidden="true">
-                                                    <FontAwesomeIcon icon={faPlay} />
-                                                </span>
-                                            )}
-                                            {item.videoUrl && (
-                                                <span className="news-featured__video-badge">{t('news.videoLabel')}</span>
-                                            )}
-                                            <div className="news-featured__overlay">
-                                                <time className="news-featured__date">{item.dateLabel || '—'}</time>
-                                                <h3 className="news-featured__title">{item.titleLabel}</h3>
-                                                <p className="news-featured__excerpt">{item.excerptLabel}</p>
-                                            </div>
-                                        </NavLink>
-                                    </article>
-                                </div>
+                                    <div key={item.id} className="news-featured-slider__slide">
+                                        <article className={`news-featured ${item.videoUrl ? 'news-featured--has-video' : ''}`}>
+                                            <NavLink to={`/news/${item.id}`} className="news-featured__media">
+                                                <div
+                                                    className="news-featured__image"
+                                                    style={{ backgroundImage: `url(${currentImage || item.image})` }}
+                                                />
+                                                {item.videoUrl && (
+                                                    <span className="news-featured__play" aria-hidden="true">
+                                                        <FontAwesomeIcon icon={faPlay} />
+                                                    </span>
+                                                )}
+                                                {item.videoUrl && (
+                                                    <span className="news-featured__video-badge">{t('news.videoLabel')}</span>
+                                                )}
+                                                <div className="news-featured__overlay">
+                                                    <time className="news-featured__date">{item.dateLabel || '—'}</time>
+                                                    <h3 className="news-featured__title">{item.titleLabel}</h3>
+                                                    <p className="news-featured__excerpt">{item.excerptLabel}</p>
+                                                </div>
+                                            </NavLink>
+                                        </article>
+                                    </div>
                                 )
                             })}
                         </div>
@@ -589,69 +589,69 @@ export default function Home() {
 
                     {/* سلايدر: 3 بطاقات ظاهرة، الانزلاق يكشف الرابعة */}
                     {tileItems.length > 0 && (
-                    <div className="news-tiles-slider">
-                        <div
-                            className="news-tiles-slider__track"
-                            style={{
-                                transform: `translateX(${isRtl ? currentTileIndex * (isNarrow ? 100 : 100 / 3) : -currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
-                            }}
-                        >
-                            {tileItems.map((item) => {
-                                const imgList = item.images?.length ? item.images : (item.image ? [item.image] : [])
-                                const currentImage = imgList.length ? imgList[newsImageTick % imgList.length] : ''
-                                return (
-                                <div key={item.id} className="news-tiles-slider__slide">
-                                    <article className={`news-tile ${item.videoUrl ? 'news-tile--has-video' : ''}`}>
-                                        <NavLink to={`/news/${item.id}`} className="news-tile__link">
-                                            <div className="news-tile__media">
-                                                <div
-                                                    className="news-tile__image"
-                                                    style={{ backgroundImage: `url(${currentImage || item.image})` }}
-                                                />
-                                                {item.videoUrl && (
-                                                    <span className="news-tile__play" aria-hidden="true">
-                                                        <FontAwesomeIcon icon={faPlay} />
-                                                    </span>
-                                                )}
-                                                {item.videoUrl && (
-                                                    <span className="news-tile__video-badge">{t('news.videoLabel')}</span>
-                                                )}
-                                            </div>
-                                            <div className="news-tile__overlay">
-                                                <time className="news-tile__date">{item.dateLabel || '—'}</time>
-                                                <h3 className="news-tile__title">{item.titleLabel}</h3>
-                                                <span className="news-tile__read">{t('news.readMore')} →</span>
-                                            </div>
-                                        </NavLink>
-                                    </article>
-                                </div>
-                                )
-                            })}
+                        <div className="news-tiles-slider">
+                            <div
+                                className="news-tiles-slider__track"
+                                style={{
+                                    transform: `translateX(${isRtl ? currentTileIndex * (isNarrow ? 100 : 100 / 3) : -currentTileIndex * (isNarrow ? 100 : 100 / 3)}%)`,
+                                }}
+                            >
+                                {tileItems.map((item) => {
+                                    const imgList = item.images?.length ? item.images : (item.image ? [item.image] : [])
+                                    const currentImage = imgList.length ? imgList[newsImageTick % imgList.length] : ''
+                                    return (
+                                        <div key={item.id} className="news-tiles-slider__slide">
+                                            <article className={`news-tile ${item.videoUrl ? 'news-tile--has-video' : ''}`}>
+                                                <NavLink to={`/news/${item.id}`} className="news-tile__link">
+                                                    <div className="news-tile__media">
+                                                        <div
+                                                            className="news-tile__image"
+                                                            style={{ backgroundImage: `url(${currentImage || item.image})` }}
+                                                        />
+                                                        {item.videoUrl && (
+                                                            <span className="news-tile__play" aria-hidden="true">
+                                                                <FontAwesomeIcon icon={faPlay} />
+                                                            </span>
+                                                        )}
+                                                        {item.videoUrl && (
+                                                            <span className="news-tile__video-badge">{t('news.videoLabel')}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="news-tile__overlay">
+                                                        <time className="news-tile__date">{item.dateLabel || '—'}</time>
+                                                        <h3 className="news-tile__title">{item.titleLabel}</h3>
+                                                        <span className="news-tile__read">{t('news.readMore')} →</span>
+                                                    </div>
+                                                </NavLink>
+                                            </article>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            <div className="news-tiles-slider__dots" aria-hidden="true">
+                                {Array.from({
+                                    length: isNarrow ? tileItems.length : Math.max(1, tileItems.length - 2),
+                                }).map((_, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        className={`news-tiles-slider__dot ${i === currentTileIndex ? 'active' : ''}`}
+                                        onClick={() => setCurrentTileIndex(i)}
+                                        aria-label={`Slide ${i + 1}`}
+                                    />
+                                ))}
+                            </div>
+                            {tileMaxIndex > 0 && (
+                                <>
+                                    <button type="button" className="news-slider__arrow news-slider__arrow--prev news-slider__arrow--tiles" onClick={prevTiles} aria-label="Previous news cards">
+                                        <FontAwesomeIcon icon={isRtl ? faChevronRight : faChevronLeft} />
+                                    </button>
+                                    <button type="button" className="news-slider__arrow news-slider__arrow--next news-slider__arrow--tiles" onClick={nextTiles} aria-label="Next news cards">
+                                        <FontAwesomeIcon icon={isRtl ? faChevronLeft : faChevronRight} />
+                                    </button>
+                                </>
+                            )}
                         </div>
-                        <div className="news-tiles-slider__dots" aria-hidden="true">
-                            {Array.from({
-                                length: isNarrow ? tileItems.length : Math.max(1, tileItems.length - 2),
-                            }).map((_, i) => (
-                                <button
-                                    key={i}
-                                    type="button"
-                                    className={`news-tiles-slider__dot ${i === currentTileIndex ? 'active' : ''}`}
-                                    onClick={() => setCurrentTileIndex(i)}
-                                    aria-label={`Slide ${i + 1}`}
-                                />
-                            ))}
-                        </div>
-                        {tileMaxIndex > 0 && (
-                            <>
-                                <button type="button" className="news-slider__arrow news-slider__arrow--prev news-slider__arrow--tiles" onClick={prevTiles} aria-label="Previous news cards">
-                                    <FontAwesomeIcon icon={isRtl ? faChevronRight : faChevronLeft} />
-                                </button>
-                                <button type="button" className="news-slider__arrow news-slider__arrow--next news-slider__arrow--tiles" onClick={nextTiles} aria-label="Next news cards">
-                                    <FontAwesomeIcon icon={isRtl ? faChevronLeft : faChevronRight} />
-                                </button>
-                            </>
-                        )}
-                    </div>
                     )}
 
                     <div className="news-section__footer">
@@ -743,7 +743,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="promise-section__payments">
-                      
+
                         <div className="promise-section__payment">
                             <div className="promise-section__payment-icon">
                                 <FontAwesomeIcon icon={faBuildingColumns} />
@@ -752,7 +752,7 @@ export default function Home() {
                             <span className="promise-section__payment-desc">{t('promise.CHAM BANK')}</span>
                             <span className="promise-section__payment-detail">{t('promise.CHAM BANKNumber')}</span>
                         </div>
-                       
+
                     </div>
                 </div>
             </section>

@@ -4,6 +4,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import './App.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import BackToTop from './components/BackToTop'
 import Home from './pages/Home'
 import About from './pages/About'
 import Objectives from './pages/Objectives'
@@ -82,6 +83,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   )
 }

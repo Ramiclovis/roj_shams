@@ -199,7 +199,7 @@ export default function Contact() {
                                         </div>
                                         <div>
                                             <strong>{t('contact.phone')}</strong>
-                                            <a href="https://wa.me/963935919318" target="_blank" rel="noopener noreferrer">+963 935 919 318</a>
+                                            <a href="https://wa.me/963935919318" target="_blank" rel="noopener noreferrer" dir="ltr" style={{ display: 'inline-block' }}>+963 935 919 318</a>
                                         </div>
                                     </div>
                                     <div className="contact__info-item">
