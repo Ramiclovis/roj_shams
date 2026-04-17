@@ -20,13 +20,15 @@ function normalize(item) {
     color:   item.color    || '#2d6b3e',
     bioEn:   item.bio_en || item.bioEn || '',
     bioAr:   item.bio_ar || item.bioAr || '',
+    phone:   item.phone || '',
+    email:   item.email || '',
     active:  item.active !== false,
   }
 }
 
 const emptyForm = {
   initials: '', nameEn: '', nameAr: '',
-  color: '#2d6b3e', bioEn: '', bioAr: '', active: true,
+  color: '#2d6b3e', bioEn: '', bioAr: '', phone: '', email: '', active: true,
 }
 
 export default function Founders() {
@@ -87,7 +89,8 @@ export default function Founders() {
   const openEdit = (item) => {
     setForm({
       initials: item.initials, nameEn: item.nameEn, nameAr: item.nameAr,
-      color: item.color, bioEn: item.bioEn, bioAr: item.bioAr, active: item.active,
+      color: item.color, bioEn: item.bioEn, bioAr: item.bioAr,
+      phone: item.phone, email: item.email, active: item.active,
     })
     setEditId(item.id); setModal('edit'); setActiveTab('ar')
   }
@@ -104,6 +107,8 @@ export default function Founders() {
       name_en: form.nameEn.trim(),
       bio_ar: form.bioAr.trim(),
       bio_en: form.bioEn.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
       initials: form.initials.trim(),
       color: form.color,
       active: !!form.active,
@@ -335,6 +340,16 @@ export default function Founders() {
 
               {/* ── Settings ── */}
               {activeTab === 'settings' && <>
+                <div className="admin-form-row">
+                  <label>رقم الهاتف</label>
+                  <input type="text" placeholder="مثال: +967 777 123 456" dir="ltr"
+                    value={form.phone} onChange={e => f('phone', e.target.value)} />
+                </div>
+                <div className="admin-form-row">
+                  <label>البريد الإلكتروني</label>
+                  <input type="email" placeholder="example@domain.com" dir="ltr"
+                    value={form.email} onChange={e => f('email', e.target.value)} />
+                </div>
                 <div className="admin-form-row">
                   <label>الأحرف الأولى (Initials)</label>
                   <input type="text" placeholder="مثال: RH" maxLength={3} dir="ltr"

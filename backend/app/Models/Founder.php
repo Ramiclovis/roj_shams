@@ -14,6 +14,8 @@ class Founder extends Model
         'name_en',
         'bio_ar',
         'bio_en',
+        'phone',
+        'email',
         'initials',
         'color',
         'active',
