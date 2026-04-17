@@ -30,17 +30,13 @@
   text-decoration: none;
 }
 
-.adm-topbar__sun {
-  font-size: 1.7rem;
-  color: #fbbd14;
-  filter: drop-shadow(0 0 8px rgba(251, 189, 20, 0.7));
-  animation: topbar-float 3s ease-in-out infinite;
-  display: inline-block;
-}
-
-@keyframes topbar-float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+.adm-topbar__logo-img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(251, 189, 20, 0.7);
+  box-shadow: 0 0 10px rgba(251, 189, 20, 0.4);
 }
 
 .adm-topbar__brand-wrap {

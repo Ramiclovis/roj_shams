@@ -43,7 +43,7 @@ export default function Navbar() {
                     aria-label="Shams Roj - Go to home"
                     onClick={() => window.scrollTo(0, 0)}
                 >
-                    <span className="navbar__logo-icon">☀</span>
+                    <img src="/img/logo.jpeg" alt="Shams Roj Logo" className="navbar__logo-img" />
                     <span className="navbar__logo-text">
                         Shams <strong>Roj</strong>
                     </span>

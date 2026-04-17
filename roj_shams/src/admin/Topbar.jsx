@@ -40,7 +40,7 @@ export default function Topbar() {
     <header className="adm-topbar">
       {/* Logo */}
       <div className="adm-topbar__logo">
-        <span className="adm-topbar__sun">☀</span>
+        <img src="/img/logo.jpeg" alt="Shams Roj Logo" className="adm-topbar__logo-img" />
         <div className="adm-topbar__brand-wrap">
           <span className="adm-topbar__brand">Shams Roj</span>
           <small className="adm-topbar__sub">لوحة التحكم</small>
