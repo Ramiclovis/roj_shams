@@ -37,11 +37,14 @@
     flex-shrink: 0;
 }
 
-.navbar__logo-icon {
-    font-size: 1.6rem;
-    color: var(--clr-accent);
-    animation: float 3s ease-in-out infinite;
-    display: inline-block;
+.navbar__logo-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(251, 189, 20, 0.7);
+    box-shadow: 0 0 10px rgba(251, 189, 20, 0.35);
+    flex-shrink: 0;
 }
 
 .navbar__logo-text {
