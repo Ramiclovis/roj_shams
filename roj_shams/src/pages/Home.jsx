@@ -5,6 +5,7 @@ import { faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faPlay, faCreditCard,
 import { faInstagram, faFacebookF, faYoutube, faLinkedinIn, faPaypal } from '@fortawesome/free-brands-svg-icons'
 import { useLanguage } from '../context/LanguageContext'
 import '../assets/components/Home.css'
+import heroVideoFile from '../assets/VIDEO/2.MP4'
 
 /* صور الهيرو (سلايدر عند عدم وجود فيديو) — معطّلة بالكومنت؛ أزل الكومنت وأعد السلايدر إن رغبت
 const heroImages = [
@@ -16,9 +17,9 @@ const heroImages = [
 */
 const heroImages = [] /* فارغ لأن السلايدر معطّل */
 
-/* فيديو الهيرو من public/2.mp4 — يظهر داخل قسم الهيرو مع تشغيل مسرّع */
-const heroVideoSrc = '/2.mp4'
-const heroVideoPlaybackRate = 1.5
+/* فيديو الهيرو — يظهر داخل قسم الهيرو مع تشغيل بطيء (سلو موشن) */
+const heroVideoSrc = heroVideoFile
+const heroVideoPlaybackRate = 0.5
 
 const ICON_MAP = {
     faBullseye, faBook, faHeartbeat, faUsers, faLeaf, faTruckMedical,
